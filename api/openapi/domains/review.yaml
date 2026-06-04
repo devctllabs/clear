@@ -1,0 +1,287 @@
+paths:
+  deckReviews:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/DeckId'
+    post:
+      operationId: startReviewSession
+      tags:
+        - Review
+      summary: Start a due or practice review session for a deck.
+      responses:
+        '201':
+          description: Started review session, or an unavailable review state when the deck has no cards.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewStartResult'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  reviewById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/ReviewId'
+    get:
+      operationId: getReviewSession
+      tags:
+        - Review
+      summary: Get a review session.
+      responses:
+        '200':
+          description: Review session state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewSession'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  gradeReviewSessionCard:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/ReviewId'
+      - $ref: '../shared/components.yaml#/components/parameters/CardId'
+    post:
+      operationId: gradeReviewSessionCard
+      tags:
+        - Review
+      summary: Grade the current card in a review session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeReviewCardRequest'
+      responses:
+        '200':
+          description: Updated review session state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewSession'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    ReviewGrade:
+      type: string
+      enum:
+        - again
+        - easy
+        - good
+        - hard
+
+    GradeReviewCardRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - grade
+      properties:
+        grade:
+          $ref: '#/components/schemas/ReviewGrade'
+
+    BasicReviewCard:
+      type: object
+      additionalProperties: false
+      required:
+        - back
+        - front
+        - id
+        - kind
+        - progress
+      properties:
+        back:
+          type: string
+        front:
+          type: string
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - basic
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+
+    ClozeReviewCard:
+      type: object
+      additionalProperties: false
+      required:
+        - body
+        - clozeId
+        - id
+        - kind
+        - progress
+      properties:
+        body:
+          type: string
+        clozeId:
+          type: string
+          example: c1
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - cloze
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+
+    ReviewCard:
+      oneOf:
+        - $ref: '#/components/schemas/BasicReviewCard'
+        - $ref: '#/components/schemas/ClozeReviewCard'
+      discriminator:
+        propertyName: kind
+        mapping:
+          basic: '#/components/schemas/BasicReviewCard'
+          cloze: '#/components/schemas/ClozeReviewCard'
+
+    ReviewCardOrNull:
+      oneOf:
+        - $ref: '#/components/schemas/ReviewCard'
+        - type: 'null'
+
+    DueReviewSessionStatus:
+      type: string
+      enum:
+        - active
+        - completed
+
+    DueReviewSession:
+      type: object
+      additionalProperties: false
+      required:
+        - currentCard
+        - deckId
+        - durationSeconds
+        - id
+        - mode
+        - plannedCount
+        - reviewedCount
+        - startedAt
+        - status
+      properties:
+        completedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        currentCard:
+          $ref: '#/components/schemas/ReviewCardOrNull'
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        durationSeconds:
+          type: integer
+          minimum: 0
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        mode:
+          type: string
+          enum:
+            - due
+        plannedCount:
+          type: integer
+          minimum: 0
+        reviewedCount:
+          type: integer
+          minimum: 0
+        startedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/DueReviewSessionStatus'
+      examples:
+        - completedAt: '2026-05-16T12:18:00.000Z'
+          currentCard: null
+          deckId: world-history
+          durationSeconds: 1080
+          id: world-history-review
+          mode: due
+          plannedCount: 2
+          reviewedCount: 2
+          startedAt: '2026-05-16T12:00:00.000Z'
+          status: completed
+
+    PracticeReviewSession:
+      type: object
+      additionalProperties: false
+      required:
+        - currentCard
+        - deckId
+        - durationSeconds
+        - id
+        - mode
+        - reviewedCount
+        - startedAt
+      properties:
+        currentCard:
+          $ref: '#/components/schemas/ReviewCard'
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        durationSeconds:
+          type: integer
+          minimum: 0
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        mode:
+          type: string
+          enum:
+            - practice
+        reviewedCount:
+          type: integer
+          minimum: 0
+        startedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+
+    ReviewSession:
+      oneOf:
+        - $ref: '#/components/schemas/DueReviewSession'
+        - $ref: '#/components/schemas/PracticeReviewSession'
+      discriminator:
+        propertyName: mode
+        mapping:
+          due: '#/components/schemas/DueReviewSession'
+          practice: '#/components/schemas/PracticeReviewSession'
+
+    ReviewUnavailableReason:
+      type: string
+      enum:
+        - empty-deck
+
+    ReviewUnavailable:
+      type: object
+      additionalProperties: false
+      required:
+        - mode
+        - reason
+      properties:
+        mode:
+          type: string
+          enum:
+            - unavailable
+        reason:
+          $ref: '#/components/schemas/ReviewUnavailableReason'
+
+    ReviewStartResult:
+      oneOf:
+        - $ref: '#/components/schemas/DueReviewSession'
+        - $ref: '#/components/schemas/PracticeReviewSession'
+        - $ref: '#/components/schemas/ReviewUnavailable'
+      discriminator:
+        propertyName: mode
+        mapping:
+          due: '#/components/schemas/DueReviewSession'
+          practice: '#/components/schemas/PracticeReviewSession'
+          unavailable: '#/components/schemas/ReviewUnavailable'

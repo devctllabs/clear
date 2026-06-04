@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Clear</title>
+    <script>
+      ;(() => {
+        // Apply the theme before React mounts to avoid a light/dark flash.
+        let preference = 'system'
+
+        try {
+          const stored = window.localStorage.getItem('clear-ui:theme-preference:v1')
+          if (stored === 'dark' || stored === 'light' || stored === 'system') {
+            preference = stored
+          }
+        } catch {
+          preference = 'system'
+        }
+
+        const prefersDark =
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        const resolvedTheme =
+          preference === 'dark' || (preference === 'system' && prefersDark)
+            ? 'dark'
+            : 'light'
+
+        document.documentElement.dataset.theme = resolvedTheme
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+paths:
+  workspaceDecks:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/WorkspaceId'
+    get:
+      operationId: listWorkspaceDecks
+      tags:
+        - Decks
+      summary: List decks at the workspace root.
+      parameters:
+        - $ref: '../shared/components.yaml#/components/parameters/DeckSortField'
+        - $ref: '../shared/components.yaml#/components/parameters/SortDirection'
+      responses:
+        '200':
+          description: Decks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Deck'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  folderDecks:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/FolderId'
+    get:
+      operationId: listFolderDecks
+      tags:
+        - Decks
+      summary: List decks in a folder.
+      parameters:
+        - $ref: '../shared/components.yaml#/components/parameters/DeckSortField'
+        - $ref: '../shared/components.yaml#/components/parameters/SortDirection'
+      responses:
+        '200':
+          description: Decks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Deck'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  decks:
+    post:
+      operationId: createDeck
+      tags:
+        - Decks
+      summary: Create a deck.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckDraft'
+      responses:
+        '201':
+          description: Created deck.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  deckById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/DeckId'
+    get:
+      operationId: getDeck
+      tags:
+        - Decks
+      summary: Get a deck by ID.
+      responses:
+        '200':
+          description: Deck detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: updateDeck
+      tags:
+        - Decks
+      summary: Update a deck.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeckDraft'
+      responses:
+        '200':
+          description: Updated deck detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deck'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    delete:
+      operationId: deleteDeck
+      tags:
+        - Decks
+      summary: Move a deck to trash.
+      responses:
+        '204':
+          description: Deck moved to trash.
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    Deck:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - dueToday
+        - icon
+        - id
+        - parentId
+        - progress
+        - title
+        - totalNotes
+        - updatedAt
+        - workspaceId
+      properties:
+        description:
+          type: string
+        dueToday:
+          type: integer
+          minimum: 0
+        icon:
+          $ref: '../shared/components.yaml#/components/schemas/VisualIconName'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        parentId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        title:
+          type: string
+          minLength: 1
+        totalNotes:
+          type: integer
+          minimum: 0
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+      examples:
+        - description: ''
+          dueToday: 24
+          icon: book-open
+          id: world-history
+          parentId: academic
+          progress: 82
+          title: World History
+          totalNotes: 80
+          updatedAt: '2026-05-15T12:00:00.000Z'
+          workspaceId: editorial-production
+
+    DeckDraft:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - icon
+        - parentId
+        - title
+      properties:
+        description:
+          type: string
+        icon:
+          $ref: '../shared/components.yaml#/components/schemas/VisualIconName'
+        parentId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        title:
+          type: string
+          minLength: 1

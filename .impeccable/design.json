@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-20T00:21:33+04:00",
+  "title": "Design System: Clear",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Warm Paper Background",
+        "canonical": "oklch(98.2% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(98.2% 0.004 95)"]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Warm Ink Foreground",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Study Surface",
+        "canonical": "oklch(99.1% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(99.1% 0.004 95)"]
+      },
+      "card-foreground": {
+        "role": "neutral",
+        "displayName": "Study Surface Text",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "popover": {
+        "role": "neutral",
+        "displayName": "Popover Surface",
+        "canonical": "oklch(99.1% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(99.1% 0.004 95)"]
+      },
+      "popover-foreground": {
+        "role": "neutral",
+        "displayName": "Popover Text",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Graphite Ink",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Primary Foreground",
+        "canonical": "oklch(99.1% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(99.1% 0.004 95)"]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Plane",
+        "canonical": "oklch(96.7% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(96.7% 0.004 95)"]
+      },
+      "secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Secondary Text",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Quiet Mist",
+        "canonical": "oklch(96.7% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(96.7% 0.004 95)"]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Soft Caption Gray",
+        "canonical": "oklch(52% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(96.7% 0.004 95)"]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Accent Plane",
+        "canonical": "oklch(96.7% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(96.7% 0.004 95)"]
+      },
+      "accent-foreground": {
+        "role": "neutral",
+        "displayName": "Accent Text",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline Ash",
+        "canonical": "oklch(91.8% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(96.7% 0.004 95)"]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Input Surface",
+        "canonical": "oklch(99.1% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(99.1% 0.004 95)"]
+      },
+      "overlay": {
+        "role": "overlay",
+        "displayName": "Overlay Smoke",
+        "canonical": "oklch(24% 0.006 95 / 0.34)",
+        "tonalRamp": ["oklch(18% 0.006 95 / 0.16)", "oklch(24% 0.006 95 / 0.34)", "oklch(32% 0.006 95 / 0.42)", "oklch(44% 0.006 95 / 0.48)", "oklch(58% 0.006 95 / 0.42)", "oklch(72% 0.006 95 / 0.34)", "oklch(86% 0.006 95 / 0.24)", "oklch(96% 0.006 95 / 0.16)"]
+      },
+      "ring": {
+        "role": "focus",
+        "displayName": "Focus Ink",
+        "canonical": "oklch(18% 0.006 95)",
+        "tonalRamp": ["oklch(18% 0.006 95)", "oklch(28% 0.006 95)", "oklch(40% 0.006 95)", "oklch(52% 0.006 95)", "oklch(66% 0.006 95)", "oklch(80% 0.006 95)", "oklch(91.8% 0.006 95)", "oklch(98% 0.006 95)"]
+      },
+      "destructive": {
+        "role": "error",
+        "displayName": "Measured Red",
+        "canonical": "oklch(48% 0.17 28)",
+        "tonalRamp": ["oklch(22% 0.10 28)", "oklch(32% 0.13 28)", "oklch(42% 0.16 28)", "oklch(48% 0.17 28)", "oklch(58% 0.15 28)", "oklch(70% 0.12 28)", "oklch(82% 0.08 28)", "oklch(94% 0.04 28)"]
+      },
+      "destructive-foreground": {
+        "role": "error",
+        "displayName": "Destructive Foreground",
+        "canonical": "oklch(99.1% 0.004 95)",
+        "tonalRamp": ["oklch(18% 0.004 95)", "oklch(28% 0.004 95)", "oklch(40% 0.004 95)", "oklch(52% 0.004 95)", "oklch(66% 0.004 95)", "oklch(80% 0.004 95)", "oklch(91.8% 0.004 95)", "oklch(99.1% 0.004 95)"]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Graphite Ground",
+        "canonical": "oklch(20% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(20% 0.004 70)", "oklch(28% 0.004 70)", "oklch(38% 0.004 70)", "oklch(52% 0.004 70)", "oklch(66% 0.004 70)", "oklch(82% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Foreground",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-card": {
+        "role": "neutral",
+        "displayName": "Charcoal Surface",
+        "canonical": "oklch(22.5% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(22.5% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-card-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Card Text",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-popover": {
+        "role": "neutral",
+        "displayName": "Dark Popover Surface",
+        "canonical": "oklch(26% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(22.5% 0.004 70)", "oklch(26% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-popover-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Popover Text",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "Warm Chalk",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-primary-foreground": {
+        "role": "primary",
+        "displayName": "Dark Primary Foreground",
+        "canonical": "oklch(18% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(18% 0.004 70)", "oklch(28% 0.004 70)", "oklch(38% 0.004 70)", "oklch(52% 0.004 70)", "oklch(66% 0.004 70)", "oklch(82% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-secondary": {
+        "role": "neutral",
+        "displayName": "Dark Secondary Plane",
+        "canonical": "oklch(25% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(25% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Secondary Text",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Dark Accent Plane",
+        "canonical": "oklch(25% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(25% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-muted-foreground": {
+        "role": "neutral",
+        "displayName": "Dust Caption",
+        "canonical": "oklch(74% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(74% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-accent": {
+        "role": "neutral",
+        "displayName": "Dark Hover Plane",
+        "canonical": "oklch(25% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(25% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Accent Text",
+        "canonical": "oklch(96.8% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Dark Hairline",
+        "canonical": "oklch(30% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(25% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-input": {
+        "role": "neutral",
+        "displayName": "Dark Input Surface",
+        "canonical": "oklch(25% 0.004 70)",
+        "tonalRamp": ["oklch(16% 0.004 70)", "oklch(25% 0.004 70)", "oklch(30% 0.004 70)", "oklch(40% 0.004 70)", "oklch(54% 0.004 70)", "oklch(68% 0.004 70)", "oklch(84% 0.004 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-overlay": {
+        "role": "overlay",
+        "displayName": "Dark Overlay Smoke",
+        "canonical": "oklch(8% 0.004 70 / 0.62)",
+        "tonalRamp": ["oklch(8% 0.004 70 / 0.62)", "oklch(16% 0.004 70 / 0.56)", "oklch(24% 0.004 70 / 0.48)", "oklch(36% 0.004 70 / 0.42)", "oklch(50% 0.004 70 / 0.34)", "oklch(64% 0.004 70 / 0.28)", "oklch(80% 0.004 70 / 0.20)", "oklch(94% 0.004 70 / 0.14)"]
+      },
+      "dark-ring": {
+        "role": "focus",
+        "displayName": "Dark Focus Ring",
+        "canonical": "oklch(88.5% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(96.8% 0.003 70)"]
+      },
+      "dark-destructive": {
+        "role": "error",
+        "displayName": "Signal Red",
+        "canonical": "oklch(70% 0.18 25)",
+        "tonalRamp": ["oklch(24% 0.10 25)", "oklch(34% 0.13 25)", "oklch(46% 0.16 25)", "oklch(58% 0.18 25)", "oklch(70% 0.18 25)", "oklch(80% 0.13 25)", "oklch(90% 0.08 25)", "oklch(96% 0.04 25)"]
+      },
+      "dark-destructive-foreground": {
+        "role": "error",
+        "displayName": "Dark Destructive Foreground",
+        "canonical": "oklch(99.1% 0.003 70)",
+        "tonalRamp": ["oklch(16% 0.003 70)", "oklch(25% 0.003 70)", "oklch(36% 0.003 70)", "oklch(50% 0.003 70)", "oklch(64% 0.003 70)", "oklch(78% 0.003 70)", "oklch(88.5% 0.003 70)", "oklch(99.1% 0.003 70)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Desktop page titles and rare identity moments."
+      },
+      "mobile-display": {
+        "displayName": "Mobile Display",
+        "purpose": "Mobile page titles with compressed scale."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Study titles, editor titles, major cards, dialogs, and important empty states."
+      },
+      "title": {
+        "displayName": "Title / Row",
+        "purpose": "Card names, list item titles, settings rows, menu items, and dense scanning surfaces."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable product copy, settings descriptions, and helper text."
+      },
+      "reading": {
+        "displayName": "Reading",
+        "purpose": "Markdown rendering, review prompts, review answers, and study content."
+      },
+      "editor-body": {
+        "displayName": "Editor Body",
+        "purpose": "Note body textareas and long-form authoring."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Buttons, navigation rows, menu items, and compact controls."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Eyebrows, metadata, counters, and compact uppercase controls."
+      },
+      "metric": {
+        "displayName": "Metric",
+        "purpose": "Due counts, percentages, and progress labels."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Inline code and technical fragments only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-card",
+        "value": "0 1px 0 oklch(99.1% 0.004 95 / 0.72) inset",
+        "purpose": "Light-mode resting cards and panels."
+      },
+      {
+        "name": "shadow-floating",
+        "value": "0 18px 48px -28px oklch(18% 0.006 95 / 0.18), 0 2px 8px -4px oklch(18% 0.006 95 / 0.08)",
+        "purpose": "Popovers, floating menus, dialogs, overlays, and controls that must sit above content."
+      },
+      {
+        "name": "shadow-card-dark",
+        "value": "0 1px 0 oklch(99.1% 0.003 70 / 0.03) inset",
+        "purpose": "Dark-mode resting cards and panels."
+      },
+      {
+        "name": "shadow-floating-dark",
+        "value": "0 18px 48px -30px oklch(6% 0.004 70 / 0.86), 0 1px 0 oklch(99.1% 0.003 70 / 0.04) inset",
+        "purpose": "Dark-mode popovers, menus, dialogs, and elevated surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-transition",
+        "value": "150ms to 250ms",
+        "purpose": "Default color, opacity, and transform feedback."
+      },
+      {
+        "name": "loading-shimmer",
+        "value": "1800ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Skeleton loading shimmer, disabled by prefers-reduced-motion."
+      },
+      {
+        "name": "reload-fade",
+        "value": "900ms cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Soft reload transition over the app canvas."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-min",
+        "value": "320px"
+      },
+      {
+        "name": "mobile-lane",
+        "value": "390px"
+      },
+      {
+        "name": "mobile-wide",
+        "value": "430px"
+      },
+      {
+        "name": "mobile-expanded",
+        "value": "520px"
+      },
+      {
+        "name": "editor-lane",
+        "value": "820px"
+      },
+      {
+        "name": "page-narrow",
+        "value": "760px"
+      },
+      {
+        "name": "page",
+        "value": "960px"
+      },
+      {
+        "name": "desktop-content-max",
+        "value": "1360px"
+      },
+      {
+        "name": "desktop-detail-container",
+        "value": "44rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action Pill",
+      "kind": "button",
+      "refersTo": "button-action-pill",
+      "description": "The main route-facing action for save, create, retry, review, and show answer.",
+      "html": "<button class='ds-button-primary'>Show answer</button>",
+      "css": ".ds-button-primary { min-height: 3rem; border: 0; border-radius: 9999px; background: var(--primary, oklch(18% 0.006 95)); color: var(--primary-foreground, oklch(99.1% 0.004 95)); padding: 0.875rem 1.75rem; font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 650; line-height: 1.25; cursor: pointer; transition: background-color 180ms ease, opacity 180ms ease, transform 180ms ease; } .ds-button-primary:hover { opacity: 0.9; } .ds-button-primary:active { transform: scale(0.98); } .ds-button-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background, oklch(98.2% 0.004 95)), 0 0 0 4px var(--ring, oklch(18% 0.006 95)); }"
+    },
+    {
+      "name": "Outline Pill",
+      "kind": "button",
+      "refersTo": "button-outline-pill",
+      "description": "A quiet secondary action with surface background and neutral border.",
+      "html": "<button class='ds-button-outline'>Close</button>",
+      "css": ".ds-button-outline { min-height: 2.75rem; border: 1px solid var(--border, oklch(91.8% 0.004 95)); border-radius: 9999px; background: var(--card, oklch(99.1% 0.004 95)); color: var(--foreground, oklch(18% 0.006 95)); padding: 0.75rem 1.25rem; font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 650; line-height: 1.25; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; } .ds-button-outline:hover { background: var(--muted, oklch(96.7% 0.004 95)); } .ds-button-outline:active { transform: scale(0.98); } .ds-button-outline:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background, oklch(98.2% 0.004 95)), 0 0 0 4px var(--ring, oklch(18% 0.006 95)); }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "search-input",
+      "description": "Pill-shaped search field with quiet border and muted icon.",
+      "html": "<label class='ds-search'><svg class='ds-search-icon' viewBox='0 0 24 24' fill='none' aria-hidden='true'><path d='m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z' stroke='currentColor' stroke-width='2' stroke-linecap='round'/></svg><input class='ds-search-input' placeholder='Search notes' /></label>",
+      "css": ".ds-search { position: relative; display: block; font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; color: var(--foreground, oklch(18% 0.006 95)); } .ds-search-icon { pointer-events: none; position: absolute; left: 1.25rem; top: 50%; width: 1.25rem; height: 1.25rem; color: color-mix(in oklch, var(--muted-foreground, oklch(52% 0.004 95)) 70%, transparent); transform: translateY(-50%); } .ds-search-input { min-height: 3.25rem; width: 100%; border: 1px solid var(--border, oklch(91.8% 0.004 95)); border-radius: 9999px; background: var(--input, oklch(99.1% 0.004 95)); color: var(--foreground, oklch(18% 0.006 95)); padding: 1rem 1.5rem 1rem 3.5rem; font-size: 1rem; font-weight: 500; transition: background-color 180ms ease, box-shadow 180ms ease; } .ds-search-input::placeholder { color: color-mix(in oklch, var(--muted-foreground, oklch(52% 0.004 95)) 70%, transparent); } .ds-search-input:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--background, oklch(98.2% 0.004 95)), 0 0 0 4px color-mix(in oklch, var(--ring, oklch(18% 0.006 95)) 40%, transparent); }"
+    },
+    {
+      "name": "Study Card",
+      "kind": "card",
+      "refersTo": "card-study",
+      "description": "The main study surface for decks, notes, search groups, review content, and editor forms.",
+      "html": "<article class='ds-study-card'><p class='ds-card-label'>Due Today</p><h3 class='ds-card-title'>Architecture Notes</h3><p class='ds-card-copy'>Durable knowledge surfaces with quiet hierarchy.</p></article>",
+      "css": ".ds-study-card { border: 1px solid var(--border, oklch(91.8% 0.004 95)); border-radius: 2rem; background: var(--card, oklch(99.1% 0.004 95)); color: var(--card-foreground, oklch(18% 0.006 95)); padding: 1.5rem; box-shadow: var(--app-shadow-card, 0 1px 0 oklch(99.1% 0.004 95 / 0.72) inset); font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; } .ds-card-label { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 600; line-height: 1.33; text-transform: uppercase; color: var(--muted-foreground, oklch(52% 0.004 95)); } .ds-card-title { margin: 0; font-size: 1.5rem; line-height: 1.15; font-weight: 650; color: var(--foreground, oklch(18% 0.006 95)); } .ds-card-copy { margin: 0.75rem 0 0; max-width: 52ch; color: var(--muted-foreground, oklch(52% 0.004 95)); font-size: 0.875rem; line-height: 1.5; font-weight: 500; }"
+    },
+    {
+      "name": "Inventory Row",
+      "kind": "card",
+      "refersTo": "inventory-surface",
+      "description": "A dense scannable row inside a rounded inventory surface.",
+      "html": "<div class='ds-inventory-row'><span class='ds-row-icon'></span><span class='ds-row-copy'><strong>Untitled deck</strong><small>Updated today</small></span><span class='ds-row-value'>42%</span></div>",
+      "css": ".ds-inventory-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid color-mix(in oklch, var(--border, oklch(91.8% 0.004 95)) 60%, transparent); background: var(--card, oklch(99.1% 0.004 95)); color: var(--foreground, oklch(18% 0.006 95)); font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; transition: background-color 180ms ease; } .ds-inventory-row:hover { background: color-mix(in oklch, var(--accent, oklch(96.7% 0.004 95)) 80%, transparent); } .ds-row-icon { width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: var(--muted, oklch(96.7% 0.004 95)); } .ds-row-copy { display: grid; gap: 0.25rem; min-width: 0; } .ds-row-copy strong { overflow-wrap: anywhere; font-size: 0.9375rem; font-weight: 600; line-height: 1.35; } .ds-row-copy small { color: var(--muted-foreground, oklch(52% 0.004 95)); font-size: 0.75rem; font-weight: 500; } .ds-row-value { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.75rem; font-weight: 700; }"
+    },
+    {
+      "name": "Desktop Nav Item",
+      "kind": "nav",
+      "refersTo": "button-default",
+      "description": "A compact pill item for desktop sidebar navigation.",
+      "html": "<a class='ds-nav-item ds-nav-item-active' href='#'><svg viewBox='0 0 24 24' fill='none' aria-hidden='true'><path d='M4 5h7v7H4V5Zm9 0h7v7h-7V5ZM4 14h7v5H4v-5Zm9 0h7v5h-7v-5Z' stroke='currentColor' stroke-width='2' stroke-linejoin='round'/></svg><span>Workspaces</span></a>",
+      "css": ".ds-nav-item { display: inline-flex; align-items: center; gap: 0.75rem; border-radius: 9999px; padding: 0.75rem 1rem; color: var(--muted-foreground, oklch(52% 0.004 95)); text-decoration: none; font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 650; line-height: 1.25; transition: background-color 180ms ease, color 180ms ease; } .ds-nav-item svg { width: 1.25rem; height: 1.25rem; } .ds-nav-item:hover { background: var(--muted, oklch(96.7% 0.004 95)); color: var(--foreground, oklch(18% 0.006 95)); } .ds-nav-item-active { background: var(--primary, oklch(18% 0.006 95)); color: var(--primary-foreground, oklch(99.1% 0.004 95)); } .ds-nav-item:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--card, oklch(99.1% 0.004 95)), 0 0 0 4px var(--ring, oklch(18% 0.006 95)); }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Small monochrome status chip for active values, card kinds, and compact metadata.",
+      "html": "<span class='ds-badge'>Active</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; border: 1px solid transparent; border-radius: 9999px; background: var(--primary, oklch(18% 0.006 95)); color: var(--primary-foreground, oklch(99.1% 0.004 95)); padding: 0.25rem 0.75rem; font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; font-size: 0.75rem; font-weight: 600; line-height: 1.33; text-transform: uppercase; }"
+    },
+    {
+      "name": "Dropdown Menu",
+      "kind": "custom",
+      "description": "A floating action surface with compact rounded rows and structural shadow.",
+      "html": "<div class='ds-menu' role='menu'><button class='ds-menu-item' role='menuitem'>Edit</button><button class='ds-menu-item ds-menu-item-danger' role='menuitem'>Delete</button></div>",
+      "css": ".ds-menu { min-width: 12rem; max-width: calc(100vw - 2rem); border: 1px solid var(--border, oklch(91.8% 0.004 95)); border-radius: 1.25rem; background: var(--popover, oklch(99.1% 0.004 95)); color: var(--popover-foreground, oklch(18% 0.006 95)); padding: 0.5rem; box-shadow: var(--app-shadow-floating, 0 18px 48px -28px oklch(18% 0.006 95 / 0.18), 0 2px 8px -4px oklch(18% 0.006 95 / 0.08)); font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; } .ds-menu-item { display: flex; width: 100%; cursor: pointer; align-items: center; border: 0; border-radius: 1rem; background: transparent; color: var(--primary, oklch(18% 0.006 95)); padding: 0.75rem 1rem; text-align: left; font-size: 0.875rem; font-weight: 650; line-height: 1.25; transition: background-color 180ms ease; } .ds-menu-item:hover, .ds-menu-item:focus-visible { outline: none; background: color-mix(in oklch, var(--primary, oklch(18% 0.006 95)) 10%, transparent); } .ds-menu-item-danger { color: var(--destructive, oklch(48% 0.17 28)); } .ds-menu-item-danger:hover, .ds-menu-item-danger:focus-visible { background: color-mix(in oklch, var(--destructive, oklch(48% 0.17 28)) 10%, transparent); }"
+    },
+    {
+      "name": "Review Card",
+      "kind": "custom",
+      "description": "A large focused prompt surface for review sessions.",
+      "html": "<article class='ds-review-card'><span class='ds-review-kind'>Basic</span><section><p class='ds-review-label'>Front</p><p class='ds-review-copy'>What is the core idea?</p></section></article>",
+      "css": ".ds-review-card { position: relative; overflow: hidden; border: 1px solid var(--border, oklch(91.8% 0.004 95)); border-radius: 2rem; background: var(--card, oklch(99.1% 0.004 95)); color: var(--card-foreground, oklch(18% 0.006 95)); padding: 2rem 1.5rem; box-shadow: var(--app-shadow-card, 0 1px 0 oklch(99.1% 0.004 95 / 0.72) inset); font-family: 'Geist Sans', ui-sans-serif, system-ui, sans-serif; } .ds-review-kind { display: inline-flex; border-radius: 9999px; background: var(--muted, oklch(96.7% 0.004 95)); color: var(--muted-foreground, oklch(52% 0.004 95)); padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; line-height: 1.33; text-transform: uppercase; } .ds-review-label { margin: 2.5rem 0 1rem; color: var(--muted-foreground, oklch(52% 0.004 95)); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; } .ds-review-copy { margin: 0; color: var(--foreground, oklch(18% 0.006 95)); font-size: 1.25rem; line-height: 1.72; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Quiet Study Room",
+    "overview": "Clear should feel like a quiet, private study room for focused learners working at a desk for a long session: warm paper in daylight, warm graphite in dim rooms, controlled type, durable study surfaces, and interactions that lower cognitive load. Design serves capture, organize, retrieve, review, and continue.",
+    "keyCharacteristics": [
+      "Warm graphite monochrome in both light and dark themes.",
+      "Color reserved for destructive and error states, never decoration.",
+      "Large study surfaces, compact controls, and clear lanes for mobile, editor, page, and desktop app frames.",
+      "Geist Sans across chrome and reading, Geist Mono only for technical and numeric fragments.",
+      "Tonal layering through 1px borders, inset highlights, and restrained floating shadows.",
+      "Motion communicates state, loading, or reload only."
+    ],
+    "rules": [
+      {
+        "name": "The Warm Graphite Rule",
+        "body": "Monochrome is Clear's native atmosphere. Color is not decoration, branding, celebration, or motivation.",
+        "section": "colors"
+      },
+      {
+        "name": "The Errors Only Rule",
+        "body": "Red appears only when something failed, could not save, could not load, or will destroy data. Do not introduce success, warning, info, or gamified accent colors without a deliberate product reason.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Token Rule",
+        "body": "Use the semantic CSS variables (`--background`, `--card`, `--primary`, `--muted`, `--border`, `--ring`, `--destructive`) rather than one-off color literals. Theme switching depends on those roles.",
+        "section": "colors"
+      },
+      {
+        "name": "The Surface Discipline Rule",
+        "body": "If two surfaces need separation, use background tone, a 1px border, spacing, or the existing shadow vocabulary. Do not add colored stripes, gradients, or glow.",
+        "section": "colors"
+      },
+      {
+        "name": "The Architectural Type Rule",
+        "body": "Display type may be bold, but dense product UI must use neutral tracking. Labels, buttons, rows, and data stay Geist Sans-based and product-native.",
+        "section": "typography"
+      },
+      {
+        "name": "The Reading Continuity Rule",
+        "body": "Study content uses Geist Sans with larger size and looser line-height, not a separate serif layer. Distinguish reading surfaces through rhythm, spacing, and weight, not decorative font changes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Upright Chrome Rule",
+        "body": "Product chrome stays upright. Italic belongs to user-authored markdown emphasis, not labels, metrics, buttons, or status text.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Decorative Type Rule",
+        "body": "Do not add serif, script, novelty, or gradient text treatments. The premium feeling comes from spacing, weight, alignment, and restraint.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-Until-Needed Rule",
+        "body": "Surfaces rest flat. Elevation appears only for cards, popovers, overlays, sticky navigation, and other real layering needs.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Blur Has a Job Rule",
+        "body": "Backdrop blur is allowed for sticky headers, bottom navigation, and reload transitions because it preserves reading context. Do not use glassmorphism as decoration.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Component Vocabulary Rule",
+        "body": "If the same action type appears twice, it must use the same visual vocabulary. A save button, review button, and active nav item can vary by context, but not by mood.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do use warm graphite monochrome as the default surface language.",
+      "Do reserve red for destructive and error states only.",
+      "Do use semantic CSS variables instead of hard-coded color literals.",
+      "Do use 1px neutral borders, tonal surfaces, and disciplined spacing to create hierarchy.",
+      "Do use Geist Sans for product UI and focused study reading, with Geist Mono reserved for code, counts, percentages, and technical fragments.",
+      "Do make loading, empty, error, and pending states feel like first-class study workflow states.",
+      "Do protect the user's flow state with predictable controls, quiet labels, and minimal interruption.",
+      "Do preserve reduced-motion behavior for shimmer and transitional effects."
+    ],
+    "donts": [
+      "Don't make Clear look like a generic SaaS dashboard.",
+      "Don't use decorative hero metrics, marketing-style card grids, presentation-first layouts, or visual noise that makes the app feel like it is selling itself.",
+      "Don't use gamified streak worship, competitive rankings, confetti, badge economies, dopamine-first rewards, or noisy motivational language.",
+      "Don't make learning feel shallow, childish, frantic, or reward-driven.",
+      "Don't add color accents for decoration, status theater, icon variety, or brand energy. Color is for errors only.",
+      "Don't use gradient text, side-stripe borders, decorative glassmorphism, neon glows, or thick colored borders.",
+      "Don't add modals as the first solution when an inline or progressive surface can carry the task.",
+      "Don't introduce serif, script, novelty display type, or decorative italics into product chrome."
+    ]
+  }
+}

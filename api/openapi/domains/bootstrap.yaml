@@ -1,0 +1,61 @@
+paths:
+  bootstrap:
+    post:
+      operationId: bootstrap
+      tags:
+        - Bootstrap
+      summary: Bootstrap the runtime.
+      responses:
+        '200':
+          description: Runtime bootstrap data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BootstrapResult'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '503':
+          $ref: '../shared/components.yaml#/components/responses/Unavailable'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    RuntimeKind:
+      type: string
+      enum:
+        - tauri
+        - web
+      example: web
+
+    RuntimeFormFactor:
+      type: string
+      enum:
+        - desktop
+        - mobile
+      example: desktop
+
+    RuntimeProfile:
+      type: object
+      additionalProperties: false
+      required:
+        - formFactor
+        - runtime
+      properties:
+        formFactor:
+          $ref: '#/components/schemas/RuntimeFormFactor'
+        runtime:
+          $ref: '#/components/schemas/RuntimeKind'
+
+    BootstrapResult:
+      type: object
+      additionalProperties: false
+      required:
+        - runtimeProfile
+      properties:
+        runtimeProfile:
+          $ref: '#/components/schemas/RuntimeProfile'
+      examples:
+        - runtimeProfile:
+            formFactor: desktop
+            runtime: web

@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = ["crates/clear-core", "crates/clear-migrator", "tauri"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.96"
+
+[profile.dev]
+debug = 1
+
+[profile.dev.package."*"]
+debug = false

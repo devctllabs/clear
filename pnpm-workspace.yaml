@@ -1,0 +1,7 @@
+packages:
+  - api/mock-server
+  - ui
+  - rust/tauri
+allowBuilds:
+  esbuild: true
+  msw: true

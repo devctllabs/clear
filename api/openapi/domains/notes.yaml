@@ -1,0 +1,389 @@
+paths:
+  deckNotes:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/DeckId'
+    get:
+      operationId: listNotesByDeck
+      tags:
+        - Notes
+      summary: List notes in a deck.
+      parameters:
+        - $ref: '../shared/components.yaml#/components/parameters/NoteSortField'
+        - $ref: '../shared/components.yaml#/components/parameters/SortDirection'
+      responses:
+        '200':
+          description: Notes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteListItem'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  notes:
+    post:
+      operationId: createNote
+      tags:
+        - Notes
+      summary: Create a note.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteDraft'
+      responses:
+        '201':
+          description: Created note reference.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteRef'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  noteById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/NoteId'
+    get:
+      operationId: getNote
+      tags:
+        - Notes
+      summary: Get a note detail by note ID.
+      responses:
+        '200':
+          description: Note detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteDetail'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: updateNote
+      tags:
+        - Notes
+      summary: Update a note.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteDraft'
+      responses:
+        '200':
+          description: Updated note reference.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteRef'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    delete:
+      operationId: deleteNote
+      tags:
+        - Notes
+      summary: Move a note to trash.
+      responses:
+        '204':
+          description: Note moved to trash.
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    NoteKind:
+      type: string
+      enum:
+        - basic
+        - cloze
+
+    NoteStatus:
+      type: string
+      enum:
+        - in-progress
+        - mastered
+
+    BasicNoteEditor:
+      type: object
+      additionalProperties: false
+      required:
+        - back
+        - front
+      properties:
+        back:
+          type: string
+        front:
+          type: string
+
+    ClozeNoteEditor:
+      type: object
+      additionalProperties: false
+      required:
+        - body
+      properties:
+        body:
+          type: string
+
+    ClozeNoteCard:
+      type: object
+      additionalProperties: false
+      required:
+        - clozeId
+        - dueAt
+        - id
+        - progress
+        - reviewedAt
+        - status
+        - title
+      properties:
+        clozeId:
+          type: string
+          example: c1
+        dueAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+          description: Opaque review-card lifecycle identifier. It is not derived from `clozeId`.
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        reviewedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        title:
+          type: string
+
+    NoteRef:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - id
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+      examples:
+        - deckId: world-history
+          id: industrial-revolution-causes
+
+    NoteListItem:
+      type: object
+      additionalProperties: false
+      required:
+        - dueAt
+        - id
+        - kind
+        - progress
+        - reviewedAt
+        - status
+        - title
+        - updatedAt
+      properties:
+        dueAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          $ref: '#/components/schemas/NoteKind'
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        reviewedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        title:
+          type: string
+          minLength: 1
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+      examples:
+        - dueAt: '2026-05-16T12:00:00.000Z'
+          id: industrial-revolution-causes
+          kind: basic
+          progress: 74
+          reviewedAt: '2026-05-12T12:00:00.000Z'
+          status: mastered
+          title: Industrial Revolution Causes
+          updatedAt: '2026-05-12T12:00:00.000Z'
+
+    BasicNote:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - dueAt
+        - editor
+        - id
+        - kind
+        - progress
+        - reviewedAt
+        - status
+        - title
+        - updatedAt
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        dueAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        editor:
+          $ref: '#/components/schemas/BasicNoteEditor'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - basic
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        reviewedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        title:
+          type: string
+          minLength: 1
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+
+    ClozeNote:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - cards
+        - dueAt
+        - editor
+        - id
+        - kind
+        - progress
+        - reviewedAt
+        - status
+        - title
+        - updatedAt
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClozeNoteCard'
+        dueAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        editor:
+          $ref: '#/components/schemas/ClozeNoteEditor'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - cloze
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        reviewedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        status:
+          $ref: '#/components/schemas/NoteStatus'
+        title:
+          type: string
+          minLength: 1
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+
+    NoteDetail:
+      oneOf:
+        - $ref: '#/components/schemas/BasicNote'
+        - $ref: '#/components/schemas/ClozeNote'
+      discriminator:
+        propertyName: kind
+        mapping:
+          basic: '#/components/schemas/BasicNote'
+          cloze: '#/components/schemas/ClozeNote'
+
+    BasicNoteDraft:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - editor
+        - kind
+        - title
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        editor:
+          $ref: '#/components/schemas/BasicNoteEditor'
+        kind:
+          type: string
+          enum:
+            - basic
+        title:
+          type: string
+          minLength: 1
+
+    ClozeNoteDraft:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - editor
+        - kind
+        - title
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        editor:
+          $ref: '#/components/schemas/ClozeNoteEditor'
+        kind:
+          type: string
+          enum:
+            - cloze
+        title:
+          type: string
+          minLength: 1
+
+    NoteDraft:
+      oneOf:
+        - $ref: '#/components/schemas/BasicNoteDraft'
+        - $ref: '#/components/schemas/ClozeNoteDraft'
+      discriminator:
+        propertyName: kind
+        mapping:
+          basic: '#/components/schemas/BasicNoteDraft'
+          cloze: '#/components/schemas/ClozeNoteDraft'

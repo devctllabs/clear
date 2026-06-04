@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: "11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        working-directory: ui
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Generate API client
+        run: pnpm codegen:api
+
+      - name: Check generated API client drift
+        run: git diff --exit-code -- ui/src/shared/services/api/generated
+
+      - name: Run UI check
+        run: pnpm check:ui
+
+      - name: Run UI lint
+        run: pnpm lint:ui
+
+      - name: Run UI tests
+        run: pnpm test:ui
+
+  mock-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: "11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate mock API assets
+        run: pnpm codegen:mock-api
+
+      - name: Check mock API codegen drift
+        run: git diff --exit-code -- api/mock-server/openapi api/mock-server/src/generated
+
+      - name: Run mock API check
+        run: pnpm --dir api/mock-server check
+
+      - name: Run mock API tests
+        run: pnpm test:mock-api
+
+      - name: Run mock API build
+        run: pnpm build:mock-api
+
+  rust:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96
+
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            file \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            libxdo-dev \
+            libssl-dev \
+            librsvg2-dev \
+            pkg-config
+
+      - name: Run Rust check
+        run: cargo check --manifest-path rust/Cargo.toml
+
+      - name: Run Tauri check
+        run: cargo check --manifest-path rust/tauri/Cargo.toml
+
+      - name: Run Rust tests
+        run: cargo test --manifest-path rust/Cargo.toml

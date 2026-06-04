@@ -1,0 +1,16 @@
+{
+  "name": "clear-tauri",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tauri build",
+    "check": "cargo check --manifest-path Cargo.toml",
+    "dev": "tauri dev",
+    "info": "tauri info",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1"
+  }
+}

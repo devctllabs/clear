@@ -1,0 +1,264 @@
+paths:
+  search:
+    post:
+      operationId: searchContent
+      tags:
+        - Search
+      summary: Search content within a workspace, folder, or deck scope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search result groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResultGroup'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    WorkspaceSearchScope:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - workspaceId
+      properties:
+        kind:
+          type: string
+          enum:
+            - workspace
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    FolderSearchScope:
+      type: object
+      additionalProperties: false
+      required:
+        - folderId
+        - kind
+      properties:
+        folderId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - folder
+
+    DeckSearchScope:
+      type: object
+      additionalProperties: false
+      required:
+        - deckId
+        - kind
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - deck
+
+    SearchScope:
+      oneOf:
+        - $ref: '#/components/schemas/WorkspaceSearchScope'
+        - $ref: '#/components/schemas/FolderSearchScope'
+        - $ref: '#/components/schemas/DeckSearchScope'
+      discriminator:
+        propertyName: kind
+        mapping:
+          deck: '#/components/schemas/DeckSearchScope'
+          folder: '#/components/schemas/FolderSearchScope'
+          workspace: '#/components/schemas/WorkspaceSearchScope'
+
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - query
+        - scope
+      properties:
+        query:
+          type: string
+          minLength: 1
+        scope:
+          $ref: '#/components/schemas/SearchScope'
+
+    SearchResultLocationPath:
+      type: array
+      minItems: 1
+      items:
+        type: string
+
+    FolderSearchResult:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - kind
+        - locationPath
+        - title
+        - updatedAt
+        - workspaceId
+      properties:
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - folder
+        locationPath:
+          $ref: '#/components/schemas/SearchResultLocationPath'
+        title:
+          type: string
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    DeckSearchResult:
+      type: object
+      additionalProperties: false
+      required:
+        - deckIcon
+        - id
+        - kind
+        - locationPath
+        - title
+        - updatedAt
+        - workspaceId
+      properties:
+        deckIcon:
+          $ref: '../shared/components.yaml#/components/schemas/VisualIconName'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - deck
+        locationPath:
+          $ref: '#/components/schemas/SearchResultLocationPath'
+        title:
+          type: string
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    NoteSearchResult:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - kind
+        - locationPath
+        - noteKind
+        - title
+        - updatedAt
+        - deckId
+        - workspaceId
+      properties:
+        deckId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          type: string
+          enum:
+            - note
+        noteKind:
+          $ref: './notes.yaml#/components/schemas/NoteKind'
+        locationPath:
+          $ref: '#/components/schemas/SearchResultLocationPath'
+        title:
+          type: string
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    SearchResultGroup:
+      oneOf:
+        - $ref: '#/components/schemas/FolderSearchResultGroup'
+        - $ref: '#/components/schemas/DeckSearchResultGroup'
+        - $ref: '#/components/schemas/NoteSearchResultGroup'
+      discriminator:
+        propertyName: kind
+        mapping:
+          deck: '#/components/schemas/DeckSearchResultGroup'
+          folder: '#/components/schemas/FolderSearchResultGroup'
+          note: '#/components/schemas/NoteSearchResultGroup'
+      examples:
+        - kind: deck
+          results:
+            - deckIcon: book-open
+              id: world-history
+              kind: deck
+              locationPath:
+                - Editorial Production
+                - Academic
+              title: World History
+              updatedAt: '2026-05-15T12:00:00.000Z'
+              workspaceId: editorial-production
+
+    FolderSearchResultGroup:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - results
+      properties:
+        kind:
+          type: string
+          enum:
+            - folder
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FolderSearchResult'
+
+    DeckSearchResultGroup:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - results
+      properties:
+        kind:
+          type: string
+          enum:
+            - deck
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeckSearchResult'
+
+    NoteSearchResultGroup:
+      type: object
+      additionalProperties: false
+      required:
+        - kind
+        - results
+      properties:
+        kind:
+          type: string
+          enum:
+            - note
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteSearchResult'

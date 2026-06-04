@@ -1,0 +1,249 @@
+paths:
+  workspaces:
+    get:
+      operationId: listWorkspaces
+      tags:
+        - Workspaces
+      summary: List visible workspaces.
+      responses:
+        '200':
+          description: Visible workspaces with the current active workspace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceListResult'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    post:
+      operationId: createWorkspace
+      tags:
+        - Workspaces
+      summary: Create a workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceDraft'
+      responses:
+        '201':
+          description: Created workspace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  activeWorkspace:
+    get:
+      operationId: getActiveWorkspace
+      tags:
+        - Workspaces
+      summary: Get the active workspace identifier.
+      responses:
+        '200':
+          description: Active workspace identifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveWorkspace'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: setActiveWorkspace
+      tags:
+        - Workspaces
+      summary: Set the active workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetActiveWorkspaceRequest'
+      responses:
+        '204':
+          description: Active workspace updated.
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  workspaceById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/WorkspaceId'
+    get:
+      operationId: getWorkspace
+      tags:
+        - Workspaces
+      summary: Get a workspace by ID.
+      responses:
+        '200':
+          description: Workspace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: updateWorkspace
+      tags:
+        - Workspaces
+      summary: Update a workspace.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceDraft'
+      responses:
+        '200':
+          description: Updated workspace.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workspace'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    delete:
+      operationId: deleteWorkspace
+      tags:
+        - Workspaces
+      summary: Move a workspace to trash.
+      responses:
+        '200':
+          description: Delete result with the next active workspace, if any.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteWorkspaceResult'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    Workspace:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - icon
+        - id
+        - title
+        - updatedAt
+      properties:
+        description:
+          type: string
+        icon:
+          $ref: '../shared/components.yaml#/components/schemas/VisualIconName'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        title:
+          type: string
+          minLength: 1
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+      examples:
+        - description: Current research, publications, and active study streams.
+          icon: layers-3
+          id: editorial-production
+          title: Editorial Production
+          updatedAt: '2026-05-15T12:00:00.000Z'
+
+    WorkspaceListResult:
+      type: object
+      additionalProperties: false
+      required:
+        - activeWorkspaceId
+        - workspaces
+      properties:
+        activeWorkspaceId:
+          oneOf:
+            - $ref: '../shared/components.yaml#/components/schemas/Id'
+            - type: 'null'
+        workspaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/Workspace'
+      examples:
+        - activeWorkspaceId: editorial-production
+          workspaces:
+            - description: Current research, publications, and active study streams.
+              icon: layers-3
+              id: editorial-production
+              title: Editorial Production
+              updatedAt: '2026-05-15T12:00:00.000Z'
+
+    WorkspaceDraft:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - icon
+        - title
+      properties:
+        description:
+          type: string
+        icon:
+          $ref: '../shared/components.yaml#/components/schemas/VisualIconName'
+        title:
+          type: string
+          minLength: 1
+
+    ActiveWorkspace:
+      type: object
+      additionalProperties: false
+      required:
+        - workspaceId
+      properties:
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    SetActiveWorkspaceRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - workspaceId
+      properties:
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    DeleteWorkspaceResult:
+      type: object
+      additionalProperties: false
+      required:
+        - activeWorkspaceId
+      properties:
+        activeWorkspaceId:
+          oneOf:
+            - $ref: '../shared/components.yaml#/components/schemas/Id'
+            - type: 'null'

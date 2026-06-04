@@ -1,0 +1,137 @@
+paths:
+  settings:
+    get:
+      operationId: getSettings
+      tags:
+        - Settings
+      summary: Read settings.
+      responses:
+        '200':
+          description: Settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: updateSettings
+      tags:
+        - Settings
+      summary: Write settings.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: Updated settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  settingsDefaults:
+    get:
+      operationId: getDefaultSettings
+      tags:
+        - Settings
+      summary: Read default settings.
+      responses:
+        '200':
+          description: Default settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  resetSettings:
+    post:
+      operationId: resetSettings
+      tags:
+        - Settings
+      summary: Reset settings to defaults.
+      responses:
+        '200':
+          description: Reset settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    SettingsNewCardsOrder:
+      type: string
+      enum:
+        - after_review
+        - before_review
+        - mixed
+
+    Settings:
+      type: object
+      additionalProperties: false
+      required:
+        - dailyNewLimit
+        - dailyReviewLimit
+        - fsrsParams
+        - fsrsRetention
+        - language
+        - masteryHorizonDays
+        - newCardsOrder
+        - timezone
+      properties:
+        dailyNewLimit:
+          type: integer
+          minimum: 0
+        dailyReviewLimit:
+          type: integer
+          minimum: 0
+        fsrsParams:
+          type: array
+          items:
+            type: number
+        fsrsRetention:
+          type: number
+          minimum: 0
+          maximum: 100
+        language:
+          type: string
+          minLength: 1
+        masteryHorizonDays:
+          type: integer
+          minimum: 0
+        newCardsOrder:
+          $ref: '#/components/schemas/SettingsNewCardsOrder'
+        timezone:
+          type: string
+          minLength: 1
+      examples:
+        - dailyNewLimit: 20
+          dailyReviewLimit: 100
+          fsrsParams:
+            - 0.212
+            - 1.2931
+          fsrsRetention: 90
+          language: en-US
+          masteryHorizonDays: 30
+          newCardsOrder: before_review
+          timezone: auto

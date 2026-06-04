@@ -1,0 +1,555 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@font-face {
+  font-family: 'Geist Sans';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/geist/Geist-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Geist Sans';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/geist/Geist-Italic-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../fonts/geist/GeistMono-Variable.woff2') format('woff2');
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-overlay: var(--overlay);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-title);
+  --font-serif: var(--font-reading);
+  --font-mono: var(--font-mono-stack);
+  --radius-card: 2rem;
+  --radius-panel: 1.5rem;
+  --radius-compact: 1.25rem;
+  --radius-pill: 9999px;
+  --container-mobile: 390px;
+  --container-mobile-wide: 430px;
+  --container-mobile-expanded: 520px;
+  --container-editor: 820px;
+  --container-page-narrow: 760px;
+  --container-page: 960px;
+  --container-app: 1360px;
+  --container-section: 45rem;
+  --container-copy: 52ch;
+  --text-reading: 1.0625rem;
+  --text-reading--line-height: 1.72;
+  --text-editor-body: 1.125rem;
+  --text-editor-body--line-height: 1.7;
+  --text-reading-heading-lg: 1.75rem;
+  --text-reading-heading-md: 1.375rem;
+  --text-reading-heading-sm: 1.125rem;
+  --text-reading-heading--line-height: 1.18;
+  --shadow-card: var(--app-shadow-card);
+  --shadow-floating: var(--app-shadow-floating);
+}
+
+@layer base {
+  :root {
+    --background: oklch(98.2% 0.004 95);
+    --foreground: oklch(18% 0.006 95);
+    --card: oklch(99.1% 0.004 95);
+    --card-foreground: oklch(18% 0.006 95);
+    --popover: oklch(99.1% 0.004 95);
+    --popover-foreground: oklch(18% 0.006 95);
+    --primary: oklch(18% 0.006 95);
+    --primary-foreground: oklch(99.1% 0.004 95);
+    --secondary: oklch(96.7% 0.004 95);
+    --secondary-foreground: oklch(18% 0.006 95);
+    --muted: oklch(96.7% 0.004 95);
+    --muted-foreground: oklch(52% 0.004 95);
+    --accent: oklch(96.7% 0.004 95);
+    --accent-foreground: oklch(18% 0.006 95);
+    --border: oklch(91.8% 0.004 95);
+    --input: oklch(99.1% 0.004 95);
+    --overlay: oklch(24% 0.006 95 / 0.34);
+    --ring: oklch(18% 0.006 95);
+    --destructive: oklch(48% 0.17 28);
+    --destructive-foreground: oklch(99.1% 0.004 95);
+    --app-shadow-card: 0 1px 0 oklch(99.1% 0.004 95 / 0.72) inset;
+    --app-shadow-floating:
+      0 18px 48px -28px oklch(18% 0.006 95 / 0.18),
+      0 2px 8px -4px oklch(18% 0.006 95 / 0.08);
+    --app-skeleton-base: oklch(91.8% 0.004 95 / 0.72);
+    --app-skeleton-highlight: oklch(99.1% 0.004 95 / 0.72);
+    --desktop-sidebar-width: 17rem;
+    --progress-ring-track: var(--muted);
+    --app-reload-background:
+      radial-gradient(circle at top left, oklch(18% 0.006 95 / 0.04), transparent 35%),
+      radial-gradient(circle at top right, oklch(18% 0.006 95 / 0.03), transparent 30%),
+      linear-gradient(180deg, oklch(99.1% 0.004 95 / 0.98), oklch(99.1% 0.004 95 / 0.98));
+    --font-ui: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-title: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-reading: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono-stack: 'Geist Mono', ui-monospace, 'SFMono-Regular', 'Roboto Mono', Menlo, Monaco,
+      'Liberation Mono', 'DejaVu Sans Mono', monospace;
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    --background: oklch(20% 0.004 70);
+    --foreground: oklch(96.8% 0.003 70);
+    --card: oklch(22.5% 0.004 70);
+    --card-foreground: oklch(96.8% 0.003 70);
+    --popover: oklch(26% 0.004 70);
+    --popover-foreground: oklch(96.8% 0.003 70);
+    --primary: oklch(96.8% 0.003 70);
+    --primary-foreground: oklch(18% 0.004 70);
+    --secondary: oklch(25% 0.004 70);
+    --secondary-foreground: oklch(96.8% 0.003 70);
+    --muted: oklch(25% 0.004 70);
+    --muted-foreground: oklch(74% 0.003 70);
+    --accent: oklch(25% 0.004 70);
+    --accent-foreground: oklch(96.8% 0.003 70);
+    --border: oklch(30% 0.004 70);
+    --input: oklch(25% 0.004 70);
+    --overlay: oklch(8% 0.004 70 / 0.62);
+    --ring: oklch(88.5% 0.003 70);
+    --destructive: oklch(70% 0.18 25);
+    --destructive-foreground: oklch(99.1% 0.003 70);
+    --app-shadow-card: 0 1px 0 oklch(99.1% 0.003 70 / 0.03) inset;
+    --app-shadow-floating:
+      0 18px 48px -30px oklch(6% 0.004 70 / 0.86),
+      0 1px 0 oklch(99.1% 0.003 70 / 0.04) inset;
+    --app-skeleton-base: oklch(29% 0.004 70 / 0.72);
+    --app-skeleton-highlight: oklch(36% 0.004 70 / 0.5);
+    --progress-ring-track: oklch(96.8% 0.003 70 / 0.14);
+    --app-reload-background:
+      radial-gradient(circle at top left, oklch(96.8% 0.003 70 / 0.04), transparent 35%),
+      radial-gradient(circle at top right, oklch(96.8% 0.003 70 / 0.03), transparent 30%),
+      linear-gradient(180deg, oklch(20% 0.004 70 / 0.98), oklch(17% 0.004 70 / 0.98));
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply bg-background text-foreground antialiased;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  body,
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  ul {
+    margin: 0;
+  }
+}
+
+.desktop-detail-content {
+  container-type: inline-size;
+}
+
+@container (max-width: 44rem) {
+  .desktop-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .desktop-detail-main,
+  .desktop-detail-aside {
+    width: 100%;
+    max-width: none;
+    margin-top: 0;
+  }
+
+  .desktop-detail-aside-first {
+    order: -1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .type-page-title {
+    font-family: var(--font-title);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .type-mobile-page-title {
+    font-family: var(--font-title);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+
+  @media (min-width: 640px) {
+    .type-mobile-page-title {
+      font-size: 2rem;
+      line-height: 1.25;
+    }
+  }
+
+  .type-study-title {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  .type-row-title {
+    font-family: var(--font-ui);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+
+  .type-label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.33;
+    letter-spacing: 0;
+  }
+
+  .type-action {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .type-metric {
+    font-family: var(--font-mono-stack);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .type-technical {
+    font-family: var(--font-mono-stack);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+  }
+
+  .type-reading {
+    font-family: var(--font-reading);
+    font-size: var(--text-reading);
+    font-weight: 400;
+    line-height: var(--text-reading--line-height);
+    letter-spacing: 0;
+  }
+
+  .type-editor-body {
+    font-family: var(--font-reading);
+    font-size: var(--text-editor-body);
+    font-weight: 400;
+    line-height: var(--text-editor-body--line-height);
+    letter-spacing: 0;
+  }
+
+  .type-reading-heading {
+    font-family: var(--font-reading);
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: var(--text-reading-heading--line-height);
+  }
+
+  .type-reading-heading-lg {
+    font-size: var(--text-reading-heading-lg);
+  }
+
+  .type-reading-heading-md {
+    font-size: var(--text-reading-heading-md);
+  }
+
+  .type-reading-heading-sm {
+    font-size: var(--text-reading-heading-sm);
+  }
+
+  .clear-nav-brand-thin {
+    min-width: 0;
+    padding: 0.15rem 0.75rem 3.75rem;
+  }
+
+  .clear-nav-brand-thin__word {
+    display: flex;
+    align-items: baseline;
+    column-gap: 0.37rem;
+    color: var(--foreground);
+    font-family: var(--font-title);
+    font-size: 1.55rem;
+    font-weight: 300;
+    font-variation-settings: "wght" 300;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .line-clamp-2,
+  .line-clamp-5 {
+    display: -webkit-box;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+  }
+
+  .line-clamp-2 {
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-5 {
+    -webkit-line-clamp: 5;
+  }
+
+  .loading-shimmer {
+    contain: paint;
+    position: relative;
+    overflow: hidden;
+    background: var(--app-skeleton-base);
+  }
+
+  .loading-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-125%);
+    background:
+      linear-gradient(90deg, transparent 0%, var(--app-skeleton-highlight) 48%, transparent 100%);
+    animation: loading-shimmer 1800ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .quiet-scrollbar {
+    scrollbar-color: color-mix(in oklch, var(--muted-foreground) 42%, transparent) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .quiet-scrollbar::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .quiet-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .quiet-scrollbar::-webkit-scrollbar-thumb {
+    min-height: 2rem;
+    border: 0.25rem solid transparent;
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--muted-foreground) 34%, transparent);
+    background-clip: content-box;
+  }
+
+  .quiet-scrollbar:hover::-webkit-scrollbar-thumb,
+  .quiet-scrollbar:focus-within::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--muted-foreground) 46%, transparent);
+    background-clip: content-box;
+  }
+
+  .quiet-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .keyboard-focus-field {
+    outline: none;
+  }
+
+  .keyboard-input-focus {
+    outline: none;
+  }
+
+  .keyboard-card-input-focus {
+    outline: none;
+  }
+
+  .keyboard-popover-input-focus {
+    outline: none;
+  }
+
+  .card-focus-ring,
+  .muted-focus-ring,
+  .popover-focus-ring,
+  .card-input-focus-ring,
+  .popover-input-focus-ring {
+    position: relative;
+    z-index: 1;
+    background-clip: padding-box;
+  }
+
+  .card-focus-ring:focus-visible,
+  .muted-focus-ring:focus-visible,
+  .popover-focus-ring:focus-visible,
+  .card-input-focus-ring:focus-visible,
+  .popover-input-focus-ring:focus-visible {
+    outline: none;
+  }
+
+  .keyboard-editor-focus {
+    position: relative;
+    z-index: 1;
+    background-clip: padding-box;
+    background-color: var(--card);
+    border-radius: 0.875rem;
+    outline: none;
+  }
+
+  html[data-focus-source='keyboard'] .keyboard-focus-field:focus {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px color-mix(in oklch, var(--ring) 40%, transparent);
+  }
+
+  html[data-focus-source='keyboard'] .keyboard-input-focus:focus {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--ring);
+  }
+
+  html[data-focus-source='keyboard'] .keyboard-card-input-focus:focus {
+    box-shadow:
+      0 0 0 2px var(--card),
+      0 0 0 4px var(--ring);
+  }
+
+  html[data-focus-source='keyboard'] .keyboard-popover-input-focus:focus {
+    box-shadow:
+      0 0 0 2px var(--popover),
+      0 0 0 4px var(--ring);
+  }
+
+  html[data-focus-source='keyboard'] .keyboard-editor-focus:focus {
+    box-shadow:
+      0 0 0 2px var(--card),
+      0 0 0 4px var(--ring);
+  }
+
+  .card-focus-ring:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--card),
+      0 0 0 4px var(--ring);
+  }
+
+  .muted-focus-ring:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--muted),
+      0 0 0 4px var(--ring);
+  }
+
+  .popover-focus-ring:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--popover),
+      0 0 0 4px var(--ring);
+  }
+
+  .card-input-focus-ring:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--card),
+      0 0 0 4px color-mix(in oklch, var(--ring) 40%, transparent);
+  }
+
+  .popover-input-focus-ring:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--popover),
+      0 0 0 4px color-mix(in oklch, var(--ring) 40%, transparent);
+  }
+}
+
+@keyframes loading-shimmer {
+  from {
+    transform: translateX(-125%);
+  }
+
+  to {
+    transform: translateX(125%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-shimmer::after {
+    animation: none;
+    content: none;
+  }
+}
+
+#root {
+  min-width: 320px;
+  min-height: 100svh;
+}
+
+.app-reload-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: var(--app-reload-background);
+  opacity: 1;
+  transition:
+    opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  backdrop-filter: blur(16px);
+  filter: saturate(1.02);
+}
+
+.app-reload-transition.is-fading {
+  opacity: 0;
+  filter: saturate(0.98);
+}
