@@ -47,7 +47,7 @@
     "@storybook/addon-docs": "10.3.6",
     "@storybook/addon-vitest": "10.3.6",
     "@storybook/react-vite": "10.3.6",
-    "@tanstack/router-plugin": "^1.167.32",
+    "@tanstack/router-plugin": "^1.168.14",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
