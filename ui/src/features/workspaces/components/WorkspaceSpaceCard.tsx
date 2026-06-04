@@ -1,6 +1,7 @@
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
@@ -10,7 +11,7 @@ import { Button } from '@shared/components/ui/button'
 import { Card } from '@shared/components/ui/card'
 import { focusRingClassName } from '@shared/components/ui/focus'
 import { cn } from '@shared/lib/utils'
-import { formatRelativeDate } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 
 import type { Workspace } from '../types/workspace.types'
 
@@ -39,6 +40,8 @@ export const WorkspaceSpaceCard = ({
   onOpen: (workspaceId: string) => void
   workspace: Workspace
 }) => {
+  const { t } = useTranslation()
+  const { formatRelativeDate } = useDateFormatters()
   const openWorkspace = () => {
     if (opening) {
       return
@@ -58,28 +61,32 @@ export const WorkspaceSpaceCard = ({
       data-slot="workspace-card-action-frame"
     >
       {opening ? (
-        <PendingSpinner label={`Opening ${workspace.title}`} />
+        <PendingSpinner
+          label={t(($) => $.workspaces.actions.openingWorkspace, {
+            title: workspace.title,
+          })}
+        />
       ) : (
         <ActionMenu
-          dialogLabel={`${workspace.title} actions`}
+          dialogLabel={t(($) => $.common.actions.itemActions, { title: workspace.title })}
           items={[
             {
               icon: <Pencil className="size-4 stroke-[2.4]" />,
-              label: 'Edit',
+              label: t(($) => $.common.actions.edit),
               onSelect: () => {
                 onEdit(workspace.id)
               },
             },
             {
               icon: <Trash2 className="size-4 stroke-[2.2]" />,
-              label: 'Delete',
+              label: t(($) => $.common.actions.delete),
               onSelect: () => {
                 onDelete(workspace)
               },
               tone: 'danger',
             },
           ]}
-          triggerAriaLabel={`${workspace.title} actions`}
+          triggerAriaLabel={t(($) => $.common.actions.itemActions, { title: workspace.title })}
           triggerClassName={workspaceMenuTriggerClass}
           triggerFocusSurface="card"
         />
@@ -97,7 +104,9 @@ export const WorkspaceSpaceCard = ({
         }
       >
         <Button
-          aria-label={`Open ${workspace.title}`}
+          aria-label={t(($) => $.workspaces.actions.openWorkspace, {
+            title: workspace.title,
+          })}
           aria-busy={opening || undefined}
           className={cn(
             focusRingClassName,
@@ -129,7 +138,7 @@ export const WorkspaceSpaceCard = ({
                   className={activeWorkspaceBadgeClassName}
                   variant="outline"
                 >
-                  Active
+                  {t(($) => $.common.labels.active)}
                 </WorkspaceBadge>
               ) : null}
             </div>
@@ -149,7 +158,9 @@ export const WorkspaceSpaceCard = ({
       }
     >
       <Button
-        aria-label={`Open ${workspace.title}`}
+        aria-label={t(($) => $.workspaces.actions.openWorkspace, {
+          title: workspace.title,
+        })}
         aria-busy={opening || undefined}
         className={cn(
           focusRingClassName,
@@ -165,7 +176,7 @@ export const WorkspaceSpaceCard = ({
               className={activeWorkspaceBadgeClassName}
               variant="outline"
             >
-              Active
+              {t(($) => $.common.labels.active)}
             </WorkspaceBadge>
           ) : (
             <span aria-hidden="true" />

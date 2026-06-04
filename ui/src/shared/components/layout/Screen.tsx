@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 import { ArrowLeft } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import {
@@ -47,7 +48,7 @@ export const navigationIconControlClassName =
   })
 
 export const BackControl = ({
-  ariaLabel = 'Back',
+  ariaLabel,
   fallbackTo,
   icon,
 }: {
@@ -55,11 +56,13 @@ export const BackControl = ({
   fallbackTo: string
   icon?: ReactNode
 }) => {
+  const { t } = useTranslation()
+
   return (
     <IconLink
       className="text-foreground/70"
       icon={icon ?? <ArrowLeft className="size-5" />}
-      label={ariaLabel}
+      label={ariaLabel ?? t(($) => $.common.actions.back)}
       size="lg"
       to={fallbackTo as never}
     />

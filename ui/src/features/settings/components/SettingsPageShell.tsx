@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { BottomNav, type NavigationTarget } from '@shared/components/layout/BottomNav'
 import {
@@ -20,6 +21,8 @@ export const SettingsPageShell = ({
   rightSlot?: ReactNode
   screenClassName?: string
 }) => {
+  const { t } = useTranslation()
+
   if (isDesktop) {
     return (
       <DesktopPageLayout
@@ -27,7 +30,7 @@ export const SettingsPageShell = ({
         contentClassName="mx-auto w-full max-w-page-narrow"
         homeTarget={homeTarget}
       >
-        <DesktopPageHeader rightSlot={rightSlot} title="Settings" />
+        <DesktopPageHeader rightSlot={rightSlot} title={t(($) => $.settings.labels.settings)} />
         {children}
       </DesktopPageLayout>
     )
@@ -36,7 +39,7 @@ export const SettingsPageShell = ({
   return (
     <AppShell>
       <ScreenCanvas className={screenClassName}>
-        <PageHeader backTo="/menu" rightSlot={rightSlot} title="Settings" />
+        <PageHeader backTo="/menu" rightSlot={rightSlot} title={t(($) => $.settings.labels.settings)} />
         {children}
       </ScreenCanvas>
       <BottomNav activeItem="menu" homeTarget={homeTarget} />

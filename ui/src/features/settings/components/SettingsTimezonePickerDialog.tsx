@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import {
@@ -27,6 +28,7 @@ export const SettingsTimezonePickerDialog = ({
   onSelect: (value: SettingsTimezone) => void
   value: SettingsTimezone
 }) => {
+  const { t } = useTranslation()
   const isDesktop = useIsDesktopLayout()
   const restoreFocusRef = useRef<HTMLElement | null>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -38,7 +40,17 @@ export const SettingsTimezonePickerDialog = ({
     }
   }, [open])
 
-  const filteredOptions = settingsTimezoneOptions.filter((option) => {
+  const translatedOptions = settingsTimezoneOptions.map((option) =>
+    option.value === 'auto'
+      ? {
+          ...option,
+          description: t(($) => $.settings.options.timezoneSystem),
+          label: t(($) => $.settings.labels.automatic),
+        }
+      : option,
+  )
+
+  const filteredOptions = translatedOptions.filter((option) => {
     const haystack = `${option.label} ${option.value} ${option.description}`.toLowerCase()
 
     return haystack.includes(query.trim().toLowerCase())
@@ -77,12 +89,12 @@ export const SettingsTimezonePickerDialog = ({
         <div className="flex shrink-0 items-start justify-between gap-4">
           <div className="min-w-0">
             <DialogTitle className="text-wrap-anywhere type-study-title text-foreground">
-              Choose Timezone
+              {t(($) => $.settings.dialogs.timezoneTitle)}
             </DialogTitle>
             <DialogDescription
               className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground"
             >
-              Search for a city or timezone identifier.
+              {t(($) => $.settings.dialogs.timezoneDescription)}
             </DialogDescription>
           </div>
           <DialogClose asChild>
@@ -92,19 +104,19 @@ export const SettingsTimezonePickerDialog = ({
               type="button"
               variant="outline"
             >
-              Close
+              {t(($) => $.common.actions.close)}
             </Button>
           </DialogClose>
         </div>
 
         <SearchBox
           ref={searchInputRef}
-          aria-label="Search timezones"
+          aria-label={t(($) => $.settings.dialogs.timezoneSearchLabel)}
           containerClassName="mt-5 shrink-0"
           icon={false}
           inputClassName="h-11 py-0"
           name="timezone-search"
-          placeholder="Search timezones…"
+          placeholder={t(($) => $.settings.dialogs.timezoneSearchPlaceholder)}
           surface="card"
           type="search"
           value={query}
@@ -142,7 +154,7 @@ export const SettingsTimezonePickerDialog = ({
                 </div>
                 {isActive ? (
                   <span className="shrink-0 rounded-full bg-primary px-2.5 py-0.5 text-[12px] font-semibold leading-5 text-primary-foreground">
-                    Active
+                    {t(($) => $.common.labels.active)}
                   </span>
                 ) : null}
               </Button>
@@ -150,7 +162,7 @@ export const SettingsTimezonePickerDialog = ({
           })}
           {filteredOptions.length === 0 ? (
             <div className="flex min-h-full items-center justify-center px-4 py-8 text-center text-sm text-muted-foreground">
-              No matching timezones.
+              {t(($) => $.settings.labels.searchNoTimezones)}
             </div>
           ) : null}
         </div>

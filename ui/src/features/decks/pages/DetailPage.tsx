@@ -1,6 +1,7 @@
 import { useState, type ChangeEventHandler } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { FileText, Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   SearchResults,
@@ -9,7 +10,10 @@ import {
 } from '@features/content-search'
 import { useDeleteNote, useNotesByDeck } from '@features/notes/hooks/useNotes'
 import { NoteList } from '@features/notes/components/NoteList'
-import { noteCreateOptions } from '@features/notes/components/noteCreateOptions'
+import {
+  getNoteKindLabel,
+  noteCreateOptions,
+} from '@features/notes/components/noteCreateOptions'
 import type { NoteKind, NoteListItem } from '@features/notes'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { EmptyState } from '@shared/components/feedback/EmptyState'
@@ -40,6 +44,7 @@ export const DeckDetailPage = ({
   deckId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [noteSort, setNoteSort] = usePersistedSort('workspace-sort:deck-notes')
   const deckQuery = useDeck(deckId)
@@ -126,7 +131,7 @@ export const DeckDetailPage = ({
       items={[
         {
           icon: <Pencil className="size-4 stroke-[2.4]" />,
-          label: 'Edit',
+          label: t(($) => $.common.actions.edit),
           onSelect: () => {
             void navigate({
               params: { deckId: deck.id, workspaceId },
@@ -137,7 +142,7 @@ export const DeckDetailPage = ({
         },
         {
           icon: <Trash2 className="size-4 stroke-[2.2]" />,
-          label: 'Delete',
+          label: t(($) => $.common.actions.delete),
           onSelect: () => openDeleteDeckDialog(deck),
           tone: 'danger',
         },
@@ -150,18 +155,18 @@ export const DeckDetailPage = ({
   const emptyNotesState = (
     <div className={isDesktop ? 'flex h-full min-h-0 flex-col' : undefined}>
       <EmptyState
-        actions={noteCreateOptions.map(({ Icon, kind, label }, index) => ({
+        actions={noteCreateOptions.map(({ Icon, kind }, index) => ({
           icon: <Icon className="size-4" />,
-          label,
+          label: getNoteKindLabel(t, kind),
           onClick: () => openCreateNote(kind),
           variant: index === 0 ? undefined : 'outline',
         }))}
         className={isDesktop ? 'min-h-0 flex-1' : undefined}
         density={isDesktop ? 'compact' : 'default'}
-        description="Add a note so this deck has material to review."
+        description={t(($) => $.decks.descriptions.emptyDeck)}
         fill={isDesktop}
         icon={<FileText className="size-6" />}
-        title="This deck is empty"
+        title={t(($) => $.decks.empty.thisDeckIsEmpty)}
       />
     </div>
   )
@@ -173,8 +178,10 @@ export const DeckDetailPage = ({
   const notesContent = trimmedQuery ? (
     <SearchResults
       key={debouncedQuery}
-      emptyDescription={`No notes matched "${trimmedQuery}".`}
-      emptyTitle="No matching notes"
+      emptyDescription={t(($) => $.decks.empty.noMatchingNotesDescription, {
+        query: trimmedQuery,
+      })}
+      emptyTitle={t(($) => $.decks.empty.noMatchingNotes)}
       error={searchQuery.error}
       groups={searchQuery.data}
       loading={showSearchLoading}
@@ -188,7 +195,7 @@ export const DeckDetailPage = ({
     <LoadErrorState
       className="mt-6"
       error={notesQuery.error}
-      title="Notes could not be loaded"
+      title={t(($) => $.decks.errors.notesCouldNotLoad)}
       onRetry={() => {
         void notesQuery.refetch()
       }}
@@ -250,14 +257,14 @@ export const DeckDetailPage = ({
       <DeckDeleteDialogs
         deckActionError={
           deleteDeck.isError
-            ? { error: deleteDeck.error, title: 'Could not delete deck' }
+            ? { error: deleteDeck.error, title: t(($) => $.decks.errors.couldNotDeleteDeck) }
             : null
         }
         deletingDeck={deleteDeck.isPending}
         deletingNote={deleteNote.isPending}
         noteActionError={
           deleteNote.isError
-            ? { error: deleteNote.error, title: 'Could not delete note' }
+            ? { error: deleteNote.error, title: t(($) => $.decks.errors.couldNotDeleteNote) }
             : null
         }
         pendingDeck={pendingDeck}
@@ -270,10 +277,10 @@ export const DeckDetailPage = ({
       {hasNotesRefreshError ? (
         <BottomStatusStack className={isDesktop ? desktopBottomStatusStackClassName : undefined}>
           <BottomStatus
-            actionLabel="Check again"
+            actionLabel={t(($) => $.common.actions.checkAgain)}
             dismissKey={notesQuery.errorUpdateCount}
             error={notesQuery.error}
-            title="Notes may be out of date"
+            title={t(($) => $.decks.errors.notesMayBeOutOfDate)}
             onAction={() => {
               void notesQuery.refetch()
             }}

@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { EditorShell } from '@shared/components/layout/EditorShell'
 import { useCloseTarget } from '@shared/lib/navigation-state'
@@ -10,6 +11,7 @@ import { defaultWorkspaceVisualIcon } from '../constants/visuals'
 import { useCreateWorkspace } from '../hooks/useWorkspaces'
 
 export const WorkspaceCreatePage = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const createWorkspace = useCreateWorkspace()
   const [title, setTitle] = useState('')
@@ -19,21 +21,21 @@ export const WorkspaceCreatePage = () => {
 
   return (
     <EditorShell
-      actionLabel="Create workspace"
+      actionLabel={t(($) => $.workspaces.actions.createWorkspace)}
       actionError={
         createWorkspace.isError
-          ? { error: createWorkspace.error, title: 'Could not create workspace' }
+          ? { error: createWorkspace.error, title: t(($) => $.workspaces.errors.couldNotCreateWorkspace) }
           : null
       }
       backTo={closeTo}
       isSubmitting={createWorkspace.isPending}
-      title="Create Workspace"
+      title={t(($) => $.workspaces.labels.createWorkspaceTitle)}
       onSubmit={() => {
         createWorkspace.mutate(
           {
-            description: description.trim() || 'Study context.',
+            description: description.trim() || t(($) => $.workspaces.descriptions.editorDefault),
             icon,
-            title: title.trim() || 'Untitled Workspace',
+            title: title.trim() || t(($) => $.workspaces.fields.untitledWorkspace),
           },
           {
             onSuccess: (workspace) => {

@@ -1,11 +1,13 @@
 import { useNavigate } from '@tanstack/react-router'
 import { RefreshCw } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useServices } from '@core/services'
 import { ClearWordmark } from '@shared/components/layout/ClearWordmark'
 import { Button } from '@shared/components/ui/button'
-import { getUserMessage, type DomainError } from '@shared/errors'
+import type { DomainError } from '@shared/errors'
+import { translateDomainError } from '@shared/errors/translation'
 import { useSetRuntimeProfile } from '@shared/hooks/useAppLayoutMode'
 import { isAbortError } from '@shared/lib/abort'
 
@@ -19,6 +21,7 @@ const bootStateClassName =
   'mt-8 flex w-full flex-col items-center text-center'
 
 export const BootPage = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const services = useServices()
   const setRuntimeProfile = useSetRuntimeProfile()
@@ -44,7 +47,7 @@ export const BootPage = () => {
       .catch((caught) => {
         if (!isAbortError(caught)) {
           setError({
-            message: 'Try again. If this keeps happening, reopen Clear.',
+            message: t(($) => $.bootstrap.error.fallbackMessage),
             retryable: false,
             type: 'unexpected',
           })
@@ -54,7 +57,7 @@ export const BootPage = () => {
     return () => {
       controller.abort()
     }
-  }, [attempt, navigate, services.bootstrap, setRuntimeProfile])
+  }, [attempt, navigate, services.bootstrap, setRuntimeProfile, t])
 
   if (error) {
     return (
@@ -76,7 +79,7 @@ export const BootPage = () => {
         role="status"
       >
         <h1 className="type-study-title text-foreground">
-          Preparing your study space
+          {t(($) => $.bootstrap.loadingTitle)}
         </h1>
         <div
           aria-hidden="true"
@@ -106,25 +109,39 @@ const BootErrorState = ({
   error: DomainError
   onRetry: () => void
 }) => (
-  <section
-    aria-live="assertive"
-    className={bootStateClassName}
-    role="alert"
-  >
-    <h1 className="text-wrap-anywhere type-study-title text-foreground">
-      Could not start
-    </h1>
-    <p className="text-wrap-anywhere mt-3 max-w-[30ch] text-sm font-medium leading-6 text-muted-foreground">
-      {getUserMessage(error)}
-    </p>
-    <Button
-      className="type-action mt-8 h-auto rounded-full bg-primary px-7 py-4 text-primary-foreground transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
-      type="button"
-      variant="default"
-      onClick={onRetry}
-    >
-      <RefreshCw aria-hidden="true" className="size-4" />
-      Try again
-    </Button>
-  </section>
+  <BootErrorStateContent error={error} onRetry={onRetry} />
 )
+
+const BootErrorStateContent = ({
+  error,
+  onRetry,
+}: {
+  error: DomainError
+  onRetry: () => void
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-live="assertive"
+      className={bootStateClassName}
+      role="alert"
+    >
+      <h1 className="text-wrap-anywhere type-study-title text-foreground">
+        {t(($) => $.bootstrap.error.title)}
+      </h1>
+      <p className="text-wrap-anywhere mt-3 max-w-[30ch] text-sm font-medium leading-6 text-muted-foreground">
+        {translateDomainError(t, error)}
+      </p>
+      <Button
+        className="type-action mt-8 h-auto rounded-full bg-primary px-7 py-4 text-primary-foreground transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
+        type="button"
+        variant="default"
+        onClick={onRetry}
+      >
+        <RefreshCw aria-hidden="true" className="size-4" />
+        {t(($) => $.common.actions.tryAgain)}
+      </Button>
+    </section>
+  )
+}

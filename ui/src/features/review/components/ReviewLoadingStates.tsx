@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 
 import {
@@ -14,12 +16,15 @@ import {
   reviewSummaryStackClassName,
 } from './ReviewSummaryLayout'
 
-export const ReviewSessionLoadingState = () => (
-  <main
-    id="main-content"
-    className="relative flex min-h-screen overflow-x-hidden flex-col bg-background text-foreground"
-  >
-    <section aria-label="Loading review" aria-live="polite" role="status">
+export const ReviewSessionLoadingState = () => {
+  const { t } = useTranslation()
+
+  return (
+    <main
+      id="main-content"
+      className="relative flex min-h-screen overflow-x-hidden flex-col bg-background text-foreground"
+    >
+    <section aria-label={t(($) => $.review.labels.loadingReview)} aria-live="polite" role="status">
       <div aria-hidden="true">
         <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-md">
           <div className="mx-auto grid h-16 max-w-xl grid-cols-[44px_1fr_44px] items-center px-6">
@@ -79,15 +84,19 @@ export const ReviewSessionLoadingState = () => (
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background"
     />
-  </main>
-)
+    </main>
+  )
+}
 
-export const ReviewSummaryLoadingState = () => (
-  <main
-    id="main-content"
-    className={reviewSummaryMainClassName}
-  >
-    <section aria-label="Loading summary" aria-live="polite" role="status">
+export const ReviewSummaryLoadingState = () => {
+  const { t } = useTranslation()
+
+  return (
+    <main
+      id="main-content"
+      className={reviewSummaryMainClassName}
+    >
+    <section aria-label={t(($) => $.review.labels.loadingSummary)} aria-live="polite" role="status">
       <div
         aria-hidden="true"
         className={reviewSummaryLaneClassName}
@@ -143,5 +152,6 @@ export const ReviewSummaryLoadingState = () => (
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background"
     />
-  </main>
-)
+    </main>
+  )
+}

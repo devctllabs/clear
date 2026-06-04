@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { SectionHeading } from '@shared/components/layout/Screen'
@@ -65,39 +66,55 @@ const SettingsSectionSkeleton = ({
   </section>
 )
 
-const GeneralSettingsSkeleton = () => (
-  <SettingsSectionSkeleton title="General">
-    <SettingsRowSkeleton valueClassName="w-24" />
-    <div className="mx-6 border-t border-border/60" />
-    <SettingsRowSkeleton valueClassName="w-20" />
-  </SettingsSectionSkeleton>
-)
+const GeneralSettingsSkeleton = () => {
+  const { t } = useTranslation()
 
-const AppearanceSettingsSkeleton = () => (
-  <SettingsSectionSkeleton title="Appearance">
-    <SettingsThemeRowSkeleton />
-  </SettingsSectionSkeleton>
-)
+  return (
+    <SettingsSectionSkeleton title={t(($) => $.settings.labels.general)}>
+      <SettingsRowSkeleton valueClassName="w-24" />
+      <div className="mx-6 border-t border-border/60" />
+      <SettingsRowSkeleton valueClassName="w-20" />
+    </SettingsSectionSkeleton>
+  )
+}
 
-const StudySettingsSkeleton = () => (
-  <SettingsSectionSkeleton title="Study">
-    <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
-    <div className="mx-6 border-t border-border/60" />
-    <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
-    <div className="mx-6 border-t border-border/60" />
-    <SettingsRowSkeleton valueClassName="w-28" />
-  </SettingsSectionSkeleton>
-)
+const AppearanceSettingsSkeleton = () => {
+  const { t } = useTranslation()
 
-const ScheduleSettingsSkeleton = () => (
-  <SettingsSectionSkeleton title="Schedule">
-    <SettingsSliderRowSkeleton />
-    <div className="mx-6 border-t border-border/60" />
-    <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
-    <div className="mx-6 border-t border-border/60" />
-    <SettingsRowSkeleton valueClassName="w-24" />
-  </SettingsSectionSkeleton>
-)
+  return (
+    <SettingsSectionSkeleton title={t(($) => $.settings.labels.appearance)}>
+      <SettingsThemeRowSkeleton />
+    </SettingsSectionSkeleton>
+  )
+}
+
+const StudySettingsSkeleton = () => {
+  const { t } = useTranslation()
+
+  return (
+    <SettingsSectionSkeleton title={t(($) => $.settings.labels.study)}>
+      <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
+      <div className="mx-6 border-t border-border/60" />
+      <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
+      <div className="mx-6 border-t border-border/60" />
+      <SettingsRowSkeleton valueClassName="w-28" />
+    </SettingsSectionSkeleton>
+  )
+}
+
+const ScheduleSettingsSkeleton = () => {
+  const { t } = useTranslation()
+
+  return (
+    <SettingsSectionSkeleton title={t(($) => $.settings.labels.schedule)}>
+      <SettingsSliderRowSkeleton />
+      <div className="mx-6 border-t border-border/60" />
+      <SettingsRowSkeleton chevron={false} valueClassName="w-24" />
+      <div className="mx-6 border-t border-border/60" />
+      <SettingsRowSkeleton valueClassName="w-24" />
+    </SettingsSectionSkeleton>
+  )
+}
 
 const ResetSettingsSkeleton = () => (
   <div className="pt-2">
@@ -105,19 +122,23 @@ const ResetSettingsSkeleton = () => (
   </div>
 )
 
-export const SettingsLoadingState = () => (
-  <section
-    aria-label="Loading settings"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
-    <div aria-hidden="true" className="space-y-6">
-      <GeneralSettingsSkeleton />
-      <AppearanceSettingsSkeleton />
-      <StudySettingsSkeleton />
-      <ScheduleSettingsSkeleton />
-      <ResetSettingsSkeleton />
-    </div>
-  </section>
-)
+export const SettingsLoadingState = () => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.settings.labels.loadingSettings)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
+      <div aria-hidden="true" className="space-y-6">
+        <GeneralSettingsSkeleton />
+        <AppearanceSettingsSkeleton />
+        <StudySettingsSkeleton />
+        <ScheduleSettingsSkeleton />
+        <ResetSettingsSkeleton />
+      </div>
+    </section>
+  )
+}

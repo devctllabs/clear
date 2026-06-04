@@ -1,33 +1,22 @@
 import { Ellipsis, FileText, Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { Badge } from '@shared/components/ui/badge'
 import { cardFocusRingClassName } from '@shared/components/ui/focus'
 import { InventoryListWithSort } from '@shared/components/data/InventoryListWithSort'
 import { inventoryRowClassName } from '@shared/components/layout/surfaces'
-import { formatRelativeDate } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import { cn } from '@shared/lib/utils'
 import type { SortPreference } from '@shared/types/sort.types'
 import { createOpenedFromState } from '@shared/lib/navigation-state'
 
 import type { NoteListItem } from '../types/note.types'
 
-const noteStatusStyles: Record<
-  NoteListItem['status'],
-  {
-    className: string
-    label: string
-  }
-> = {
-  mastered: {
-    className: 'border-border bg-muted/50 text-muted-foreground',
-    label: 'Mastered',
-  },
-  'in-progress': {
-    className: 'border-border bg-muted/50 text-muted-foreground',
-    label: 'In progress',
-  },
+const noteStatusStyles: Record<NoteListItem['status'], string> = {
+  mastered: 'border-border bg-muted/50 text-muted-foreground',
+  'in-progress': 'border-border bg-muted/50 text-muted-foreground',
 }
 
 export const NoteList = ({
@@ -75,6 +64,8 @@ const NoteListContent = ({
   sort: SortPreference
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
+  const { formatUpdatedAge } = useDateFormatters()
   const navigate = useNavigate()
 
   if (notes.length === 0) {
@@ -88,7 +79,7 @@ const NoteListContent = ({
       renderItem={(note) => (
         <div className={cn('flex w-full min-w-0 items-stretch gap-0 px-0 py-0', inventoryRowClassName)}>
           <Link
-            aria-label={`Open ${note.title}`}
+            aria-label={t(($) => $.notes.actions.openNote, { title: note.title })}
             className={cn(
               'group flex min-w-0 flex-1 items-center gap-4 px-5 py-4 text-left transition-colors',
               cardFocusRingClassName,
@@ -107,11 +98,13 @@ const NoteListContent = ({
                 <Badge
                   className={cn(
                     'type-label rounded-full px-2 py-0.5 normal-case',
-                    noteStatusStyles[note.status].className,
+                    noteStatusStyles[note.status],
                   )}
                   variant="outline"
                 >
-                  {noteStatusStyles[note.status].label}
+                  {note.status === 'mastered'
+                    ? t(($) => $.notes.labels.mastered)
+                    : t(($) => $.notes.labels.inProgress)}
                 </Badge>
                 <span
                   aria-hidden="true"
@@ -120,18 +113,18 @@ const NoteListContent = ({
                   •
                 </span>
                 <span className="line-clamp-2 min-w-0 text-wrap-anywhere text-[10px] font-medium text-muted-foreground">
-                  {formatRelativeDate(note.updatedAt).replace('Updated ', '')}
+                  {formatUpdatedAge(note.updatedAt)}
                 </span>
               </div>
             </div>
           </Link>
           <div className="flex shrink-0 items-center pr-4">
             <ActionMenu
-              dialogLabel={`${note.title} actions`}
+              dialogLabel={t(($) => $.decks.actions.actionMenu, { title: note.title })}
               items={[
                 {
                   icon: <Pencil className="size-4 stroke-[2.4]" />,
-                  label: 'Edit',
+                  label: t(($) => $.common.actions.edit),
                   onSelect: () => {
                     void navigate({
                       params: {
@@ -146,12 +139,12 @@ const NoteListContent = ({
                 },
                 {
                   icon: <Trash2 className="size-4 stroke-[2.2]" />,
-                  label: 'Delete',
+                  label: t(($) => $.common.actions.delete),
                   onSelect: () => onDelete(note),
                   tone: 'danger',
                 },
               ]}
-              triggerAriaLabel={`${note.title} actions`}
+              triggerAriaLabel={t(($) => $.decks.actions.actionMenu, { title: note.title })}
               triggerClassName="text-muted-foreground/70 hover:text-primary"
               triggerFocusSurface="card"
               triggerIcon={<Ellipsis className="size-4.5" />}
@@ -160,12 +153,12 @@ const NoteListContent = ({
         </div>
       )}
       sort={sort}
-      sortAriaLabel="Sort notes"
+      sortAriaLabel={t(($) => $.notes.sort.ariaLabel)}
       sortFieldOptions={[
-        { field: 'title', label: 'Title' },
-        { field: 'updated', label: 'Updated' },
+        { field: 'title', label: t(($) => $.notes.sort.title) },
+        { field: 'updated', label: t(($) => $.notes.sort.updated) },
       ]}
-      title="Notes"
+      title={t(($) => $.notes.labels.notes)}
       onSortChange={onSortChange}
     />
   )

@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { InlineErrorState } from '@shared/components/feedback/LoadErrorState'
 import { EditorShell } from '@shared/components/layout/EditorShell'
@@ -15,6 +16,7 @@ export const FolderCreatePage = ({
   folderId?: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const createFolder = useCreateFolder()
   const targetFolderId = folderId ?? workspaceId
@@ -26,24 +28,24 @@ export const FolderCreatePage = ({
     ? `/dashboard/${workspaceId}`
     : `/dashboard/${workspaceId}/folders/${targetFolderId}`
   const closeTo = useCloseTarget(backTo)
-  const locationPath = isRootTarget ? ['Workspace'] : folderPathQuery.data
+  const locationPath = isRootTarget ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
 
   return (
     <EditorShell
-      actionLabel="Create folder"
+      actionLabel={t(($) => $.folders.actions.createFolder)}
       actionError={
         createFolder.isError
-          ? { error: createFolder.error, title: 'Could not create folder' }
+          ? { error: createFolder.error, title: t(($) => $.folders.errors.couldNotCreateFolder) }
           : null
       }
       backTo={closeTo}
       isSubmitting={createFolder.isPending}
-      title="Create Folder"
+      title={t(($) => $.folders.labels.createFolderTitle)}
       onSubmit={() => {
         createFolder.mutate(
           {
-            description: description.trim() || 'Folder for related decks.',
-            name: name.trim() || 'Untitled Folder',
+            description: description.trim() || t(($) => $.folders.descriptions.editorDefault),
+            name: name.trim() || t(($) => $.folders.fields.untitledFolder),
             parentId: targetFolderId,
           },
           {
@@ -61,7 +63,7 @@ export const FolderCreatePage = ({
         <InlineErrorState
           className="mb-5"
           error={folderPathQuery.error}
-          title="Could not load folder path"
+          title={t(($) => $.folders.errors.couldNotLoadFolderPath)}
         />
       ) : null}
       <FolderEditorForm

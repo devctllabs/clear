@@ -4,6 +4,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import {
@@ -41,14 +42,16 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(({
   icon,
   iconClassName,
   inputClassName,
-  label = 'Search',
+  label,
   name = 'search',
   surface = 'background',
   type = 'search',
   ...props
 }, ref) => {
+  const { t } = useTranslation()
   const resolvedIcon = icon === undefined ? <Search className="size-5" /> : icon
   const hasIcon = resolvedIcon !== false
+  const resolvedLabel = label ?? t(($) => $.common.search.label)
   const { 'aria-label': ariaLabel, ...inputProps } = props
 
   return (
@@ -65,7 +68,7 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(({
       ) : null}
       <input
         ref={ref}
-        aria-label={ariaLabel ?? label}
+        aria-label={ariaLabel ?? resolvedLabel}
         autoComplete={autoComplete}
         className={cn(
           'block min-w-0 w-full truncate rounded-full border border-border bg-input text-base font-medium text-foreground transition-colors placeholder:text-muted-foreground/70 focus:bg-input sm:text-sm',

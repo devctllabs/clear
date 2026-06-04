@@ -5,6 +5,7 @@ import {
   useRef,
 } from 'react'
 import { Bold, Braces, Italic, Link2, List } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import { Card } from '@shared/components/ui/card'
@@ -86,10 +87,12 @@ const ModeSwitcher = ({
   activeKind: NoteKind
   onKindChange: (kind: NoteKind) => void
 }) => {
+  const { t } = useTranslation()
+
   return (
     <div className="mb-6 flex justify-center">
       <div
-        aria-label="Note type"
+        aria-label={t(($) => $.notes.labels.noteType)}
         className="inline-flex max-w-full rounded-full bg-muted p-1 ring-1 ring-border"
         role="group"
       >
@@ -108,7 +111,9 @@ const ModeSwitcher = ({
               onKindChange(kind)
             }}
           >
-            {kind}
+            {kind === 'basic'
+              ? t(($) => $.notes.labels.basicLower)
+              : t(($) => $.notes.labels.clozeLower)}
           </Button>
         ))}
       </div>
@@ -129,6 +134,7 @@ const BasicNoteForm = ({
   onTitleChange: (value: string) => void
   title: string
 }) => {
+  const { t } = useTranslation()
   const frontTextareaRef = useRef<HTMLTextAreaElement>(null)
   const backTextareaRef = useRef<HTMLTextAreaElement>(null)
   const activeFieldRef = useRef<Extract<MarkdownFieldId, 'back' | 'front'>>('back')
@@ -156,9 +162,9 @@ const BasicNoteForm = ({
       <div className="px-8 pb-8 pt-8">
         <TextField
           id="basic-note-title"
-          label="Title"
+          label={t(($) => $.notes.fields.title)}
           name="note-title"
-          placeholder="Add a note title"
+          placeholder={t(($) => $.notes.fields.titlePlaceholder)}
           value={title}
           onChange={onTitleChange}
         />
@@ -167,9 +173,9 @@ const BasicNoteForm = ({
       <div className="px-8 pt-8">
         <TextAreaField
           id="basic-note-front"
-          label="Front"
+          label={t(($) => $.notes.fields.front)}
           name="note-front"
-          placeholder="Enter front side"
+          placeholder={t(($) => $.notes.fields.frontPlaceholder)}
           textareaRef={frontTextareaRef}
           value={draft.front}
           onChange={(value) => {
@@ -185,9 +191,9 @@ const BasicNoteForm = ({
       <div className="px-8 py-8">
         <TextAreaField
           id="basic-note-back"
-          label="Back"
+          label={t(($) => $.notes.fields.back)}
           name="note-back"
-          placeholder="Enter back side"
+          placeholder={t(($) => $.notes.fields.backPlaceholder)}
           textareaRef={backTextareaRef}
           value={draft.back}
           onChange={(value) => {
@@ -218,6 +224,7 @@ const ClozeNoteForm = ({
   onTitleChange: (value: string) => void
   title: string
 }) => {
+  const { t } = useTranslation()
   const bodyTextareaRef = useRef<HTMLTextAreaElement>(null)
   const { clearUndoEntries, handleUndo, pushUndoEntry } = useMarkdownUndo()
   const bodyTarget: MarkdownToolbarTarget = {
@@ -233,9 +240,9 @@ const ClozeNoteForm = ({
         <div className="px-8 pb-8 pt-8">
           <TextField
             id="cloze-note-title"
-            label="Title"
+            label={t(($) => $.notes.fields.title)}
             name="note-title"
-            placeholder="Add a note title"
+            placeholder={t(($) => $.notes.fields.titlePlaceholder)}
             value={title}
             onChange={onTitleChange}
           />
@@ -244,10 +251,10 @@ const ClozeNoteForm = ({
         <div className="px-8 py-8">
           <TextAreaField
             id="cloze-note-body"
-            label="Note body"
+            label={t(($) => $.notes.fields.noteBody)}
             minRows={9}
             name="note-body"
-            placeholder="Write the note body with cloze deletions…"
+            placeholder={t(($) => $.notes.fields.bodyPlaceholder)}
             textareaRef={bodyTextareaRef}
             value={draft.body}
             onChange={(value) => {
@@ -270,11 +277,13 @@ const ClozeNoteForm = ({
           </div>
           <div className="min-w-0">
             <h2 className="type-row-title text-foreground">
-              Cloze format
+              {t(($) => $.notes.labels.clozeFormat)}
             </h2>
             <p className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground">
-              Wrap hidden text with <span className="font-bold text-foreground">{'{{c1::...}}'}</span>.
-              {' '}Each hidden part becomes a review card when you save.
+              {t(($) => $.notes.descriptions.clozeFormatPrefix)}{' '}
+              <span className="font-bold text-foreground">{'{{c1::...}}'}</span>.
+              {' '}
+              {t(($) => $.notes.descriptions.clozeFormat)}
             </p>
           </div>
         </div>
@@ -378,6 +387,7 @@ const EditorToolbar = ({
   onSaveUndo: (target: MarkdownToolbarTarget, selection: MarkdownSelection) => void
   showAddCloze?: boolean
 }) => {
+  const { t } = useTranslation()
   const applyFormat = (action: MarkdownFormatAction) => {
     const target = getTarget()
     const selection = getTextareaSelection(target)
@@ -405,34 +415,34 @@ const EditorToolbar = ({
 
   return (
     <div
-      aria-label="Markdown formatting"
+      aria-label={t(($) => $.notes.labels.markdownFormatting)}
       className="quiet-scrollbar mt-6 flex flex-wrap items-center gap-2 overflow-x-auto pb-1"
       role="toolbar"
     >
       <ToolbarButton
         icon={<Bold className="size-4" />}
-        label="Bold"
+        label={t(($) => $.notes.toolbar.bold)}
         onClick={() => applyFormat('bold')}
       />
       <ToolbarButton
         icon={<Italic className="size-4" />}
-        label="Italic"
+        label={t(($) => $.notes.toolbar.italic)}
         onClick={() => applyFormat('italic')}
       />
       <ToolbarButton
         icon={<Link2 className="size-4" />}
-        label="Link"
+        label={t(($) => $.notes.toolbar.link)}
         onClick={() => applyFormat('link')}
       />
       <ToolbarButton
         icon={<List className="size-4" />}
-        label="List"
+        label={t(($) => $.notes.toolbar.list)}
         onClick={() => applyFormat('list')}
       />
       {showAddCloze ? (
         <ToolbarButton
           icon={<Braces className="size-4" />}
-          label="Add cloze"
+          label={t(($) => $.notes.actions.addCloze)}
           onClick={() => applyFormat('cloze')}
         />
       ) : null}

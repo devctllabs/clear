@@ -1,12 +1,11 @@
 import { CheckCircle2 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import { cn } from '@shared/lib/utils'
-import {
-  formatNonNegativeInteger,
-  normalizeNonNegativeInteger,
-} from '@shared/lib/number-format'
+import { formatNonNegativeInteger } from '@shared/lib/number-format'
+import { formatDurationSeconds } from '@shared/lib/translated-date-format'
 
 import type { DueReviewSession } from '../types/review.types'
 import {
@@ -21,29 +20,8 @@ import {
   reviewSummaryStackClassName,
 } from './ReviewSummaryLayout'
 
-const secondsInMinute = 60
-const minutesInHour = 60
-
-const formatDurationSeconds = (value: number | undefined) => {
-  const seconds = normalizeNonNegativeInteger(value ?? 0)
-
-  if (seconds < secondsInMinute) {
-    return `${formatNonNegativeInteger(seconds)}s`
-  }
-
-  if (seconds < secondsInMinute * minutesInHour) {
-    return `${formatNonNegativeInteger(seconds / secondsInMinute)}m`
-  }
-
-  const totalMinutes = normalizeNonNegativeInteger(seconds / secondsInMinute)
-  const hours = Math.floor(totalMinutes / minutesInHour)
-  const minutes = totalMinutes % minutesInHour
-
-  return `${formatNonNegativeInteger(hours)}h ${formatNonNegativeInteger(minutes)}m`
-}
-
 export const ReviewSummaryCard = ({
-  backLabel = 'Back to deck',
+  backLabel,
   backTo,
   continueTo,
   summary,
@@ -52,73 +30,78 @@ export const ReviewSummaryCard = ({
   backTo: string
   continueTo?: string
   summary?: DueReviewSession
-}) => (
-  <div className={reviewSummaryStackClassName}>
-    <section className={reviewSummaryCardClassName}>
-      <div className={reviewSummaryHeaderClassName}>
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground sm:size-12">
-          <CheckCircle2 className="size-5 stroke-[2.4]" />
-        </span>
-        <div className={reviewSummaryHeaderTextClassName}>
-          <h1 className="text-wrap-anywhere type-study-title text-foreground">
-            Review complete
-          </h1>
-          <p className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground">
-            Your progress was saved to this deck.
-          </p>
-        </div>
-      </div>
+}) => {
+  const { t } = useTranslation()
+  const resolvedBackLabel = backLabel ?? t(($) => $.review.actions.backToDeck)
 
-      <div className={reviewSummaryMetricsClassName}>
-        <span
-          aria-hidden="true"
-          className={reviewSummaryMetricDividerClassName}
-        />
-        <div className={reviewSummaryMetricCellClassName}>
-          <span className="type-label uppercase text-muted-foreground">
-            Cards reviewed
+  return (
+    <div className={reviewSummaryStackClassName}>
+      <section className={reviewSummaryCardClassName}>
+        <div className={reviewSummaryHeaderClassName}>
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-muted text-foreground sm:size-12">
+            <CheckCircle2 className="size-5 stroke-[2.4]" />
           </span>
-          <span className="text-wrap-anywhere mt-2 block text-2xl font-bold leading-none text-foreground">
-            {formatNonNegativeInteger(summary?.reviewedCount ?? 0)}
-          </span>
+          <div className={reviewSummaryHeaderTextClassName}>
+            <h1 className="text-wrap-anywhere type-study-title text-foreground">
+              {t(($) => $.review.labels.reviewComplete)}
+            </h1>
+            <p className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground">
+              {t(($) => $.review.summary.saved)}
+            </p>
+          </div>
         </div>
-        <div className={reviewSummaryMetricCellClassName}>
-          <span className="type-label uppercase text-muted-foreground">
-            Duration
-          </span>
-          <span className="text-wrap-anywhere mt-2 block text-2xl font-bold leading-none text-foreground">
-            {formatDurationSeconds(summary?.durationSeconds)}
-          </span>
+
+        <div className={reviewSummaryMetricsClassName}>
+          <span
+            aria-hidden="true"
+            className={reviewSummaryMetricDividerClassName}
+          />
+          <div className={reviewSummaryMetricCellClassName}>
+            <span className="type-label uppercase text-muted-foreground">
+              {t(($) => $.review.labels.cardsReviewed)}
+            </span>
+            <span className="text-wrap-anywhere mt-2 block text-2xl font-bold leading-none text-foreground">
+              {formatNonNegativeInteger(summary?.reviewedCount ?? 0)}
+            </span>
+          </div>
+          <div className={reviewSummaryMetricCellClassName}>
+            <span className="type-label uppercase text-muted-foreground">
+              {t(($) => $.review.labels.duration)}
+            </span>
+            <span className="text-wrap-anywhere mt-2 block text-2xl font-bold leading-none text-foreground">
+              {formatDurationSeconds(t, summary?.durationSeconds)}
+            </span>
+          </div>
         </div>
-      </div>
-    </section>
-    <div className={reviewSummaryActionStackClassName}>
-      <Button
-        asChild
-        className={cn(
-          'type-action bg-primary text-primary-foreground transition-transform active:scale-95',
-          reviewSummaryActionBaseClassName,
-        )}
-        variant="default"
-      >
-        <Link to={(continueTo ?? backTo) as never}>
-          {continueTo ? 'Continue review' : backLabel}
-        </Link>
-      </Button>
-      {continueTo ? (
+      </section>
+      <div className={reviewSummaryActionStackClassName}>
         <Button
           asChild
           className={cn(
-            'type-action border border-border bg-card text-foreground transition-transform active:scale-95',
+            'type-action bg-primary text-primary-foreground transition-transform active:scale-95',
             reviewSummaryActionBaseClassName,
           )}
-          variant="outline"
+          variant="default"
         >
-          <Link to={backTo as never}>
-            {backLabel}
+          <Link to={(continueTo ?? backTo) as never}>
+            {continueTo ? t(($) => $.review.actions.continueReview) : resolvedBackLabel}
           </Link>
         </Button>
-      ) : null}
+        {continueTo ? (
+          <Button
+            asChild
+            className={cn(
+              'type-action border border-border bg-card text-foreground transition-transform active:scale-95',
+              reviewSummaryActionBaseClassName,
+            )}
+            variant="outline"
+          >
+            <Link to={backTo as never}>
+              {resolvedBackLabel}
+            </Link>
+          </Button>
+        ) : null}
+      </div>
     </div>
-  </div>
-)
+  )
+}

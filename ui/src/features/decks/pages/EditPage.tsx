@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
 import { useFolderPath } from '@features/folders/hooks/useFolders'
@@ -20,6 +21,7 @@ export const DeckEditPage = ({
   deckId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deckQuery = useDeck(deckId)
   const currentParentId = deckQuery.data?.parentId ?? workspaceId
@@ -29,7 +31,7 @@ export const DeckEditPage = ({
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [icon, setIcon] = useState<VisualIconName>(defaultDeckVisualIcon)
-  const parentLocationPath = isRootContainer ? ['Workspace'] : folderPathQuery.data
+  const parentLocationPath = isRootContainer ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
   const closeTo = useCloseTarget(`/dashboard/${workspaceId}/decks/${deckId}`)
 
   useEffect(() => {
@@ -43,7 +45,7 @@ export const DeckEditPage = ({
   }, [deckQuery.data])
 
   if (deckQuery.isLoading) {
-    return <EditorLoadingState backTo={closeTo} formKind="deck" title="Edit Deck" />
+    return <EditorLoadingState backTo={closeTo} formKind="deck" title={t(($) => $.decks.actions.editDeck)} />
   }
 
   if (deckQuery.isError && !deckQuery.data) {
@@ -51,7 +53,8 @@ export const DeckEditPage = ({
       <EditorErrorState
         backTo={closeTo}
         error={deckQuery.error}
-        title="Edit Deck"
+        errorTitle={t(($) => $.decks.errors.deckCouldNotLoad)}
+        title={t(($) => $.decks.actions.editDeck)}
         onRetry={() => {
           void deckQuery.refetch()
         }}
@@ -61,13 +64,15 @@ export const DeckEditPage = ({
 
   return (
     <EditorShell
-      actionLabel="Save changes"
+      actionLabel={t(($) => $.common.actions.saveChanges)}
       actionError={
-        updateDeck.isError ? { error: updateDeck.error, title: 'Could not save deck' } : null
+        updateDeck.isError
+          ? { error: updateDeck.error, title: t(($) => $.decks.errors.couldNotSaveDeck) }
+          : null
       }
       backTo={closeTo}
       isSubmitting={updateDeck.isPending}
-      title="Edit Deck"
+      title={t(($) => $.decks.actions.editDeck)}
       onSubmit={() => {
         updateDeck.mutate(
           {
@@ -91,7 +96,7 @@ export const DeckEditPage = ({
         <InlineErrorState
           className="mb-5"
           error={folderPathQuery.error}
-          title="Could not load folder path"
+          title={t(($) => $.decks.errors.couldNotLoadFolderPath)}
         />
       ) : null}
       <DeckEditorForm

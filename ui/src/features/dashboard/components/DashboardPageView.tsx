@@ -1,4 +1,5 @@
 import type { ChangeEventHandler, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SearchBox, StickySearch } from '@features/content-search'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
@@ -61,6 +62,8 @@ export const DashboardPageView = ({
 }
 
 const DashboardPageDesktop = (props: DashboardPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <DesktopPageLayout activeItem="home" homeTarget={props.homeTarget}>
@@ -72,10 +75,10 @@ const DashboardPageDesktop = (props: DashboardPageViewProps) => {
   if (props.state === 'workspace-error') {
     return (
       <DesktopPageLayout activeItem="home" homeTarget={props.homeTarget}>
-        <DesktopPageHeader title="Dashboard" />
+        <DesktopPageHeader title={t(($) => $.dashboard.labels.dashboard)} />
         <LoadErrorState
           error={props.error}
-          title="Workspace could not be loaded"
+          title={t(($) => $.dashboard.errors.workspaceCouldNotLoad)}
           onRetry={props.onRetry}
         />
       </DesktopPageLayout>
@@ -102,7 +105,7 @@ const DashboardPageDesktop = (props: DashboardPageViewProps) => {
           <SearchBox
             className="mb-0 mt-0"
             onChange={props.onQueryChange}
-            placeholder="Search folders, decks, and notes…"
+            placeholder={t(($) => $.dashboard.descriptions.searchPlaceholder)}
             value={props.query}
           />
         }
@@ -127,6 +130,8 @@ const DashboardPageDesktop = (props: DashboardPageViewProps) => {
 }
 
 const DashboardPageMobile = (props: DashboardPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <AppShell>
@@ -142,10 +147,10 @@ const DashboardPageMobile = (props: DashboardPageViewProps) => {
     return (
       <AppShell>
         <ScreenCanvas>
-          <PageHeader title="Dashboard" />
+          <PageHeader title={t(($) => $.dashboard.labels.dashboard)} />
           <LoadErrorState
             error={props.error}
-            title="Workspace could not be loaded"
+            title={t(($) => $.dashboard.errors.workspaceCouldNotLoad)}
             onRetry={props.onRetry}
           />
         </ScreenCanvas>
@@ -165,7 +170,6 @@ const DashboardPageMobile = (props: DashboardPageViewProps) => {
             <div className="flex items-center gap-2">
               {props.emptyState === null ? (
                 <ResourceCreateMenu
-                  label="Create"
                   variant="responsive"
                   onCreateDeck={props.onCreateDeck}
                   onCreateFolder={props.onCreateFolder}
@@ -178,7 +182,7 @@ const DashboardPageMobile = (props: DashboardPageViewProps) => {
         />
         <StickySearch
           onChange={props.onQueryChange}
-          placeholder="Search folders, decks, and notes…"
+          placeholder={t(($) => $.dashboard.descriptions.searchPlaceholder)}
           value={props.query}
         />
         <div>

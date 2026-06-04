@@ -1,4 +1,6 @@
 import { StickySearchSkeleton } from '@features/content-search'
+import { useTranslation } from 'react-i18next'
+import type { ReactNode } from 'react'
 import { InventoryList, InventorySection } from '@shared/components/data/InventoryList'
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { DesktopPageHeaderSkeleton } from '@shared/components/layout/DesktopShell'
@@ -53,12 +55,19 @@ export const DashboardLoadingState = ({
 }
 
 const DashboardMobileLoadingState = () => (
-  <section
-    aria-label="Loading dashboard"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <DashboardMobileLoadingContent />
+)
+
+const DashboardMobileLoadingContent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.dashboard.labels.loadingDashboard)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <PageHeaderSkeleton
       compactBodyGap
       reserveDescriptionSpace
@@ -70,16 +79,24 @@ const DashboardMobileLoadingState = () => (
       <FolderSectionSkeleton />
       <DeckSectionSkeleton />
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const DashboardDesktopLoadingState = () => (
-  <section
-    aria-label="Loading dashboard"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <DashboardDesktopLoadingContent />
+)
+
+const DashboardDesktopLoadingContent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.dashboard.labels.loadingDashboard)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <DesktopPageHeaderSkeleton
       reserveDescriptionSpace
       rightActionWidths={['w-28', 'w-11']}
@@ -92,31 +109,49 @@ const DashboardDesktopLoadingState = () => (
         <DeckSectionSkeleton />
       </div>
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const FolderSectionSkeleton = () => (
-  <InventorySection
-    actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
-    title="Folders"
-  >
+  <DashboardSectionSkeleton titleKey="folders">
     <InventoryList
       getItemKey={(item) => item}
       items={sectionSkeletonItems}
       renderItem={() => <FolderRowSkeleton />}
     />
-  </InventorySection>
+  </DashboardSectionSkeleton>
 )
 
 const DeckSectionSkeleton = () => (
-  <InventorySection
-    actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
-    title="Decks"
-  >
+  <DashboardSectionSkeleton titleKey="decks">
     <InventoryList
       getItemKey={(item) => item}
       items={sectionSkeletonItems}
       renderItem={() => <DeckRowSkeleton />}
     />
-  </InventorySection>
+  </DashboardSectionSkeleton>
 )
+
+const DashboardSectionSkeleton = ({
+  children,
+  titleKey,
+}: {
+  children: ReactNode
+  titleKey: 'decks' | 'folders'
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <InventorySection
+      actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
+      title={
+        titleKey === 'decks'
+          ? t(($) => $.decks.labels.decks)
+          : t(($) => $.folders.labels.folders)
+      }
+    >
+      {children}
+    </InventorySection>
+  )
+}

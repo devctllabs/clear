@@ -1,4 +1,5 @@
 import { ConfirmDialog } from '@shared/components/feedback/ConfirmDialog'
+import { useTranslation } from 'react-i18next'
 
 import type { NoteDetail } from '../types/note.types'
 
@@ -20,14 +21,44 @@ export const NoteDeleteDialog = ({
   onConfirm: () => void
   onOpenChange: (open: boolean) => void
 }) => (
-  <ConfirmDialog
+  <NoteDeleteDialogContent
     actionError={actionError}
-    confirmLabel="Delete note"
     confirming={confirming}
-    description={note ? `This moves "${note.title}" to Trash. You can restore it later.` : ''}
+    note={note}
     open={open}
-    title={note ? `Delete "${note.title}"?` : 'Delete note?'}
     onConfirm={onConfirm}
     onOpenChange={onOpenChange}
   />
 )
+
+const NoteDeleteDialogContent = ({
+  actionError,
+  confirming,
+  note,
+  open,
+  onConfirm,
+  onOpenChange,
+}: Parameters<typeof NoteDeleteDialog>[0]) => {
+  const { t } = useTranslation()
+
+  return (
+    <ConfirmDialog
+      actionError={actionError}
+      confirmLabel={t(($) => $.notes.actions.deleteNote)}
+      confirming={confirming}
+      description={
+        note
+          ? t(($) => $.notes.dialogs.deleteNoteDescription, { title: note.title })
+          : t(($) => $.notes.dialogs.deleteNoteFallbackDescription)
+      }
+      open={open}
+      title={
+        note
+          ? t(($) => $.notes.dialogs.deleteNoteTitle, { title: note.title })
+          : t(($) => $.notes.dialogs.deleteNoteFallbackTitle)
+      }
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+    />
+  )
+}

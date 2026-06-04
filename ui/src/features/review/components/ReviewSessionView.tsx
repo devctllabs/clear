@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Check, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { MarkdownContent } from '@shared/components/data/MarkdownContent'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
@@ -70,19 +71,21 @@ export const ReviewSessionView = ({
 )
 
 export const ReviewSessionHeader = ({ onClose }: { onClose: () => void }) => {
+  const { t } = useTranslation()
+
   return (
     <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-md">
       <div className="mx-auto grid h-16 max-w-xl grid-cols-[44px_1fr_44px] items-center px-6">
         <IconButton
           className="text-foreground/70"
           icon={<X className="size-5" />}
-          label="Close"
+          label={t(($) => $.common.actions.close)}
           size="lg"
           type="button"
           onClick={onClose}
         />
         <h1 className="type-row-title whitespace-nowrap text-center text-foreground">
-          Review
+          {t(($) => $.review.labels.review)}
         </h1>
         <div />
       </div>
@@ -107,6 +110,7 @@ export const ReviewSessionContent = ({
   revealed: boolean
   reviewedCount?: number
 }) => {
+  const { t } = useTranslation()
   const normalizedPlannedCount = normalizeNonNegativeInteger(plannedCount)
   const normalizedRawReviewedCount = normalizeNonNegativeInteger(reviewedCount)
   const normalizedReviewedCount =
@@ -126,7 +130,7 @@ export const ReviewSessionContent = ({
         <section className="mb-12 flex w-full min-w-0 flex-col items-center space-y-4">
           <div className="flex min-w-0 flex-col items-center text-center">
             <span className="type-label mb-1 uppercase text-muted-foreground">
-              Deck
+              {t(($) => $.review.labels.deck)}
             </span>
             <h2 className="text-wrap-anywhere type-study-title max-w-full text-primary">
               {deckTitle}
@@ -146,7 +150,7 @@ export const ReviewSessionContent = ({
                   </span>
                 </div>
                 <div
-                  aria-label="Review progress"
+                  aria-label={t(($) => $.review.labels.progress)}
                   className="h-1.5 w-full overflow-hidden rounded-full bg-border/50"
                   role="progressbar"
                 >
@@ -166,7 +170,9 @@ export const ReviewSessionContent = ({
                   className="size-3.5 shrink-0 translate-y-px stroke-[2.5] text-foreground/45 [[data-theme=dark]_&]:text-muted-foreground/60"
                 />
                 <span className="sr-only">
-                  Reviewed {formatNonNegativeInteger(normalizedReviewedCount)}
+                  {t(($) => $.review.labels.reviewed, {
+                    count: normalizedReviewedCount,
+                  })}
                 </span>
                 <span
                   aria-hidden="true"
@@ -203,6 +209,8 @@ export const ReviewSessionActions = ({
   pendingGrade?: ReviewGrade | null
   revealed: boolean
 }) => {
+  const { t } = useTranslation()
+
   useVisualViewportBottomOffset()
 
   return (
@@ -216,31 +224,31 @@ export const ReviewSessionActions = ({
             variant="default"
             onClick={onReveal}
           >
-            Show answer
+            {t(($) => $.review.actions.showAnswer)}
           </Button>
         ) : (
           <div className="grid w-full grid-cols-2 gap-2 @min-[22rem]:grid-cols-4">
             <GradeButton
               disabled={disabled}
-              label="Again"
+              label={t(($) => $.review.actions.again)}
               pending={pendingGrade === 'again'}
               onClick={() => onGrade('again')}
             />
             <GradeButton
               disabled={disabled}
-              label="Hard"
+              label={t(($) => $.review.actions.hard)}
               pending={pendingGrade === 'hard'}
               onClick={() => onGrade('hard')}
             />
             <GradeButton
               disabled={disabled}
-              label="Good"
+              label={t(($) => $.review.actions.good)}
               pending={pendingGrade === 'good'}
               onClick={() => onGrade('good')}
             />
             <GradeButton
               disabled={disabled}
-              label="Easy"
+              label={t(($) => $.review.actions.easy)}
               pending={pendingGrade === 'easy'}
               onClick={() => onGrade('easy')}
             />
@@ -251,23 +259,29 @@ export const ReviewSessionActions = ({
   )
 }
 
-const ReviewSessionCard = ({ card, revealed }: { card: ReviewCard; revealed: boolean }) => (
-  <article className="editorial-shadow group relative w-full min-w-0 overflow-hidden rounded-card border border-border bg-card px-6 py-8 shadow-card sm:px-12 sm:py-10">
-    <div className="absolute left-6 top-6 flex max-w-[calc(100%-3rem)] gap-2 sm:left-8 sm:top-8">
-      <span className="type-label shrink-0 rounded-full bg-muted px-3 py-1 uppercase text-muted-foreground">
-        {card.kind.toUpperCase()}
-      </span>
-    </div>
-    <div className="relative z-10 flex w-full min-w-0 flex-col space-y-10 pt-16 sm:pl-8">
-      {card.kind === 'basic' ? (
-        <BasicReviewCardContent card={card} revealed={revealed} />
-      ) : (
-        <ClozeReviewCardContent card={card} revealed={revealed} />
-      )}
-      {revealed ? <RecallGauge value={card.progress} /> : null}
-    </div>
-  </article>
-)
+const ReviewSessionCard = ({ card, revealed }: { card: ReviewCard; revealed: boolean }) => {
+  const { t } = useTranslation()
+
+  return (
+    <article className="editorial-shadow group relative w-full min-w-0 overflow-hidden rounded-card border border-border bg-card px-6 py-8 shadow-card sm:px-12 sm:py-10">
+      <div className="absolute left-6 top-6 flex max-w-[calc(100%-3rem)] gap-2 sm:left-8 sm:top-8">
+        <span className="type-label shrink-0 rounded-full bg-muted px-3 py-1 uppercase text-muted-foreground">
+          {card.kind === 'basic'
+            ? t(($) => $.notes.labels.basicUppercase)
+            : t(($) => $.notes.labels.clozeUppercase)}
+        </span>
+      </div>
+      <div className="relative z-10 flex w-full min-w-0 flex-col space-y-10 pt-16 sm:pl-8">
+        {card.kind === 'basic' ? (
+          <BasicReviewCardContent card={card} revealed={revealed} />
+        ) : (
+          <ClozeReviewCardContent card={card} revealed={revealed} />
+        )}
+        {revealed ? <RecallGauge value={card.progress} /> : null}
+      </div>
+    </article>
+  )
+}
 
 const BasicReviewCardContent = ({
   card,
@@ -275,27 +289,31 @@ const BasicReviewCardContent = ({
 }: {
   card: Extract<ReviewCard, { kind: 'basic' }>
   revealed: boolean
-}) => (
-  <>
-    <section className="min-w-0 space-y-4">
-      <span className="type-label block uppercase text-muted-foreground">
-        Front
-      </span>
-      <MarkdownContent className="text-xl" markdown={card.front} />
-    </section>
-    {revealed ? (
-      <>
-        <div className="h-px w-full bg-muted" />
-        <section className="min-w-0 space-y-4">
-          <span className="type-label block uppercase text-muted-foreground">
-            Back
-          </span>
-          <MarkdownContent className="text-xl" markdown={card.back} />
-        </section>
-      </>
-    ) : null}
-  </>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <section className="min-w-0 space-y-4">
+        <span className="type-label block uppercase text-muted-foreground">
+          {t(($) => $.notes.labels.frontUppercase)}
+        </span>
+        <MarkdownContent className="text-xl" markdown={card.front} />
+      </section>
+      {revealed ? (
+        <>
+          <div className="h-px w-full bg-muted" />
+          <section className="min-w-0 space-y-4">
+            <span className="type-label block uppercase text-muted-foreground">
+              {t(($) => $.notes.labels.backUppercase)}
+            </span>
+            <MarkdownContent className="text-xl" markdown={card.back} />
+          </section>
+        </>
+      ) : null}
+    </>
+  )
+}
 
 const ClozeReviewCardContent = ({
   card,

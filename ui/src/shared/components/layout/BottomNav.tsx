@@ -1,6 +1,7 @@
 import { Ellipsis, Grid2X2, Home } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { cardFocusRingClassName } from '@shared/components/ui/focus'
 import { useVisualViewportBottomOffset } from '@shared/hooks/useVisualViewportBottomOffset'
@@ -20,6 +21,8 @@ export const BottomNav = ({
   activeItem?: 'home' | 'menu' | 'spaces'
   homeTarget: NavigationTarget
 }) => {
+  const { t } = useTranslation()
+
   useVisualViewportBottomOffset()
 
   return (
@@ -33,19 +36,19 @@ export const BottomNav = ({
         <BottomNavItem
           active={activeItem === 'home'}
           icon={<Home className="size-5 fill-current" />}
-          label="Home"
+          label={t(($) => $.navigation.items.home)}
           target={homeTarget}
         />
         <BottomNavItem
           active={activeItem === 'spaces'}
           icon={<Grid2X2 className="size-5" />}
-          label="Spaces"
+          label={t(($) => $.navigation.items.spaces)}
           target={{ to: '/workspaces' }}
         />
         <BottomNavItem
           active={activeItem === 'menu'}
           icon={<Ellipsis className="size-5" />}
-          label="Menu"
+          label={t(($) => $.navigation.items.menu)}
           target={{ to: '/menu' }}
         />
       </div>

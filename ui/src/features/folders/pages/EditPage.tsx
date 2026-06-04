@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { InlineErrorState } from '@shared/components/feedback/LoadErrorState'
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
@@ -17,6 +18,7 @@ export const FolderEditPage = ({
   folderId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const folderQuery = useFolder(folderId)
   const currentParentFolderId = folderQuery.data?.parentId ?? workspaceId
@@ -25,7 +27,7 @@ export const FolderEditPage = ({
   const updateFolder = useUpdateFolder(folderId)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
-  const locationPath = isRootParent ? ['Workspace'] : folderPathQuery.data
+  const locationPath = isRootParent ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
   const closeTo = useCloseTarget(`/dashboard/${workspaceId}/folders/${folderId}`)
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export const FolderEditPage = ({
   }, [folderQuery.data])
 
   if (folderQuery.isLoading) {
-    return <EditorLoadingState backTo={closeTo} formKind="folder" title="Edit Folder" />
+    return <EditorLoadingState backTo={closeTo} formKind="folder" title={t(($) => $.folders.actions.editFolder)} />
   }
 
   if (folderQuery.isError && !folderQuery.data) {
@@ -46,7 +48,8 @@ export const FolderEditPage = ({
       <EditorErrorState
         backTo={closeTo}
         error={folderQuery.error}
-        title="Edit Folder"
+        errorTitle={t(($) => $.folders.errors.folderCouldNotLoad)}
+        title={t(($) => $.folders.actions.editFolder)}
         onRetry={() => {
           void folderQuery.refetch()
         }}
@@ -56,13 +59,15 @@ export const FolderEditPage = ({
 
   return (
     <EditorShell
-      actionLabel="Save changes"
+      actionLabel={t(($) => $.common.actions.saveChanges)}
       actionError={
-        updateFolder.isError ? { error: updateFolder.error, title: 'Could not save folder' } : null
+        updateFolder.isError
+          ? { error: updateFolder.error, title: t(($) => $.folders.errors.couldNotSaveFolder) }
+          : null
       }
       backTo={closeTo}
       isSubmitting={updateFolder.isPending}
-      title="Edit Folder"
+      title={t(($) => $.folders.actions.editFolder)}
       onSubmit={() => {
         updateFolder.mutate(
           {
@@ -85,7 +90,7 @@ export const FolderEditPage = ({
         <InlineErrorState
           className="mb-5"
           error={folderPathQuery.error}
-          title="Could not load folder path"
+          title={t(($) => $.folders.errors.couldNotLoadFolderPath)}
         />
       ) : null}
       <FolderEditorForm

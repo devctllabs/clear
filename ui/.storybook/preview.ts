@@ -3,6 +3,7 @@ import { createElement, useEffect, type ReactNode } from 'react'
 import { useDarkMode } from 'storybook-dark-mode'
 
 import '@assets/styles/globals.css'
+import { AppI18nProvider } from '@core/i18n'
 import { applyTheme } from '@core/theme'
 import { useFocusModalityTracking } from '@shared/hooks/useFocusModalityTracking'
 import {
@@ -25,8 +26,11 @@ const StorybookThemeProvider = ({ children }: { children: ReactNode }) => {
 const withStorybookTheme: Decorator = (Story) =>
   createElement(StorybookThemeProvider, null, Story())
 
+const withStorybookI18n: Decorator = (Story) =>
+  createElement(AppI18nProvider, null, Story())
+
 const preview: Preview = {
-  decorators: [withStorybookRuntimeProfile, withStorybookTheme],
+  decorators: [withStorybookRuntimeProfile, withStorybookI18n, withStorybookTheme],
   globalTypes: storybookRuntimeGlobalTypes,
   parameters: {
     darkMode: {

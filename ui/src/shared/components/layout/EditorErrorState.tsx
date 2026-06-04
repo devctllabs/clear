@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
@@ -10,14 +11,17 @@ import { desktopEditorLaneClassName, editorLaneClassName } from './LayoutLane'
 export const EditorErrorState = ({
   backTo,
   error,
+  errorTitle,
   title,
   onRetry,
 }: {
   backTo: string
   error: unknown
+  errorTitle?: string
   title: string
   onRetry?: () => void
 }) => {
+  const { t } = useTranslation()
   const isDesktop = useIsDesktopLayout()
   const laneClassName = isDesktop ? desktopEditorLaneClassName : editorLaneClassName
 
@@ -33,7 +37,7 @@ export const EditorErrorState = ({
           )}
         >
           <BackControl
-            ariaLabel="Close editor"
+            ariaLabel={t(($) => $.navigation.actions.closeEditor)}
             fallbackTo={backTo}
             icon={<X className="size-5" />}
           />
@@ -56,7 +60,7 @@ export const EditorErrorState = ({
           isDesktop ? 'px-8 pb-16 pt-32' : 'px-6 pb-32 pt-24',
         )}
       >
-        <LoadErrorState error={error} title={`${title} could not be loaded`} onRetry={onRetry} />
+        <LoadErrorState error={error} title={errorTitle ?? title} onRetry={onRetry} />
       </div>
     </main>
   )

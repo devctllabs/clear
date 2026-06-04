@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
@@ -22,12 +23,15 @@ export const ReviewSummaryPage = ({
   reviewId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const reviewQuery = useReviewSession(reviewId)
   const showInitialLoading = useDelayedBoolean(reviewQuery.isLoading, 180)
   const fallbackBackTo = `/dashboard/${workspaceId}/decks/${deckId}`
   const [returnTarget] = useState(() => consumeReviewReturnTarget(workspaceId, deckId))
   const backTo = returnTarget ?? fallbackBackTo
-  const backLabel = returnTarget ? 'Back' : 'Back to deck'
+  const backLabel = returnTarget
+    ? t(($) => $.common.actions.back)
+    : t(($) => $.review.actions.backToDeck)
   const continueTo = `/dashboard/${workspaceId}/decks/${deckId}/review`
 
   if (showInitialLoading) {
@@ -50,7 +54,7 @@ export const ReviewSummaryPage = ({
             backLabel={backLabel}
             backTo={backTo}
             error={reviewQuery.error}
-            title="Review summary could not be loaded"
+            title={t(($) => $.review.errors.summaryCouldNotLoad)}
             onRetry={() => {
               void reviewQuery.refetch()
             }}
@@ -67,8 +71,8 @@ export const ReviewSummaryPage = ({
           <LoadErrorState
             backLabel={backLabel}
             backTo={backTo}
-            error={domainError.conflict('This review is not complete yet.')}
-            title="Review summary is not available"
+            error={domainError.validation(t(($) => $.review.errors.summaryNotComplete), {})}
+            title={t(($) => $.review.errors.summaryNotAvailable)}
           />
         </div>
       </main>

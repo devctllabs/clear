@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { CircleAlert, RefreshCw, X } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { getUserMessage } from '@shared/errors'
+import { translateDomainError } from '@shared/errors/translation'
 import { mobileLaneWidthClassName } from '@shared/components/layout/LayoutLane'
 import { Button } from '@shared/components/ui/button'
 import { IconButton } from '@shared/components/ui/icon-button'
@@ -49,7 +50,7 @@ export const BottomStatusStack = ({
 export const BottomStatus = ({
   actionLabel,
   className,
-  dismissLabel = 'Dismiss status',
+  dismissLabel,
   dismissKey,
   error,
   onAction,
@@ -63,6 +64,7 @@ export const BottomStatus = ({
   onAction?: () => void
   title: string
 }) => {
+  const { t } = useTranslation()
   const [dismissedKey, setDismissedKey] = useState<unknown>(null)
 
   useEffect(() => {
@@ -78,6 +80,8 @@ export const BottomStatus = ({
   }
 
   const normalizedError = normalizeError(error)
+  const message = translateDomainError(t, normalizedError)
+  const resolvedDismissLabel = dismissLabel ?? t(($) => $.common.actions.dismissStatus)
 
   return (
     <div
@@ -96,7 +100,7 @@ export const BottomStatus = ({
           {title}
         </p>
         <p className="text-wrap-anywhere mt-1 text-sm font-medium leading-5 text-muted-foreground">
-          {getUserMessage(normalizedError)}
+          {message}
         </p>
         {onAction ? (
           <Button
@@ -106,7 +110,7 @@ export const BottomStatus = ({
             onClick={onAction}
           >
             <RefreshCw aria-hidden="true" className="size-3.5" />
-            {actionLabel ?? 'Try again'}
+            {actionLabel ?? t(($) => $.common.actions.tryAgain)}
           </Button>
         ) : null}
       </div>
@@ -114,7 +118,7 @@ export const BottomStatus = ({
         className="-mr-1 -mt-1"
         focusSurface="card"
         icon={<X aria-hidden="true" className="size-4" />}
-        label={dismissLabel}
+        label={resolvedDismissLabel}
         size="sm"
         type="button"
         onClick={() => {
@@ -138,6 +142,8 @@ export const BottomActionErrorStatus = ({
   error: unknown
   title: string
 }) => {
+  const { t } = useTranslation()
+
   if (!error) {
     return null
   }
@@ -146,7 +152,7 @@ export const BottomActionErrorStatus = ({
     <BottomStatusStack className={className} contentClassName={contentClassName}>
       <BottomStatus
         dismissKey={dismissKey}
-        dismissLabel="Dismiss error"
+        dismissLabel={t(($) => $.common.actions.dismissError)}
         error={error}
         title={title}
       />

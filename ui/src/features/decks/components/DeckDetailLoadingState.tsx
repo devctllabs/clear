@@ -1,4 +1,5 @@
 import { SearchBoxSkeleton, StickySearchSkeleton } from '@features/content-search'
+import { useTranslation } from 'react-i18next'
 import { InventoryList, InventorySection } from '@shared/components/data/InventoryList'
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import {
@@ -60,12 +61,19 @@ export const DeckDetailLoadingState = ({
 }
 
 const DeckDetailMobileLoadingState = ({ backTo }: { backTo?: string }) => (
-  <section
-    aria-label="Loading deck"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <DeckDetailMobileLoadingContent backTo={backTo} />
+)
+
+const DeckDetailMobileLoadingContent = ({ backTo }: { backTo?: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.decks.labels.loadingDeck)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <div className="w-full min-w-0">
       <PageHeaderSkeleton
         backTo={backTo}
@@ -91,16 +99,24 @@ const DeckDetailMobileLoadingState = ({ backTo }: { backTo?: string }) => (
         <NoteSectionSkeleton />
       </div>
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const DeckDetailDesktopLoadingState = ({ backTo }: { backTo?: string }) => (
-  <section
-    aria-label="Loading deck"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <DeckDetailDesktopLoadingContent backTo={backTo} />
+)
+
+const DeckDetailDesktopLoadingContent = ({ backTo }: { backTo?: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.decks.labels.loadingDeck)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <DesktopPageHeaderSkeleton
       backTo={backTo}
       compactBodyGap
@@ -130,18 +146,27 @@ const DeckDetailDesktopLoadingState = ({ backTo }: { backTo?: string }) => (
         </DesktopAsidePanel>
       </div>
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const NoteSectionSkeleton = () => (
-  <InventorySection
-    actionSlot={<SkeletonBlock className="h-3.5 w-14 shrink-0" />}
-    title="Notes"
-  >
-    <InventoryList
-      getItemKey={(item) => item}
-      items={noteSkeletonItems}
-      renderItem={() => <NoteRowSkeleton />}
-    />
-  </InventorySection>
+  <NoteSectionSkeletonContent />
 )
+
+const NoteSectionSkeletonContent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <InventorySection
+      actionSlot={<SkeletonBlock className="h-3.5 w-14 shrink-0" />}
+      title={t(($) => $.decks.labels.notes)}
+    >
+      <InventoryList
+        getItemKey={(item) => item}
+        items={noteSkeletonItems}
+        renderItem={() => <NoteRowSkeleton />}
+      />
+    </InventorySection>
+  )
+}

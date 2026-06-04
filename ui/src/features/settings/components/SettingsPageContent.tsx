@@ -1,5 +1,6 @@
 import type { ThemePreference } from '@core/theme'
 import { Button } from '@shared/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 import {
   SettingsDropdownRow,
@@ -38,104 +39,149 @@ export const SettingsPageContent = ({
   onThemePreferenceChange: (theme: ThemePreference) => void
   onUpdateSettings: (patch: Partial<Settings>) => void
 }) => (
-  <div className="space-y-6">
-    <SettingsSection title="General">
-      {showSettingsLanguageControl ? (
-        <SettingsDropdownRow
-          description="Interface language"
-          label="Language"
-          options={settingsLanguageOptions}
-          value={settings.language}
-          onSelect={(language) => {
-            onUpdateSettings({ language })
+  <SettingsPageContentInner
+    settings={settings}
+    themePreference={themePreference}
+    onOpenFsrsParamsEditor={onOpenFsrsParamsEditor}
+    onOpenResetDialog={onOpenResetDialog}
+    onOpenTimezonePicker={onOpenTimezonePicker}
+    onThemePreferenceChange={onThemePreferenceChange}
+    onUpdateSettings={onUpdateSettings}
+  />
+)
+
+const SettingsPageContentInner = ({
+  settings,
+  themePreference,
+  onOpenFsrsParamsEditor,
+  onOpenResetDialog,
+  onOpenTimezonePicker,
+  onThemePreferenceChange,
+  onUpdateSettings,
+}: {
+  settings: Settings
+  themePreference: ThemePreference
+  onOpenFsrsParamsEditor: () => void
+  onOpenResetDialog: () => void
+  onOpenTimezonePicker: () => void
+  onThemePreferenceChange: (theme: ThemePreference) => void
+  onUpdateSettings: (patch: Partial<Settings>) => void
+}) => {
+  const { t } = useTranslation()
+  const newCardsOrderOptions = settingsNewCardsOrderOptions.map((option) => ({
+    ...option,
+    label:
+      option.value === 'before_review'
+        ? t(($) => $.settings.options.newCardsBeforeReviews)
+        : option.value === 'after_review'
+          ? t(($) => $.settings.options.newCardsAfterReviews)
+          : t(($) => $.settings.options.newCardsMixed),
+  }))
+
+  return (
+    <div className="space-y-6">
+      <SettingsSection title={t(($) => $.settings.labels.general)}>
+        {showSettingsLanguageControl ? (
+          <SettingsDropdownRow
+            description={t(($) => $.settings.rows.languageDescription)}
+            label={t(($) => $.settings.labels.language)}
+            options={settingsLanguageOptions}
+            value={settings.language}
+            onSelect={(language) => {
+              onUpdateSettings({ language })
+            }}
+          />
+        ) : null}
+        <SettingsRow
+          chevron
+          description={t(($) => $.settings.rows.timezoneDescription)}
+          label={t(($) => $.settings.labels.timezone)}
+          value={
+            settings.timezone === 'auto'
+              ? t(($) => $.settings.labels.automatic)
+              : settingsTimezoneLabelMap.get(settings.timezone) ??
+                formatTimezoneDisplayName(settings.timezone)
+          }
+          onClick={onOpenTimezonePicker}
+        />
+      </SettingsSection>
+
+      <SettingsSection title={t(($) => $.settings.labels.appearance)}>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-6 py-5">
+          <div className="min-w-0 flex-1">
+            <p className="type-row-title text-foreground">
+              {t(($) => $.settings.labels.theme)}
+            </p>
+          </div>
+          <SettingsThemeSegmentedControl
+            theme={themePreference}
+            onThemeChange={onThemePreferenceChange}
+          />
+        </div>
+      </SettingsSection>
+
+      <SettingsSection title={t(($) => $.settings.labels.study)}>
+        <SettingsNumberRow
+          description={t(($) => $.settings.rows.newCardsPerDayDescription)}
+          label={t(($) => $.settings.labels.newCardsPerDay)}
+          value={settings.dailyNewLimit}
+          onChange={(dailyNewLimit) => {
+            onUpdateSettings({ dailyNewLimit })
           }}
         />
-      ) : null}
-      <SettingsRow
-        chevron
-        description="Use automatic timezone or choose a city."
-        label="Timezone"
-        value={
-          settings.timezone === 'auto'
-            ? 'Automatic'
-            : settingsTimezoneLabelMap.get(settings.timezone) ??
-              formatTimezoneDisplayName(settings.timezone)
-        }
-        onClick={onOpenTimezonePicker}
-      />
-    </SettingsSection>
-
-    <SettingsSection title="Appearance">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-6 py-5">
-        <div className="min-w-0 flex-1">
-          <p className="type-row-title text-foreground">
-            Theme
-          </p>
-        </div>
-        <SettingsThemeSegmentedControl
-          theme={themePreference}
-          onThemeChange={onThemePreferenceChange}
+        <SettingsNumberRow
+          description={t(($) => $.settings.rows.reviewCardsPerDayDescription)}
+          label={t(($) => $.settings.labels.reviewCardsPerDay)}
+          value={settings.dailyReviewLimit}
+          onChange={(dailyReviewLimit) => {
+            onUpdateSettings({ dailyReviewLimit })
+          }}
         />
-      </div>
-    </SettingsSection>
+        <SettingsDropdownRow
+          description={t(($) => $.settings.rows.newCardOrderDescription)}
+          label={t(($) => $.settings.labels.newCardOrder)}
+          options={newCardsOrderOptions}
+          value={settings.newCardsOrder}
+          onSelect={(newCardsOrder) => {
+            onUpdateSettings({ newCardsOrder })
+          }}
+        />
+      </SettingsSection>
 
-    <SettingsSection title="Study">
-      <SettingsNumberRow
-        description="Maximum new cards per day"
-        label="New cards per day"
-        value={settings.dailyNewLimit}
-        onChange={(dailyNewLimit) => {
-          onUpdateSettings({ dailyNewLimit })
-        }}
-      />
-      <SettingsNumberRow
-        description="Maximum review cards per day"
-        label="Review cards per day"
-        value={settings.dailyReviewLimit}
-        onChange={(dailyReviewLimit) => {
-          onUpdateSettings({ dailyReviewLimit })
-        }}
-      />
-      <SettingsDropdownRow
-        description="Order new cards relative to reviews"
-        label="New card order"
-        options={settingsNewCardsOrderOptions}
-        value={settings.newCardsOrder}
-        onSelect={(newCardsOrder) => {
-          onUpdateSettings({ newCardsOrder })
-        }}
-      />
-    </SettingsSection>
+      <SettingsSection title={t(($) => $.settings.labels.schedule)}>
+        <SettingsSliderRow
+          description={t(($) => $.settings.rows.targetRecallProbabilityDescription)}
+          label={t(($) => $.settings.labels.targetRecallProbability)}
+          value={settings.fsrsRetention}
+          onChange={(fsrsRetention) => {
+            onUpdateSettings({ fsrsRetention })
+          }}
+        />
+        <SettingsNumberRow
+          description={t(($) => $.settings.rows.masteryHorizonDescription)}
+          label={t(($) => $.settings.labels.masteryHorizon)}
+          value={settings.masteryHorizonDays}
+          onChange={(masteryHorizonDays) => {
+            onUpdateSettings({ masteryHorizonDays })
+          }}
+        />
+        <SettingsRow
+          chevron
+          description={t(($) => $.settings.rows.fsrsDescription)}
+          label={t(($) => $.settings.labels.fsrsParameters)}
+          value={
+            isDefaultSettingsFsrsParams(settings.fsrsParams)
+              ? t(($) => $.common.labels.default)
+              : t(($) => $.common.labels.custom)
+          }
+          onClick={onOpenFsrsParamsEditor}
+        />
+      </SettingsSection>
 
-    <SettingsSection title="Schedule">
-      <SettingsSliderRow
-        description="Minimum probability of recall at the next scheduled review"
-        label="Target recall probability"
-        value={settings.fsrsRetention}
-        onChange={(fsrsRetention) => {
-          onUpdateSettings({ fsrsRetention })
-        }}
-      />
-      <SettingsNumberRow
-        description="Days a card must stay recallable at or above the target probability to count as mastered"
-        label="Mastery horizon"
-        value={settings.masteryHorizonDays}
-        onChange={(masteryHorizonDays) => {
-          onUpdateSettings({ masteryHorizonDays })
-        }}
-      />
-      <SettingsRow
-        chevron
-        description="Expert model weights"
-        label="FSRS Parameters"
-        value={isDefaultSettingsFsrsParams(settings.fsrsParams) ? 'Default' : 'Custom'}
-        onClick={onOpenFsrsParamsEditor}
-      />
-    </SettingsSection>
-
-    <SettingsResetSection className="pt-2" onReset={onOpenResetDialog} />
-  </div>
-)
+      <SettingsResetSection className="pt-2" onReset={onOpenResetDialog} />
+    </div>
+  )
+}
 
 const SettingsResetSection = ({
   className,
@@ -144,14 +190,28 @@ const SettingsResetSection = ({
   className: string
   onReset: () => void
 }) => (
-  <section aria-label="Settings reset" className={className}>
-    <Button
-      className="type-action h-12 w-full rounded-full border border-border bg-card uppercase text-muted-foreground hover:bg-muted hover:text-foreground"
-      type="button"
-      variant="outline"
-      onClick={onReset}
-    >
-      Reset all settings
-    </Button>
-  </section>
+  <SettingsResetSectionContent className={className} onReset={onReset} />
 )
+
+const SettingsResetSectionContent = ({
+  className,
+  onReset,
+}: {
+  className: string
+  onReset: () => void
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <section aria-label={t(($) => $.settings.labels.settingsReset)} className={className}>
+      <Button
+        className="type-action h-12 w-full rounded-full border border-border bg-card uppercase text-muted-foreground hover:bg-muted hover:text-foreground"
+        type="button"
+        variant="outline"
+        onClick={onReset}
+      >
+        {t(($) => $.settings.actions.resetAll)}
+      </Button>
+    </section>
+  )
+}

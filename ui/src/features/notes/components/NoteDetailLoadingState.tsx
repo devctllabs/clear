@@ -1,4 +1,5 @@
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
+import { useTranslation } from 'react-i18next'
 import { BottomNav, type NavigationTarget } from '@shared/components/layout/BottomNav'
 import {
   mobileFooterActionSkeletonClassName,
@@ -11,8 +12,19 @@ export const NoteDetailLoadingState = ({
 }: {
   homeTarget: NavigationTarget
 }) => (
+  <NoteDetailLoadingContent homeTarget={homeTarget} />
+)
+
+const NoteDetailLoadingContent = ({
+  homeTarget,
+}: {
+  homeTarget: NavigationTarget
+}) => {
+  const { t } = useTranslation()
+
+  return (
   <main id="main-content" className="min-h-screen overflow-x-hidden bg-background">
-    <section aria-label="Loading note" aria-live="polite" role="status">
+    <section aria-label={t(($) => $.notes.labels.loadingNote)} aria-live="polite" role="status">
       <div aria-hidden="true">
         <header className="fixed inset-x-0 top-0 z-50 w-full bg-background/95 backdrop-blur-md">
           <div className={cn(mobileLaneClassName, 'px-6 pb-2 pt-12')}>
@@ -87,4 +99,5 @@ export const NoteDetailLoadingState = ({
     </section>
     <BottomNav activeItem="home" homeTarget={homeTarget} />
   </main>
-)
+  )
+}

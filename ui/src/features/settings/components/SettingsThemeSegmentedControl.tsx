@@ -4,6 +4,7 @@ import {
 } from '@core/theme'
 import { Button } from '@shared/components/ui/button'
 import { cn } from '@shared/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 export const SettingsThemeSegmentedControl = ({
   onThemeChange,
@@ -12,9 +13,22 @@ export const SettingsThemeSegmentedControl = ({
   onThemeChange: (theme: ThemePreference) => void
   theme: ThemePreference
 }) => {
+  const { t } = useTranslation()
+
+  const getThemeLabel = (themePreference: ThemePreference) => {
+    switch (themePreference) {
+      case 'dark':
+        return t(($) => $.settings.options.themeDark)
+      case 'light':
+        return t(($) => $.settings.options.themeLight)
+      case 'system':
+        return t(($) => $.settings.options.themeSystem)
+    }
+  }
+
   return (
     <div
-      aria-label="Theme"
+      aria-label={t(($) => $.settings.labels.theme)}
       className="inline-flex items-center rounded-full bg-muted p-1"
       role="group"
     >
@@ -37,7 +51,7 @@ export const SettingsThemeSegmentedControl = ({
               onThemeChange(option.id)
             }}
           >
-            {option.label}
+            {getThemeLabel(option.id)}
           </Button>
         )
       })}

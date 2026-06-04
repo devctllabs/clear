@@ -1,4 +1,5 @@
 import { Folder } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { SectionHeading } from '@shared/components/layout/Screen'
 import { Card } from '@shared/components/ui/card'
@@ -22,6 +23,7 @@ export const FolderEditorForm = ({
   onDescriptionChange: (value: string) => void
   onNameChange: (value: string) => void
 }) => {
+  const { t } = useTranslation()
   const locationLabel = locationPath ? formatLocationPathLabel(locationPath) : undefined
   const compactLocationLabel = locationPath
     ? formatCompactLocationPath(locationPath)
@@ -44,9 +46,9 @@ export const FolderEditorForm = ({
         </div>
       ) : null}
       <div className="px-8 pt-8">
-        <SectionHeading>Name</SectionHeading>
+        <SectionHeading>{t(($) => $.common.labels.name)}</SectionHeading>
         <label className="sr-only" htmlFor="folder-name">
-          Folder name
+          {t(($) => $.folders.fields.namePlaceholder)}
         </label>
         <textarea
           autoComplete="off"
@@ -56,7 +58,7 @@ export const FolderEditorForm = ({
           )}
           id="folder-name"
           name="folder-name"
-          placeholder="Folder name"
+          placeholder={t(($) => $.folders.fields.namePlaceholder)}
           rows={2}
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
@@ -64,9 +66,9 @@ export const FolderEditorForm = ({
       </div>
       <hr className="mx-8 border-t border-border" />
       <div className="px-8 py-8">
-        <SectionHeading>Description</SectionHeading>
+        <SectionHeading>{t(($) => $.common.labels.description)}</SectionHeading>
         <label className="sr-only" htmlFor="folder-description">
-          Folder description
+          {t(($) => $.folders.fields.descriptionLabel)}
         </label>
         <textarea
           autoComplete="off"
@@ -76,7 +78,7 @@ export const FolderEditorForm = ({
           )}
           id="folder-description"
           name="folder-description"
-          placeholder="What belongs in this folder?"
+          placeholder={t(($) => $.folders.fields.descriptionPlaceholder)}
           rows={5}
           value={description}
           onChange={(event) => onDescriptionChange(event.target.value)}

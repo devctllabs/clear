@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { useDeck } from '@features/decks/hooks/useDecks'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
@@ -24,6 +25,7 @@ export const NoteDetailPage = ({
   noteId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deckQuery = useDeck(deckId)
   const noteQuery = useNote(deckId, noteId)
@@ -68,21 +70,21 @@ export const NoteDetailPage = ({
   }
   const noteActionMenu = note ? (
     <ActionMenu
-      dialogLabel={`${note.title} actions`}
+      dialogLabel={t(($) => $.common.actions.itemActions, { title: note.title })}
       items={[
         {
           icon: <Pencil className="size-4 stroke-[2.4]" />,
-          label: 'Edit',
+          label: t(($) => $.common.actions.edit),
           onSelect: editNote,
         },
         {
           icon: <Trash2 className="size-4 stroke-[2.2]" />,
-          label: 'Delete',
+          label: t(($) => $.common.actions.delete),
           onSelect: openDeleteDialog,
           tone: 'danger',
         },
       ]}
-      triggerAriaLabel={`${note.title} actions`}
+      triggerAriaLabel={t(($) => $.common.actions.itemActions, { title: note.title })}
       triggerClassName="text-foreground hover:bg-muted"
     />
   ) : null
@@ -124,7 +126,7 @@ export const NoteDetailPage = ({
       <NoteDeleteDialog
         actionError={
           deleteNote.isError
-            ? { error: deleteNote.error, title: 'Could not delete note' }
+            ? { error: deleteNote.error, title: t(($) => $.notes.errors.couldNotDeleteNote) }
             : null
         }
         confirming={deleteNote.isPending}

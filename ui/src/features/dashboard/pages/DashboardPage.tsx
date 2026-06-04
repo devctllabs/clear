@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 import { FolderPlus, Layers3, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState, type ChangeEventHandler, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useDeleteDeck, useWorkspaceRootDecks } from '@features/decks/hooks/useDecks'
 import { DeckList } from '@features/decks/components/DeckList'
@@ -45,6 +46,7 @@ import {
 } from '../components/DashboardPageView'
 
 export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [folderSort, setFolderSort] = usePersistedSort('workspace-sort:folders')
   const [deckSort, setDeckSort] = usePersistedSort('workspace-sort:decks')
@@ -198,7 +200,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
       items={[
         {
           icon: <Pencil className="size-4 stroke-[2.4]" />,
-          label: 'Edit',
+          label: t(($) => $.common.actions.edit),
           onSelect: () => {
             void navigate({
               params: { workspaceId: workspace.id },
@@ -209,7 +211,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
         },
         {
           icon: <Trash2 className="size-4 stroke-[2.2]" />,
-          label: 'Delete',
+          label: t(($) => $.common.actions.delete),
           onSelect: () => openDeleteWorkspaceDialog(workspace),
           tone: 'danger',
         },
@@ -232,8 +234,10 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
   const searchResults = (
     <SearchResults
       key={debouncedQuery}
-      emptyDescription={`No folders, decks, or notes matched "${trimmedQuery}".`}
-      emptyTitle="No matches in this workspace"
+      emptyDescription={t(($) => $.search.empty.noMatchesInWorkspaceDescription, {
+        query: trimmedQuery,
+      })}
+      emptyTitle={t(($) => $.search.empty.noMatchesInWorkspace)}
       error={searchQuery.error}
       groups={searchQuery.data}
       loading={showSearchLoading}
@@ -251,25 +255,25 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
       actions={[
         {
           icon: <Layers3 className="size-4" />,
-          label: 'New deck',
+          label: t(($) => $.dashboard.actions.newDeck),
           onClick: openCreateDeck,
         },
         {
           icon: <FolderPlus className="size-4" />,
-          label: 'New folder',
+          label: t(($) => $.dashboard.actions.newFolder),
           onClick: openCreateFolder,
           variant: 'outline',
         },
       ]}
-      description="Create a deck, then add notes to build your review queue."
+      description={t(($) => $.dashboard.descriptions.emptyWorkspace)}
       icon={<Layers3 className="size-6" />}
-      title="Create your first deck"
+      title={t(($) => $.dashboard.empty.createFirstDeck)}
     />
   )
   const folderSection: ReactNode = foldersUnavailable ? (
     <LoadErrorState
       error={foldersQuery.error}
-      title="Folders could not be loaded"
+      title={t(($) => $.dashboard.errors.foldersCouldNotLoad)}
       onRetry={() => {
         void foldersQuery.refetch()
       }}
@@ -287,7 +291,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
   const decksSection: ReactNode = decksUnavailable ? (
     <LoadErrorState
       error={decksQuery.error}
-      title="Decks could not be loaded"
+      title={t(($) => $.dashboard.errors.decksCouldNotLoad)}
       onRetry={() => {
         void decksQuery.refetch()
       }}
@@ -319,7 +323,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
       : {
           currentPagePath,
           decksSection,
-          description: workspace?.description ?? 'Keep decks, folders, and notes together.',
+          description: workspace?.description ?? t(($) => $.dashboard.descriptions.defaultWorkspace),
           emptyState: isWorkspaceEmpty ? emptyWorkspaceState : null,
           folderSection,
           homeTarget,
@@ -330,7 +334,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
           showDeckSection,
           showFolderSection,
           state: 'loaded',
-          title: workspace?.title ?? 'Dashboard',
+          title: workspace?.title ?? t(($) => $.dashboard.labels.dashboard),
           workspaceActionMenu,
           workspaceId,
           onCreateDeck: openCreateDeck,
@@ -344,7 +348,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
       <DashboardDeleteDialogs
         deckActionError={
           deleteDeck.isError
-            ? { error: deleteDeck.error, title: 'Could not delete deck' }
+            ? { error: deleteDeck.error, title: t(($) => $.dashboard.errors.couldNotDeleteDeck) }
             : null
         }
         deletingDeck={deleteDeck.isPending}
@@ -352,7 +356,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
         deletingWorkspace={deleteWorkspace.isPending}
         folderActionError={
           deleteFolder.isError
-            ? { error: deleteFolder.error, title: 'Could not delete folder' }
+            ? { error: deleteFolder.error, title: t(($) => $.dashboard.errors.couldNotDeleteFolder) }
             : null
         }
         pendingDeck={pendingDeck}
@@ -360,7 +364,7 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
         pendingWorkspace={pendingWorkspace}
         workspaceActionError={
           deleteWorkspace.isError
-            ? { error: deleteWorkspace.error, title: 'Could not delete workspace' }
+            ? { error: deleteWorkspace.error, title: t(($) => $.dashboard.errors.couldNotDeleteWorkspace) }
             : null
         }
         onCloseDeck={closeDeleteDeckDialog}
@@ -374,10 +378,10 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
         <BottomStatusStack className={isDesktop ? desktopBottomStatusStackClassName : undefined}>
           {hasFolderRefreshError ? (
             <BottomStatus
-              actionLabel="Check again"
+              actionLabel={t(($) => $.common.actions.checkAgain)}
               dismissKey={foldersQuery.errorUpdateCount}
               error={foldersQuery.error}
-              title="Folders may be out of date"
+              title={t(($) => $.dashboard.errors.foldersMayBeOutOfDate)}
               onAction={() => {
                 void foldersQuery.refetch()
               }}
@@ -385,10 +389,10 @@ export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
           ) : null}
           {hasDeckRefreshError ? (
             <BottomStatus
-              actionLabel="Check again"
+              actionLabel={t(($) => $.common.actions.checkAgain)}
               dismissKey={decksQuery.errorUpdateCount}
               error={decksQuery.error}
-              title="Decks may be out of date"
+              title={t(($) => $.dashboard.errors.decksMayBeOutOfDate)}
               onAction={() => {
                 void decksQuery.refetch()
               }}

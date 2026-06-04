@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
 import {
@@ -16,7 +17,7 @@ import {
   saveReviewReturnTarget,
 } from '@shared/lib/navigation-state'
 import { cn } from '@shared/lib/utils'
-import { formatRelativeDate } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import {
   formatNonNegativeInteger,
   normalizeNonNegativeInteger,
@@ -43,10 +44,15 @@ export const DeckCard = ({
   onReview,
   surface = 'card',
 }: DeckCardProps) => {
-  const deckTitle = deck.title.trim() || 'Untitled deck'
+  const { t } = useTranslation()
+  const { formatRelativeDate } = useDateFormatters()
+  const deckTitle = deck.title.trim() || t(($) => $.decks.fields.untitledDeckLower)
   const dueToday = normalizeNonNegativeInteger(deck.dueToday)
   const dueTodayLabel = formatNonNegativeInteger(deck.dueToday)
   const hasDueToday = dueToday > 0
+  const openDeckLabel = t(($) => $.decks.actions.openDeck, { title: deckTitle })
+  const deckActionsLabel = t(($) => $.decks.actions.actionMenu, { title: deckTitle })
+  const reviewLabel = t(($) => $.common.actions.review)
 
   const openDeck = () => {
     onOpen(deck)
@@ -61,7 +67,7 @@ export const DeckCard = ({
         )}
       >
         <Button
-          aria-label={`Open ${deckTitle} deck`}
+          aria-label={openDeckLabel}
           className={inventoryRowOverlayClassName}
           type="button"
           onClick={openDeck}
@@ -81,18 +87,18 @@ export const DeckCard = ({
         </div>
         <div className="pointer-events-auto relative z-20 col-start-3 row-start-1 justify-self-end sm:col-start-4 sm:-translate-y-2 sm:self-start">
           <ActionMenu
-            ariaLabel={`${deckTitle} actions`}
+            ariaLabel={deckActionsLabel}
             items={[
               {
                 icon: <Pencil className="size-4 stroke-[2.4]" />,
-                label: 'Edit',
+                label: t(($) => $.common.actions.edit),
                 onSelect: () => {
                   onEdit(deck)
                 },
               },
               {
                 icon: <Trash2 className="size-4 stroke-[2.2]" />,
-                label: 'Delete',
+                label: t(($) => $.common.actions.delete),
                 onSelect: () => onDelete(deck),
                 tone: 'danger',
               },
@@ -104,7 +110,7 @@ export const DeckCard = ({
           <div className="flex min-w-0 items-center gap-2">
             <div className="flex min-w-8 shrink-0 flex-col items-start gap-0.5">
               <span className="text-[0.6875rem] font-semibold uppercase leading-none text-muted-foreground">
-                Due
+                {t(($) => $.decks.labels.due)}
               </span>
               <span className="type-technical text-xs font-bold leading-none text-foreground">
                 {dueTodayLabel}
@@ -131,7 +137,7 @@ export const DeckCard = ({
               onReview(deck)
             }}
           >
-            Review
+            {reviewLabel}
             <ArrowRight className="size-4" />
           </Button>
         </div>
@@ -147,7 +153,7 @@ export const DeckCard = ({
       )}
     >
       <Button
-        aria-label={`Open ${deckTitle} deck`}
+        aria-label={openDeckLabel}
         className={cn(
           focusRingClassName,
           'absolute inset-0 z-10 cursor-pointer rounded-card text-left focus-visible:ring-inset focus-visible:ring-offset-0',
@@ -175,18 +181,18 @@ export const DeckCard = ({
           <ProgressRing value={deck.progress} />
           <div className="pointer-events-auto">
             <ActionMenu
-              ariaLabel={`${deckTitle} actions`}
+              ariaLabel={deckActionsLabel}
               items={[
                 {
                   icon: <Pencil className="size-4 stroke-[2.4]" />,
-                  label: 'Edit',
+                  label: t(($) => $.common.actions.edit),
                   onSelect: () => {
                     onEdit(deck)
                   },
                 },
                 {
                   icon: <Trash2 className="size-4 stroke-[2.2]" />,
-                  label: 'Delete',
+                  label: t(($) => $.common.actions.delete),
                   onSelect: () => onDelete(deck),
                   tone: 'danger',
                 },
@@ -199,7 +205,7 @@ export const DeckCard = ({
       <div className="pointer-events-none relative z-20 flex min-w-0 items-center justify-between">
         <div>
           <span className="type-label uppercase text-muted-foreground">
-            Due Today
+            {t(($) => $.decks.labels.dueToday)}
           </span>
           <p className="type-metric text-primary">
             {dueTodayLabel}
@@ -219,7 +225,7 @@ export const DeckCard = ({
             onReview(deck)
           }}
         >
-          Review
+          {reviewLabel}
           <ArrowRight className="size-4" />
         </Button>
       </div>

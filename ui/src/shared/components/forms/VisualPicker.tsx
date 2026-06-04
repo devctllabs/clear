@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Ellipsis } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   Dialog,
@@ -86,12 +87,14 @@ const getVisualPickerOptionButtonClassName = (selected: boolean) =>
 export const VisualPicker = ({
   allOptions,
   description,
-  label = 'Visual',
+  label,
   loadOptions = loadFullVisualOptions,
   onValueChange,
   presetOptions,
   value,
 }: VisualPickerProps) => {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t(($) => $.common.labels.visual)
   const isDesktop = useIsDesktopLayout()
   const [moreOpen, setMoreOpen] = useState(false)
   const [scrollContainerElement, setScrollContainerElement] = useState<HTMLDivElement | null>(null)
@@ -112,7 +115,7 @@ export const VisualPicker = ({
     catalogStatus: catalog.catalogStatus,
     filteredOptions: catalog.filteredOptions,
     hasMoreOptions: catalog.hasMoreOptions,
-    label,
+    label: resolvedLabel,
     query: catalog.query,
     searchRef,
     selectedValue: value,
@@ -139,7 +142,7 @@ export const VisualPicker = ({
   return (
     <div className="space-y-4">
       <div className="space-y-1">
-        <SectionHeading>{label}</SectionHeading>
+        <SectionHeading>{resolvedLabel}</SectionHeading>
         {description ? (
           <p className="text-sm font-medium leading-6 text-muted-foreground">
             {description}
@@ -149,7 +152,9 @@ export const VisualPicker = ({
 
       <div className="flex items-center gap-3 rounded-card bg-card p-3">
         <div
-          aria-label={`Selected ${catalog.selectedOption.label}`}
+          aria-label={t(($) => $.common.visualPicker.selectedIcon, {
+            label: catalog.selectedOption.label,
+          })}
           className="flex size-16 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground"
           role="img"
         >
@@ -174,7 +179,7 @@ export const VisualPicker = ({
         {isDesktop ? (
           <VisualPickerDesktopPopover
             catalogProps={catalogContentProps}
-            label={label}
+            label={resolvedLabel}
             open={moreOpen}
             searchRef={searchRef}
             onOpenChange={setMoreOpen}
@@ -182,7 +187,7 @@ export const VisualPicker = ({
         ) : (
           <VisualPickerMobileDialog
             catalogProps={catalogContentProps}
-            label={label}
+            label={resolvedLabel}
             open={moreOpen}
             onOpenChange={setMoreOpen}
           />
@@ -258,22 +263,25 @@ const VisualPickerDesktopPopover = ({
   open,
   searchRef,
   onOpenChange,
-}: VisualPickerDesktopPopoverProps) => (
+}: VisualPickerDesktopPopoverProps) => {
+  const { t } = useTranslation()
+
+  return (
   <Popover open={open} onOpenChange={onOpenChange}>
     <PopoverTrigger asChild>
       <IconButton
         className={visualPickerTriggerButtonClassName}
         focusSurface="card"
         icon={<Ellipsis className="size-5" />}
-        label="More icons"
+        label={t(($) => $.common.visualPicker.moreIcons)}
         size="xl"
-        title="More icons"
+        title={t(($) => $.common.visualPicker.moreIcons)}
         type="button"
       />
     </PopoverTrigger>
     <PopoverContent
       align="end"
-      aria-label={`${label} icon picker`}
+      aria-label={t(($) => $.common.visualPicker.iconPicker, { label })}
       className={desktopCatalogContentClassName}
       collisionPadding={24}
       role="dialog"
@@ -288,10 +296,12 @@ const VisualPickerDesktopPopover = ({
         header={(
           <div className="px-1">
             <p className="type-label uppercase text-muted-foreground">
-              All Lucide icons
+              {t(($) => $.common.visualPicker.allLucideIcons)}
             </p>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Browse or search icons for {label.toLowerCase()}.
+              {t(($) => $.common.visualPicker.browseIconsFor, {
+                label: label.toLowerCase(),
+              })}
             </p>
           </div>
         )}
@@ -301,7 +311,8 @@ const VisualPickerDesktopPopover = ({
       />
     </PopoverContent>
   </Popover>
-)
+  )
+}
 
 type VisualPickerMobileDialogProps = {
   catalogProps: VisualPickerCatalogContentProps
@@ -316,6 +327,7 @@ const VisualPickerMobileDialog = ({
   open,
   onOpenChange,
 }: VisualPickerMobileDialogProps) => {
+  const { t } = useTranslation()
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   return (
@@ -325,9 +337,9 @@ const VisualPickerMobileDialog = ({
         className={visualPickerTriggerButtonClassName}
         focusSurface="card"
         icon={<Ellipsis className="size-5" />}
-        label="More icons"
+        label={t(($) => $.common.visualPicker.moreIcons)}
         size="xl"
-        title="More icons"
+        title={t(($) => $.common.visualPicker.moreIcons)}
         type="button"
         onClick={() => onOpenChange(true)}
       />
@@ -352,10 +364,12 @@ const VisualPickerMobileDialog = ({
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <DialogTitle className="type-study-title text-foreground">
-                    Choose Icon
+                    {t(($) => $.common.visualPicker.chooseIcon)}
                   </DialogTitle>
                   <DialogDescription className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Browse or search icons for {label.toLowerCase()}.
+                    {t(($) => $.common.visualPicker.browseIconsFor, {
+                      label: label.toLowerCase(),
+                    })}
                   </DialogDescription>
                 </div>
                 <DialogClose asChild>
@@ -365,7 +379,7 @@ const VisualPickerMobileDialog = ({
                     type="button"
                     variant="outline"
                   >
-                    Close
+                    {t(($) => $.common.actions.close)}
                   </Button>
                 </DialogClose>
               </div>
@@ -411,18 +425,21 @@ const VisualPickerCatalog = ({
   visibleOptions,
   onRetryCatalog,
   onSelect,
-}: VisualPickerCatalogProps) => (
+}: VisualPickerCatalogProps) => {
+  const { t } = useTranslation()
+
+  return (
   <>
     <div className={headerClassName}>
       {header}
       <SearchBox
         ref={searchRef}
-        aria-label={`${label} icon search`}
+        aria-label={t(($) => $.common.visualPicker.iconSearch, { label })}
         containerClassName={searchContainerClassName}
         icon={false}
         inputClassName={searchInputClassName}
         name="icon-search"
-        placeholder="Search icons…"
+        placeholder={t(($) => $.common.visualPicker.searchIconsPlaceholder)}
         surface={surface}
         type="search"
         value={query}
@@ -448,7 +465,8 @@ const VisualPickerCatalog = ({
       />
     </div>
   </>
-)
+  )
+}
 
 type VisualPickerCatalogResultsProps = {
   catalogStatus: VisualPickerCatalogStatus
@@ -475,6 +493,8 @@ const VisualPickerCatalogResults = ({
   onRetryCatalog,
   onSelect,
 }: VisualPickerCatalogResultsProps) => {
+  const { t } = useTranslation()
+
   if (catalogStatus === 'idle' || catalogStatus === 'loading') {
     return <VisualPickerCatalogLoadingState />
   }
@@ -486,7 +506,7 @@ const VisualPickerCatalogResults = ({
   if (!filteredOptions.length) {
     return (
       <div className="flex min-h-full items-center justify-center px-4 py-6 text-center text-sm font-medium text-muted-foreground">
-        No icons match "{query}".
+        {t(($) => $.common.visualPicker.noIconsMatch, { query })}
       </div>
     )
   }
@@ -514,39 +534,49 @@ const VisualPickerCatalogResults = ({
           className="flex justify-center py-3"
           data-testid="visual-picker-load-sentinel"
         >
-          <span className="sr-only">Loading more icons</span>
+          <span className="sr-only">
+            {t(($) => $.common.visualPicker.loadingMoreIcons)}
+          </span>
         </div>
       ) : null}
     </>
   )
 }
 
-const VisualPickerCatalogLoadingState = () => (
-  <div
-    aria-label="Loading icons"
-    className={visualPickerGridClassName}
-    role="status"
-  >
-    <VisualPickerLoadingCells />
-  </div>
-)
+const VisualPickerCatalogLoadingState = () => {
+  const { t } = useTranslation()
 
-const VisualPickerCatalogErrorState = ({ onRetry }: { onRetry: () => void }) => (
-  <div className="flex min-h-full flex-col items-center justify-center px-4 py-6 text-center">
-    <p className="text-sm font-medium leading-6 text-muted-foreground">
-      Icons could not be loaded.
-    </p>
-    <Button
-      className="type-action mt-4 h-10 rounded-full px-5"
-      focusSurface="card"
-      type="button"
-      variant="outline"
-      onClick={onRetry}
+  return (
+    <div
+      aria-label={t(($) => $.common.visualPicker.loadingIcons)}
+      className={visualPickerGridClassName}
+      role="status"
     >
-      Try again
-    </Button>
-  </div>
-)
+      <VisualPickerLoadingCells />
+    </div>
+  )
+}
+
+const VisualPickerCatalogErrorState = ({ onRetry }: { onRetry: () => void }) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="flex min-h-full flex-col items-center justify-center px-4 py-6 text-center">
+      <p className="text-sm font-medium leading-6 text-muted-foreground">
+        {t(($) => $.common.visualPicker.iconsCouldNotLoad)}
+      </p>
+      <Button
+        className="type-action mt-4 h-10 rounded-full px-5"
+        focusSurface="card"
+        type="button"
+        variant="outline"
+        onClick={onRetry}
+      >
+        {t(($) => $.common.actions.tryAgain)}
+      </Button>
+    </div>
+  )
+}
 
 const VisualPickerLoadingCells = () => (
   <>

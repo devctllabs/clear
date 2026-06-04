@@ -1,23 +1,16 @@
 import { useId, useState, type ReactNode } from 'react'
 import { CalendarDays, Clock3, Info } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { MarkdownContent } from '@shared/components/data/MarkdownContent'
 import { IconButton } from '@shared/components/ui/icon-button'
-import {
-  formatDueLabel,
-  formatReviewedLabel,
-  formatUpdatedChipLabel,
-} from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import { formatPercentage } from '@shared/lib/number-format'
 import { cn } from '@shared/lib/utils'
 
 import type { ClozeNoteCard, NoteDetail } from '../types/note.types'
 
 type NoteDetailContentVariant = 'mobile' | 'desktop'
-
-const basicProgressHeading = 'STUDY PROGRESS'
-const clozeBodyHeading = 'NOTE BODY'
-const clozeCardsHelperText = 'Notes are the source of truth for derived cards.'
 
 export const NoteDetailContent = ({
   note,
@@ -46,11 +39,30 @@ const MetadataChip = ({ label }: { label: string }) => (
 )
 
 const NoteKindChip = ({ note }: { note: NoteDetail }) => (
-  <MetadataChip label={note.kind === 'basic' ? 'BASIC' : 'CLOZE'} />
+  <NoteKindChipContent note={note} />
 )
 
-const formatNoteStatusLabel = (status: NoteDetail['status']) =>
-  status === 'mastered' ? 'MASTERED' : 'IN PROGRESS'
+const NoteKindChipContent = ({ note }: { note: NoteDetail }) => {
+  const { t } = useTranslation()
+
+  return (
+    <MetadataChip
+      label={
+        note.kind === 'basic'
+          ? t(($) => $.notes.labels.basicUppercase)
+          : t(($) => $.notes.labels.clozeUppercase)
+      }
+    />
+  )
+}
+
+const NoteStatusLabel = ({ status }: { status: NoteDetail['status'] }) => {
+  const { t } = useTranslation()
+
+  return status === 'mastered'
+    ? t(($) => $.notes.labels.masteredUppercase)
+    : t(($) => $.notes.labels.inProgressUppercase)
+}
 
 const DesktopNoteKindChip = ({ note }: { note: NoteDetail }) => (
   <div className="px-8 pt-8">
@@ -77,6 +89,20 @@ const BasicNoteDetailCard = ({
   note: Extract<NoteDetail, { kind: 'basic' }>
   variant: NoteDetailContentVariant
 }) => (
+  <BasicNoteDetailCardContent note={note} variant={variant} />
+)
+
+const BasicNoteDetailCardContent = ({
+  note,
+  variant,
+}: {
+  note: Extract<NoteDetail, { kind: 'basic' }>
+  variant: NoteDetailContentVariant
+}) => {
+  const { t } = useTranslation()
+  const { formatDueLabel, formatReviewedLabel, formatUpdatedChipLabel } = useDateFormatters()
+
+  return (
   <NoteDetailSurface>
     {variant === 'desktop' ? <DesktopNoteKindChip note={note} /> : null}
 
@@ -92,7 +118,7 @@ const BasicNoteDetailCard = ({
     {variant === 'mobile' ? (
       <>
         <div className="px-8 pb-8 pt-8">
-          <DetailSectionHeading>TITLE</DetailSectionHeading>
+          <DetailSectionHeading>{t(($) => $.notes.labels.titleUppercase)}</DetailSectionHeading>
           <h2 className="text-wrap-anywhere type-study-title mt-4 text-foreground">
             {note.title}
           </h2>
@@ -104,7 +130,7 @@ const BasicNoteDetailCard = ({
 
     <div className="px-8 py-8">
       <p className="type-label uppercase text-muted-foreground">
-        FRONT
+        {t(($) => $.notes.labels.frontUppercase)}
       </p>
       <MarkdownContent className="mt-4 text-lg" markdown={note.editor.front} />
     </div>
@@ -113,7 +139,7 @@ const BasicNoteDetailCard = ({
 
     <div className="px-8 py-8">
       <p className="type-label uppercase text-muted-foreground">
-        BACK
+        {t(($) => $.notes.labels.backUppercase)}
       </p>
       <MarkdownContent className="mt-4 text-lg" markdown={note.editor.back} />
     </div>
@@ -125,13 +151,13 @@ const BasicNoteDetailCard = ({
         <div className="px-8 py-8">
           <div className="mb-6 flex min-w-0 items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
-              <DetailSectionHeading>{basicProgressHeading}</DetailSectionHeading>
+              <DetailSectionHeading>{t(($) => $.notes.labels.studyProgressUppercase)}</DetailSectionHeading>
               <h3 className="type-metric mt-1 text-foreground">
                 {formatPercentage(note.progress)}
               </h3>
             </div>
             <span className="text-wrap-anywhere type-label max-w-[11rem] shrink-0 rounded-full bg-muted px-3 py-1 text-right uppercase text-muted-foreground">
-              {formatNoteStatusLabel(note.status)}
+              <NoteStatusLabel status={note.status} />
             </span>
           </div>
 
@@ -154,7 +180,8 @@ const BasicNoteDetailCard = ({
       </>
     ) : null}
   </NoteDetailSurface>
-)
+  )
+}
 
 const ClozeNoteDetailCard = ({
   note,
@@ -163,6 +190,20 @@ const ClozeNoteDetailCard = ({
   note: Extract<NoteDetail, { kind: 'cloze' }>
   variant: NoteDetailContentVariant
 }) => (
+  <ClozeNoteDetailCardContent note={note} variant={variant} />
+)
+
+const ClozeNoteDetailCardContent = ({
+  note,
+  variant,
+}: {
+  note: Extract<NoteDetail, { kind: 'cloze' }>
+  variant: NoteDetailContentVariant
+}) => {
+  const { t } = useTranslation()
+  const { formatUpdatedChipLabel } = useDateFormatters()
+
+  return (
   <NoteDetailSurface>
     {variant === 'desktop' ? <DesktopNoteKindChip note={note} /> : null}
 
@@ -178,7 +219,7 @@ const ClozeNoteDetailCard = ({
     {variant === 'mobile' ? (
       <>
         <div className="px-8 pb-8 pt-8">
-          <DetailSectionHeading>TITLE</DetailSectionHeading>
+          <DetailSectionHeading>{t(($) => $.notes.labels.titleUppercase)}</DetailSectionHeading>
           <h2 className="text-wrap-anywhere type-study-title mt-4 text-foreground">
             {note.title}
           </h2>
@@ -189,7 +230,7 @@ const ClozeNoteDetailCard = ({
     ) : null}
 
     <div className="px-8 py-8">
-      <DetailSectionHeading>{clozeBodyHeading}</DetailSectionHeading>
+      <DetailSectionHeading>{t(($) => $.notes.labels.noteBody)}</DetailSectionHeading>
       <MarkdownContent
         className="mt-4 text-lg"
         clozeMode="all"
@@ -208,23 +249,29 @@ const ClozeNoteDetailCard = ({
       </div>
     </div>
   </NoteDetailSurface>
-)
+  )
+}
 
 const DerivedCardsHeading = () => {
+  const { t } = useTranslation()
   const helperId = useId()
   const [isHelperVisible, setIsHelperVisible] = useState(false)
 
   return (
     <div>
       <div className="flex min-w-0 items-center gap-2">
-        <DetailSectionHeading>DERIVED CARDS</DetailSectionHeading>
+        <DetailSectionHeading>{t(($) => $.notes.labels.derivedCards)}</DetailSectionHeading>
         <IconButton
           aria-controls={helperId}
           aria-expanded={isHelperVisible}
           className="-ml-1 text-muted-foreground hover:bg-accent"
           focusSurface="card"
           icon={<Info className="size-3.5" />}
-          label={isHelperVisible ? 'Hide derived cards note' : 'Show derived cards note'}
+          label={
+            isHelperVisible
+              ? t(($) => $.notes.actions.hideDerivedCardsNote)
+              : t(($) => $.notes.actions.showDerivedCardsNote)
+          }
           size="xs"
           type="button"
           onClick={() => setIsHelperVisible((visible) => !visible)}
@@ -238,14 +285,17 @@ const DerivedCardsHeading = () => {
         )}
         id={helperId}
       >
-        {clozeCardsHelperText}
+        {t(($) => $.notes.descriptions.derivedCardsHelper)}
       </p>
     </div>
   )
 }
 
-const DerivedCardGroup = ({ card }: { card: ClozeNoteCard }) => (
-  <div>
+const DerivedCardGroup = ({ card }: { card: ClozeNoteCard }) => {
+  const { formatDueLabel, formatReviewedLabel } = useDateFormatters()
+
+  return (
+    <div>
     <div className="mb-3 flex min-w-0 items-start gap-4">
       <div className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-[12px] font-extrabold text-primary-foreground">
         {card.clozeId}
@@ -267,5 +317,6 @@ const DerivedCardGroup = ({ card }: { card: ClozeNoteCard }) => (
     </div>
 
     <LinearProgress value={card.progress} />
-  </div>
-)
+    </div>
+  )
+}

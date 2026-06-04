@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { CircleAlert, RefreshCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   domainError,
-  getUserMessage,
   isDomainError,
   type DomainError,
 } from '@shared/errors'
+import { translateDomainError } from '@shared/errors/translation'
 import { cn } from '@shared/lib/utils'
 import { Button } from '@shared/components/ui/button'
 import { mobileLaneWidthClassName } from '@shared/components/layout/LayoutLane'
@@ -34,12 +35,12 @@ export const normalizeError = (
 }
 
 export const LoadErrorState = ({
-  backLabel = 'Back',
+  backLabel,
   backTo,
   children,
   className,
   error,
-  retryLabel = 'Try again',
+  retryLabel,
   showRetry,
   title,
   variant = 'section',
@@ -56,9 +57,13 @@ export const LoadErrorState = ({
   variant?: LoadErrorVariant
   onRetry?: () => void
 }) => {
+  const { t } = useTranslation()
   const normalizedError = normalizeError(error)
+  const message = translateDomainError(t, normalizedError)
   const shouldShowRetry = Boolean(onRetry && (showRetry ?? normalizedError.retryable))
   const compactActions = variant === 'section'
+  const resolvedBackLabel = backLabel ?? t(($) => $.common.actions.back)
+  const resolvedRetryLabel = retryLabel ?? t(($) => $.common.actions.tryAgain)
 
   return (
     <section
@@ -87,7 +92,7 @@ export const LoadErrorState = ({
           {title}
         </h2>
         <p className="text-wrap-anywhere mt-3 text-sm font-medium leading-6 text-muted-foreground">
-          {getUserMessage(normalizedError)}
+          {message}
         </p>
         {children ? (
           <div className="text-wrap-anywhere mt-3 text-sm font-medium leading-6 text-muted-foreground">
@@ -107,7 +112,7 @@ export const LoadErrorState = ({
                 onClick={onRetry}
               >
                 <RefreshCw aria-hidden="true" />
-                {retryLabel}
+                {resolvedRetryLabel}
               </Button>
             ) : null}
             {backTo ? (
@@ -119,7 +124,7 @@ export const LoadErrorState = ({
                 )}
                 variant="outline"
               >
-                <Link to={backTo as never}>{backLabel}</Link>
+                <Link to={backTo as never}>{resolvedBackLabel}</Link>
               </Button>
             ) : null}
           </div>
@@ -132,17 +137,21 @@ export const LoadErrorState = ({
 export const InlineErrorState = ({
   className,
   error,
-  title = 'Action failed',
+  title,
 }: {
   className?: string
   error: unknown
   title?: string
 }) => {
+  const { t } = useTranslation()
+
   if (!error) {
     return null
   }
 
   const normalizedError = normalizeError(error)
+  const message = translateDomainError(t, normalizedError)
+  const resolvedTitle = title ?? t(($) => $.common.status.actionFailed)
 
   return (
     <div
@@ -155,10 +164,10 @@ export const InlineErrorState = ({
       <CircleAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
       <div className="min-w-0">
         <p className="text-wrap-anywhere type-label uppercase text-foreground">
-          {title}
+          {resolvedTitle}
         </p>
         <p className="text-wrap-anywhere mt-1 text-sm font-medium leading-5 text-muted-foreground">
-          {getUserMessage(normalizedError)}
+          {message}
         </p>
       </div>
     </div>
