@@ -1,5 +1,6 @@
 import type { NoteListItem } from '@features/notes'
 import { ConfirmDialog } from '@shared/components/feedback/ConfirmDialog'
+import { useTranslation } from 'react-i18next'
 
 import type { DeckDetail } from '../types/deck.types'
 
@@ -31,42 +32,80 @@ export const DeckDeleteDialogs = ({
   onConfirmDeck: () => void
   onConfirmNote: () => void
 }) => (
-  <>
-    <ConfirmDialog
-      actionError={deckActionError}
-      confirmLabel="Delete deck"
-      confirming={deletingDeck}
-      description={
-        pendingDeck
-          ? `This moves "${pendingDeck.title}" to Trash. You can restore it later.`
-          : ''
-      }
-      open={pendingDeck !== null}
-      title={pendingDeck ? `Delete "${pendingDeck.title}"?` : 'Delete deck?'}
-      onConfirm={onConfirmDeck}
-      onOpenChange={(open) => {
-        if (!open) {
-          onCloseDeck()
-        }
-      }}
-    />
-    <ConfirmDialog
-      actionError={noteActionError}
-      confirmLabel="Delete note"
-      confirming={deletingNote}
-      description={
-        pendingNote
-          ? `This moves "${pendingNote.title}" to Trash. You can restore it later.`
-          : ''
-      }
-      open={pendingNote !== null}
-      title={pendingNote ? `Delete "${pendingNote.title}"?` : 'Delete note?'}
-      onConfirm={onConfirmNote}
-      onOpenChange={(open) => {
-        if (!open) {
-          onCloseNote()
-        }
-      }}
-    />
-  </>
+  <DeckDeleteDialogsContent
+    deckActionError={deckActionError}
+    deletingDeck={deletingDeck}
+    deletingNote={deletingNote}
+    noteActionError={noteActionError}
+    pendingDeck={pendingDeck}
+    pendingNote={pendingNote}
+    onCloseDeck={onCloseDeck}
+    onCloseNote={onCloseNote}
+    onConfirmDeck={onConfirmDeck}
+    onConfirmNote={onConfirmNote}
+  />
 )
+
+const DeckDeleteDialogsContent = ({
+  deckActionError,
+  deletingDeck,
+  deletingNote,
+  noteActionError,
+  pendingDeck,
+  pendingNote,
+  onCloseDeck,
+  onCloseNote,
+  onConfirmDeck,
+  onConfirmNote,
+}: Parameters<typeof DeckDeleteDialogs>[0]) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <ConfirmDialog
+        actionError={deckActionError}
+        confirmLabel={t(($) => $.decks.actions.deleteDeck)}
+        confirming={deletingDeck}
+        description={
+          pendingDeck
+            ? t(($) => $.decks.dialogs.deleteDeckDescription, { title: pendingDeck.title })
+            : ''
+        }
+        open={pendingDeck !== null}
+        title={
+          pendingDeck
+            ? t(($) => $.decks.dialogs.deleteDeckTitle, { title: pendingDeck.title })
+            : t(($) => $.decks.dialogs.deleteDeckFallbackTitle)
+        }
+        onConfirm={onConfirmDeck}
+        onOpenChange={(open) => {
+          if (!open) {
+            onCloseDeck()
+          }
+        }}
+      />
+      <ConfirmDialog
+        actionError={noteActionError}
+        confirmLabel={t(($) => $.notes.actions.deleteNote)}
+        confirming={deletingNote}
+        description={
+          pendingNote
+            ? t(($) => $.notes.dialogs.deleteNoteDescription, { title: pendingNote.title })
+            : ''
+        }
+        open={pendingNote !== null}
+        title={
+          pendingNote
+            ? t(($) => $.notes.dialogs.deleteNoteTitle, { title: pendingNote.title })
+            : t(($) => $.notes.dialogs.deleteNoteFallbackTitle)
+        }
+        onConfirm={onConfirmNote}
+        onOpenChange={(open) => {
+          if (!open) {
+            onCloseNote()
+          }
+        }}
+      />
+    </>
+  )
+}

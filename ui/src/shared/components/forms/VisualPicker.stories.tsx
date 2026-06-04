@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, userEvent, waitFor, within } from 'storybook/test'
 
 import { createVisualOption, type VisualOption } from '@shared/components/icons/IconGlyph'
+import { fullVisualOptions } from '@shared/components/icons/visualIconCatalog'
 import { expectNoHorizontalOverflow } from '@/test/storybook/assertions'
 import { formCanvas } from '@/test/storybook/decorators'
 import { noop } from '@/test/storybook/fixtures'
@@ -209,6 +210,9 @@ export const CatalogNoResults: Story = {
 }
 
 export const LargeCatalogIncremental: Story = {
+  args: {
+    allOptions: fullVisualOptions,
+  },
   play: async ({ canvasElement }) => {
     const popover = await openVisualPickerPopover(canvasElement)
 
@@ -228,6 +232,9 @@ export const LargeCatalogIncremental: Story = {
 }
 
 export const LargeCatalogAfterScroll: Story = {
+  args: {
+    allOptions: fullVisualOptions,
+  },
   play: async ({ canvasElement }) => {
     const popover = await openVisualPickerPopover(canvasElement)
     const scrollArea = getVisualPickerScrollArea(popover)
@@ -247,6 +254,9 @@ export const LargeCatalogAfterScroll: Story = {
 }
 
 export const MobileDialogLargeCatalogIncremental: Story = {
+  args: {
+    allOptions: fullVisualOptions,
+  },
   globals: {
     appFormFactor: 'mobile',
   },
@@ -342,6 +352,9 @@ export const MobileDialogCatalogNoResults: Story = {
 }
 
 export const MobileDialogLargeCatalogAfterScroll: Story = {
+  args: {
+    allOptions: fullVisualOptions,
+  },
   globals: {
     appFormFactor: 'mobile',
   },

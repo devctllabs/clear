@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
 import { useFolderPath } from '@features/folders/hooks/useFolders'
@@ -18,6 +19,7 @@ export const DeckCreatePage = ({
   folderId?: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const createDeck = useCreateDeck()
   const targetFolderId = folderId ?? workspaceId
@@ -30,24 +32,26 @@ export const DeckCreatePage = ({
     ? `/dashboard/${workspaceId}`
     : `/dashboard/${workspaceId}/folders/${targetFolderId}`
   const closeTo = useCloseTarget(backTo)
-  const locationPath = isRootTarget ? ['Workspace'] : folderPathQuery.data
+  const locationPath = isRootTarget ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
 
   return (
     <EditorShell
-      actionLabel="Create deck"
+      actionLabel={t(($) => $.decks.actions.createDeck)}
       actionError={
-        createDeck.isError ? { error: createDeck.error, title: 'Could not create deck' } : null
+        createDeck.isError
+          ? { error: createDeck.error, title: t(($) => $.decks.errors.couldNotCreateDeck) }
+          : null
       }
       backTo={closeTo}
       isSubmitting={createDeck.isPending}
-      title="Create Deck"
+      title={t(($) => $.decks.labels.createDeckTitle)}
       onSubmit={() => {
         createDeck.mutate(
           {
-            description: description.trim() || 'Focused study deck.',
+            description: description.trim() || t(($) => $.decks.descriptions.editorDefault),
             icon,
             parentId: targetFolderId,
-            title: title.trim() || 'Untitled Deck',
+            title: title.trim() || t(($) => $.decks.fields.untitledDeck),
           },
           {
             onSuccess: (deck) => {
@@ -64,7 +68,7 @@ export const DeckCreatePage = ({
         <InlineErrorState
           className="mb-5"
           error={folderPathQuery.error}
-          title="Could not load folder path"
+          title={t(($) => $.decks.errors.couldNotLoadFolderPath)}
         />
       ) : null}
       <DeckEditorForm

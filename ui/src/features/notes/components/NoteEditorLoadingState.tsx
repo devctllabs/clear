@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import {
@@ -15,14 +16,16 @@ import type { NoteKind } from '../types/note.types'
 export const NoteEditorLoadingState = ({
   activeKind = 'basic',
   backTo,
-  title = 'Loading note editor',
+  title,
 }: {
   activeKind?: NoteKind
   backTo: string
   title?: string
 }) => {
+  const { t } = useTranslation()
   const isDesktop = useIsDesktopLayout()
   const laneClassName = isDesktop ? desktopEditorLaneClassName : editorLaneClassName
+  const loadingTitle = title ?? t(($) => $.notes.labels.loadingNoteEditor)
 
   return (
     <main id="main-content" className="min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -37,7 +40,7 @@ export const NoteEditorLoadingState = ({
         >
           <div className={cn(isDesktop ? 'flex min-w-0 items-center gap-4' : 'contents')}>
             <BackControl
-              ariaLabel="Close editor"
+              ariaLabel={t(($) => $.navigation.actions.closeEditor)}
               fallbackTo={backTo}
               icon={<X className="size-5" />}
             />
@@ -49,7 +52,7 @@ export const NoteEditorLoadingState = ({
                   : 'text-center',
               )}
             >
-              {title}
+              {loadingTitle}
             </h1>
           </div>
           {isDesktop ? (
@@ -61,7 +64,7 @@ export const NoteEditorLoadingState = ({
       </header>
 
       <section
-        aria-label="Loading note editor"
+        aria-label={t(($) => $.notes.labels.loadingNoteEditor)}
         aria-live="polite"
         className={cn(
           laneClassName,

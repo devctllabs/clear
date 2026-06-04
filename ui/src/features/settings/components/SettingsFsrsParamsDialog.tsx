@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import {
@@ -28,6 +29,7 @@ export const SettingsFsrsParamsDialog = ({
   onSave: (value: number[]) => void
   value: number[]
 }) => {
+  const { t } = useTranslation()
   const errorId = useId()
   const helperId = useId()
   const restoreFocusRef = useRef<HTMLElement | null>(null)
@@ -50,7 +52,9 @@ export const SettingsFsrsParamsDialog = ({
 
       if (!isSettingsFsrsParams(parsed)) {
         setError(
-          `Enter a JSON array with exactly ${settingsFsrsParamsLength} finite numbers.`,
+          t(($) => $.settings.dialogs.fsrsErrorInvalidParams, {
+            count: settingsFsrsParamsLength,
+          }),
         )
         return
       }
@@ -58,7 +62,7 @@ export const SettingsFsrsParamsDialog = ({
       onSave(parsed)
       onOpenChange(false)
     } catch {
-      setError('Paste valid JSON with 21 numeric values.')
+      setError(t(($) => $.settings.dialogs.fsrsErrorInvalidJson))
     }
   }
 
@@ -92,12 +96,12 @@ export const SettingsFsrsParamsDialog = ({
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <DialogTitle className="text-wrap-anywhere type-study-title text-foreground">
-              Edit FSRS parameters
+              {t(($) => $.settings.dialogs.fsrsTitle)}
             </DialogTitle>
             <DialogDescription
               className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground"
             >
-              Paste a JSON array with 21 numbers to override the scheduler weights.
+              {t(($) => $.settings.dialogs.fsrsDescription)}
             </DialogDescription>
           </div>
           <DialogClose asChild>
@@ -107,7 +111,7 @@ export const SettingsFsrsParamsDialog = ({
               type="button"
               variant="outline"
             >
-              Close
+              {t(($) => $.common.actions.close)}
             </Button>
           </DialogClose>
         </div>
@@ -118,7 +122,7 @@ export const SettingsFsrsParamsDialog = ({
             error ? `${helperId} ${errorId}` : helperId
           }
           aria-invalid={error ? true : undefined}
-          aria-label="FSRS Parameters JSON"
+          aria-label={t(($) => $.settings.dialogs.fsrsJsonLabel)}
           autoComplete="off"
           className={cn(
             'mt-5 min-h-64 w-full rounded-compact border border-border bg-input px-4 py-4 font-mono text-[12px] leading-6 text-foreground transition-colors placeholder:text-muted-foreground/70 focus:bg-input',
@@ -136,7 +140,7 @@ export const SettingsFsrsParamsDialog = ({
           className="text-wrap-anywhere mt-3 text-[12px] leading-5 text-muted-foreground"
           id={helperId}
         >
-          This is an expert override. Values must stay in order.
+          {t(($) => $.settings.dialogs.fsrsHelper)}
         </p>
 
         {error ? (
@@ -161,7 +165,7 @@ export const SettingsFsrsParamsDialog = ({
               setError(null)
             }}
           >
-            Reset to defaults
+            {t(($) => $.settings.actions.resetToDefaults)}
           </Button>
 
           <div className="ml-auto flex items-center gap-3">
@@ -172,7 +176,7 @@ export const SettingsFsrsParamsDialog = ({
                 type="button"
                 variant="outline"
               >
-                Cancel
+                {t(($) => $.common.actions.cancel)}
               </Button>
             </DialogClose>
             <Button
@@ -182,7 +186,7 @@ export const SettingsFsrsParamsDialog = ({
               variant="default"
               onClick={handleSave}
             >
-              Save
+              {t(($) => $.common.actions.save)}
             </Button>
           </div>
         </div>

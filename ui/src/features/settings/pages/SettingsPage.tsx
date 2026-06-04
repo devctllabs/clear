@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   BottomActionErrorStatus,
@@ -25,6 +26,7 @@ import {
 import type { Settings } from '../types/settings.types'
 
 export const SettingsPage = () => {
+  const { t } = useTranslation()
   const activeWorkspaceIdQuery = useActiveWorkspaceId()
   const homeTarget = activeWorkspaceIdQuery.data
     ? { to: `/dashboard/${activeWorkspaceIdQuery.data}` }
@@ -75,7 +77,7 @@ export const SettingsPage = () => {
       <SettingsPageShell homeTarget={homeTarget} isDesktop={isDesktop}>
         <LoadErrorState
           error={settingsQuery.error}
-          title="Settings could not be loaded"
+          title={t(($) => $.settings.errors.settingsCouldNotLoad)}
           onRetry={() => {
             void settingsQuery.refetch()
           }}
@@ -88,8 +90,8 @@ export const SettingsPage = () => {
     return (
       <SettingsPageShell homeTarget={homeTarget} isDesktop={isDesktop}>
         <LoadErrorState
-          error="Settings are unavailable."
-          title="Settings could not be loaded"
+          error={t(($) => $.settings.errors.settingsUnavailable)}
+          title={t(($) => $.settings.errors.settingsCouldNotLoad)}
           onRetry={() => {
             void settingsQuery.refetch()
           }}
@@ -107,7 +109,7 @@ export const SettingsPage = () => {
 
   const savingStatus = showWritePending ? (
     <span className="flex size-9 items-center justify-center rounded-full bg-card text-muted-foreground ring-1 ring-border">
-      <PendingSpinner label="Saving settings" />
+      <PendingSpinner label={t(($) => $.settings.labels.savingSettings)} />
     </span>
   ) : undefined
 
@@ -159,7 +161,7 @@ export const SettingsPage = () => {
       <SettingsResetDialog
         actionError={
           resetSettings.isError
-            ? { error: resetSettings.error, title: 'Could not reset settings' }
+            ? { error: resetSettings.error, title: t(($) => $.settings.errors.couldNotResetSettings) }
             : null
         }
         confirming={resetSettings.isPending}
@@ -184,7 +186,7 @@ export const SettingsPage = () => {
       <BottomActionErrorStatus
         className={isDesktop ? desktopBottomStatusStackClassName : undefined}
         error={writeSettings.isError ? writeSettings.error : null}
-        title="Could not save settings"
+        title={t(($) => $.settings.errors.couldNotSaveSettings)}
       />
     </>
   )

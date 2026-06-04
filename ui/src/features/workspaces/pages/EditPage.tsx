@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
@@ -12,6 +13,7 @@ import { defaultWorkspaceVisualIcon } from '../constants/visuals'
 import { useUpdateWorkspace, useWorkspace } from '../hooks/useWorkspaces'
 
 export const WorkspaceEditPage = ({ workspaceId }: { workspaceId: string }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const workspaceQuery = useWorkspace(workspaceId)
   const updateWorkspace = useUpdateWorkspace(workspaceId)
@@ -35,7 +37,7 @@ export const WorkspaceEditPage = ({ workspaceId }: { workspaceId: string }) => {
       <EditorLoadingState
         backTo={closeTo}
         formKind="workspace"
-        title="Edit Workspace"
+        title={t(($) => $.workspaces.actions.editWorkspace)}
       />
     )
   }
@@ -45,7 +47,8 @@ export const WorkspaceEditPage = ({ workspaceId }: { workspaceId: string }) => {
       <EditorErrorState
         backTo={closeTo}
         error={workspaceQuery.error}
-        title="Edit Workspace"
+        errorTitle={t(($) => $.workspaces.errors.workspaceCouldNotLoad)}
+        title={t(($) => $.workspaces.actions.editWorkspace)}
         onRetry={() => {
           void workspaceQuery.refetch()
         }}
@@ -55,15 +58,15 @@ export const WorkspaceEditPage = ({ workspaceId }: { workspaceId: string }) => {
 
   return (
     <EditorShell
-      actionLabel="Save changes"
+      actionLabel={t(($) => $.common.actions.saveChanges)}
       actionError={
         updateWorkspace.isError
-          ? { error: updateWorkspace.error, title: 'Could not save workspace' }
+          ? { error: updateWorkspace.error, title: t(($) => $.workspaces.errors.couldNotSaveWorkspace) }
           : null
       }
       backTo={closeTo}
       isSubmitting={updateWorkspace.isPending}
-      title="Edit Workspace"
+      title={t(($) => $.workspaces.actions.editWorkspace)}
       onSubmit={() => {
         updateWorkspace.mutate(
           {

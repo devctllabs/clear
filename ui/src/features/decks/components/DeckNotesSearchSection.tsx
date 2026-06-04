@@ -1,8 +1,7 @@
 import type { ChangeEventHandler, ReactNode, Ref } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SearchBox, StickySearch } from '@features/content-search'
-
-const deckNotesSearchPlaceholder = 'Search notes…'
 
 export const DeckNotesSearchSection = ({
   children,
@@ -19,10 +18,13 @@ export const DeckNotesSearchSection = ({
   searchActive?: boolean
   variant: 'desktop' | 'mobile'
 }) => {
+  const { t } = useTranslation()
+  const deckNotesSearchPlaceholder = t(($) => $.decks.descriptions.notesSearchPlaceholder)
+
   if (variant === 'desktop') {
     return (
       <section
-        aria-label="Deck notes search"
+        aria-label={t(($) => $.decks.labels.deckNotesSearch)}
         className="desktop-detail-main flex min-w-0 max-w-section self-stretch flex-col xl:max-w-none"
       >
         <SearchBox
@@ -41,7 +43,7 @@ export const DeckNotesSearchSection = ({
 
   return (
     <section
-      aria-label="Deck notes search"
+      aria-label={t(($) => $.decks.labels.deckNotesSearch)}
       className={searchActive ? '[overflow-anchor:none] min-h-[75dvh] space-y-0' : 'space-y-0'}
     >
       <StickySearch

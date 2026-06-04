@@ -1,4 +1,5 @@
 import { StickySearchSkeleton } from '@features/content-search'
+import { useTranslation } from 'react-i18next'
 import { InventoryList, InventorySection } from '@shared/components/data/InventoryList'
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { DesktopPageHeaderSkeleton } from '@shared/components/layout/DesktopShell'
@@ -55,12 +56,19 @@ export const FolderDetailLoadingState = ({
 }
 
 const FolderDetailMobileLoadingState = ({ backTo }: { backTo?: string }) => (
-  <section
-    aria-label="Loading folder"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <FolderDetailMobileLoadingContent backTo={backTo} />
+)
+
+const FolderDetailMobileLoadingContent = ({ backTo }: { backTo?: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.folders.labels.loadingFolder)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <PageHeaderSkeleton
       backTo={backTo}
       compactBodyGap
@@ -73,16 +81,24 @@ const FolderDetailMobileLoadingState = ({ backTo }: { backTo?: string }) => (
       <FolderSectionSkeleton />
       <DeckSectionSkeleton />
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const FolderDetailDesktopLoadingState = ({ backTo }: { backTo?: string }) => (
-  <section
-    aria-label="Loading folder"
-    aria-live="polite"
-    className="w-full min-w-0"
-    role="status"
-  >
+  <FolderDetailDesktopLoadingContent backTo={backTo} />
+)
+
+const FolderDetailDesktopLoadingContent = ({ backTo }: { backTo?: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.folders.labels.loadingFolder)}
+      aria-live="polite"
+      className="w-full min-w-0"
+      role="status"
+    >
     <DesktopPageHeaderSkeleton
       backTo={backTo}
       reserveDescriptionSpace
@@ -94,31 +110,48 @@ const FolderDetailDesktopLoadingState = ({ backTo }: { backTo?: string }) => (
       <FolderSectionSkeleton />
       <DeckSectionSkeleton />
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const FolderSectionSkeleton = () => (
-  <InventorySection
-    actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
-    title="Folders"
-  >
-    <InventoryList
-      getItemKey={(item) => item}
-      items={sectionSkeletonItems}
-      renderItem={() => <FolderRowSkeleton />}
-    />
-  </InventorySection>
+  <FolderSectionSkeletonContent />
 )
 
 const DeckSectionSkeleton = () => (
-  <InventorySection
-    actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
-    title="Decks"
-  >
-    <InventoryList
-      getItemKey={(item) => item}
-      items={sectionSkeletonItems}
-      renderItem={() => <DeckRowSkeleton />}
-    />
-  </InventorySection>
+  <DeckSectionSkeletonContent />
 )
+
+const FolderSectionSkeletonContent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <InventorySection
+      actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
+      title={t(($) => $.folders.labels.folders)}
+    >
+      <InventoryList
+        getItemKey={(item) => item}
+        items={sectionSkeletonItems}
+        renderItem={() => <FolderRowSkeleton />}
+      />
+    </InventorySection>
+  )
+}
+
+const DeckSectionSkeletonContent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <InventorySection
+      actionSlot={<SkeletonBlock className="size-8 shrink-0" />}
+      title={t(($) => $.decks.labels.decks)}
+    >
+      <InventoryList
+        getItemKey={(item) => item}
+        items={sectionSkeletonItems}
+        renderItem={() => <DeckRowSkeleton />}
+      />
+    </InventorySection>
+  )
+}

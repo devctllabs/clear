@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Ellipsis } from 'lucide-react'
 
@@ -39,8 +40,9 @@ export const ActionMenu = ({
   triggerFocusSurface = 'background',
   triggerIcon,
 }: ActionMenuProps) => {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
-  const label = triggerAriaLabel ?? ariaLabel ?? 'Open actions'
+  const label = triggerAriaLabel ?? ariaLabel ?? t(($) => $.navigation.actions.openActions)
 
   return (
     <DropdownMenu

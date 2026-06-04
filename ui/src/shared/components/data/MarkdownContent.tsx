@@ -1,5 +1,6 @@
 import { type ComponentProps } from 'react'
 import ReactMarkdown, { type Components } from 'react-markdown'
+import { useTranslation } from 'react-i18next'
 import remarkGfm from 'remark-gfm'
 
 import { cn } from '@shared/lib/utils'
@@ -80,6 +81,27 @@ const withoutMarkdownNode = <Props extends { node?: unknown }>(
   delete propsWithoutNode.node
 
   return propsWithoutNode as Omit<Props, 'node'>
+}
+
+const MarkdownTaskInput = ({
+  className,
+  ...props
+}: ComponentProps<'input'> & { node?: unknown }) => {
+  const { t } = useTranslation()
+
+  return (
+    <input
+      aria-label={
+        props['aria-label'] ??
+        (props.checked
+          ? t(($) => $.common.labels.completedTask)
+          : t(($) => $.common.labels.incompleteTask))
+      }
+      className={cn('mr-2 align-middle accent-primary', className)}
+      {...withoutMarkdownNode(props)}
+      disabled
+    />
+  )
 }
 
 const markdownComponents = {
@@ -175,14 +197,7 @@ const markdownComponents = {
       {...withoutMarkdownNode(props)}
     />
   ),
-  input: ({ className, ...props }) => (
-    <input
-      aria-label={props['aria-label'] ?? (props.checked ? 'Completed task' : 'Incomplete task')}
-      className={cn('mr-2 align-middle accent-primary', className)}
-      {...withoutMarkdownNode(props)}
-      disabled
-    />
-  ),
+  input: MarkdownTaskInput,
   li: ({ className, ...props }) => (
     <li
       className={cn('text-wrap-anywhere pl-1', className)}

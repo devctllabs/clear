@@ -7,38 +7,33 @@ import {
   Trash2,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
 import { Card } from '@shared/components/ui/card'
-import { formatDeletedAge } from '@shared/lib/date-format'
 import {
   formatCompactLocationPath,
   formatLocationPathLabel,
 } from '@shared/lib/location-path'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 
 import type { TrashItem, TrashKind } from '../types/trash.types'
 
-const trashKindConfig: Record<TrashKind, { icon: ReactNode; label: string }> = {
+const trashKindConfig: Record<TrashKind, { icon: ReactNode }> = {
   deck: {
     icon: <Layers3 className="size-4.5 stroke-[2.2]" />,
-    label: 'Deck',
   },
   folder: {
     icon: <Folder className="size-4.5 fill-current stroke-[2.1]" />,
-    label: 'Folder',
   },
   note: {
     icon: <FileText className="size-4.5 stroke-[2.2]" />,
-    label: 'Note',
   },
   workspace: {
     icon: <Archive className="size-4.5 stroke-[2.2]" />,
-    label: 'Workspace',
   },
 }
-
-const originalLocationPrefix = 'Original location: '
 
 export const WorkspaceTrashList = ({
   items,
@@ -84,10 +79,23 @@ const WorkspaceTrashRow = ({
   restoring: boolean
   showRestoringSpinner: boolean
 }) => {
+  const { t } = useTranslation()
+  const { formatDeletedAge } = useDateFormatters()
   const kindConfig = trashKindConfig[item.kind]
-  const locationLabel = `${originalLocationPrefix}${formatLocationPathLabel(item.locationPath)}`
-  const compactLocationLabel =
-    `${originalLocationPrefix}${formatCompactLocationPath(item.locationPath)}`
+  const kindLabel =
+    item.kind === 'deck'
+      ? t(($) => $.trash.kinds.deck)
+      : item.kind === 'folder'
+        ? t(($) => $.trash.kinds.folder)
+        : item.kind === 'note'
+          ? t(($) => $.trash.kinds.note)
+          : t(($) => $.trash.kinds.workspace)
+  const locationLabel = t(($) => $.trash.labels.originalLocation, {
+    location: formatLocationPathLabel(item.locationPath),
+  })
+  const compactLocationLabel = t(($) => $.trash.labels.originalLocation, {
+    location: formatCompactLocationPath(item.locationPath),
+  })
 
   return (
     <div
@@ -104,7 +112,7 @@ const WorkspaceTrashRow = ({
         </span>
         <div className="mt-1 flex min-w-0 items-center gap-2">
           <span className="text-wrap-anywhere type-label inline-flex min-w-0 items-center rounded-full bg-muted px-2.5 py-1 uppercase text-muted-foreground">
-            {kindConfig.label}
+            {kindLabel}
           </span>
         </div>
         <div className="mt-0.5 space-y-0.5">
@@ -125,30 +133,32 @@ const WorkspaceTrashRow = ({
         {restoring ? (
           <span className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
             {showRestoringSpinner ? (
-              <PendingSpinner label={`Restoring ${item.title}`} />
+              <PendingSpinner
+                label={t(($) => $.trash.actions.restoringItem, { title: item.title })}
+              />
             ) : null}
           </span>
         ) : (
           <ActionMenu
-            dialogLabel={`${item.title} trash actions`}
+            dialogLabel={t(($) => $.trash.labels.trashActions, { title: item.title })}
             items={[
               {
                 icon: <RotateCcw className="size-4 stroke-[2.4]" />,
-                label: 'Restore',
+                label: t(($) => $.trash.actions.restore),
                 onSelect: () => {
                   onRestore(item.id)
                 },
               },
               {
                 icon: <Trash2 className="size-4 stroke-[2.2]" />,
-                label: 'Delete',
+                label: t(($) => $.common.actions.delete),
                 onSelect: () => {
                   onDeleteRequest(item)
                 },
                 tone: 'danger',
               },
             ]}
-            triggerAriaLabel={`${item.title} trash actions`}
+            triggerAriaLabel={t(($) => $.trash.labels.trashActions, { title: item.title })}
             triggerFocusSurface="card"
           />
         )}

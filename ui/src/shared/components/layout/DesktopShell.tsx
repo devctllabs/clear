@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { Grid2X2, Home, Settings2, Trash2 } from 'lucide-react'
 import type { ComponentPropsWithoutRef, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { Card } from '@shared/components/ui/card'
@@ -206,6 +207,7 @@ const DesktopSidebar = ({
   activeItem: DesktopNavItem
   homeTarget: NavigationTarget
 }) => {
+  const { t } = useTranslation()
   const navItems: Array<{
     icon: ReactNode
     id: DesktopNavItem
@@ -215,25 +217,25 @@ const DesktopSidebar = ({
     {
       icon: <Home className="size-5" />,
       id: 'home',
-      label: 'Home',
+      label: t(($) => $.navigation.items.home),
       target: homeTarget,
     },
     {
       icon: <Grid2X2 className="size-5" />,
       id: 'spaces',
-      label: 'Workspaces',
+      label: t(($) => $.navigation.items.workspaces),
       target: { to: '/workspaces' },
     },
     {
       icon: <Settings2 className="size-5" />,
       id: 'settings',
-      label: 'Settings',
+      label: t(($) => $.navigation.items.settings),
       target: { to: '/menu/settings' },
     },
     {
       icon: <Trash2 className="size-5" />,
       id: 'trash',
-      label: 'Trash',
+      label: t(($) => $.navigation.items.trash),
       target: { to: '/menu/trash' },
     },
   ]
@@ -243,7 +245,7 @@ const DesktopSidebar = ({
       <div className="clear-nav-brand-thin">
         <ClearWordmark />
       </div>
-      <nav aria-label="Primary" className="space-y-1">
+      <nav aria-label={t(($) => $.navigation.items.primary)} className="space-y-1">
         {navItems.map((item) => {
           const active = item.id === activeItem
 

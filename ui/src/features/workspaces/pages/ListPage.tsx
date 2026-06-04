@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConfirmDialog } from '@shared/components/feedback/ConfirmDialog'
 import { EmptyState } from '@shared/components/feedback/EmptyState'
@@ -39,6 +40,7 @@ import type { Workspace } from '../types/workspace.types'
 const workspaceListDesktopGridClassName = 'grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3'
 
 export const WorkspaceListPage = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const workspacesQuery = useWorkspaces()
   const setActiveWorkspace = useSetActiveWorkspace()
@@ -111,13 +113,13 @@ export const WorkspaceListPage = () => {
       actions={[
         {
           icon: <Plus className="size-4" />,
-          label: 'Create workspace',
+          label: t(($) => $.workspaces.actions.createWorkspace),
           onClick: openCreateWorkspace,
         },
       ]}
-      description="Separate decks, notes, and review queues by study context."
+      description={t(($) => $.workspaces.descriptions.emptyList)}
       icon={<Plus className="size-6" />}
-      title="Start with a workspace"
+      title={t(($) => $.workspaces.empty.startWithWorkspace)}
     />
   )
   const viewProps: WorkspaceListPageViewProps = workspacesQuery.isLoading
@@ -158,18 +160,26 @@ export const WorkspaceListPage = () => {
       <ConfirmDialog
         actionError={
           deleteWorkspace.isError
-            ? { error: deleteWorkspace.error, title: 'Could not delete workspace' }
+            ? { error: deleteWorkspace.error, title: t(($) => $.workspaces.errors.couldNotDeleteWorkspace) }
             : null
         }
-        confirmLabel="Delete workspace"
+        confirmLabel={t(($) => $.workspaces.actions.deleteWorkspace)}
         confirming={deleteWorkspace.isPending}
         description={
           pendingDelete
-            ? `This moves "${pendingDelete.title}" to Trash. You can restore it later.`
-            : 'This moves this workspace to Trash. You can restore it later.'
+            ? t(($) => $.workspaces.dialogs.deleteWorkspaceDescription, {
+                title: pendingDelete.title,
+              })
+            : t(($) => $.workspaces.dialogs.deleteWorkspaceFallbackDescription)
         }
         open={pendingDelete !== null}
-        title={pendingDelete ? `Delete "${pendingDelete.title}"?` : 'Delete workspace?'}
+        title={
+          pendingDelete
+            ? t(($) => $.workspaces.dialogs.deleteWorkspaceTitle, {
+                title: pendingDelete.title,
+              })
+            : t(($) => $.workspaces.dialogs.deleteWorkspaceFallbackTitle)
+        }
         onConfirm={() => {
           if (pendingDelete) {
             deleteWorkspace.mutate(pendingDelete.id, {
@@ -188,7 +198,7 @@ export const WorkspaceListPage = () => {
       <BottomActionErrorStatus
         className={isDesktop ? desktopBottomStatusStackClassName : undefined}
         error={setActiveWorkspace.isError ? setActiveWorkspace.error : null}
-        title="Could not open workspace"
+        title={t(($) => $.workspaces.errors.couldNotOpenWorkspace)}
       />
     </>
   )
@@ -218,6 +228,8 @@ type WorkspaceListPageViewProps =
     }
 
 const WorkspaceListPageDesktop = (props: WorkspaceListPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <DesktopPageLayout
@@ -235,10 +247,10 @@ const WorkspaceListPageDesktop = (props: WorkspaceListPageViewProps) => {
         activeItem="spaces"
         homeTarget={props.homeTarget}
       >
-        <DesktopPageHeader title="Workspaces" />
+        <DesktopPageHeader title={t(($) => $.workspaces.labels.workspaces)} />
         <LoadErrorState
           error={props.error}
-          title="Workspaces could not be loaded"
+          title={t(($) => $.workspaces.errors.workspacesCouldNotLoad)}
           onRetry={props.onRetry}
         />
       </DesktopPageLayout>
@@ -260,11 +272,11 @@ const WorkspaceListPageDesktop = (props: WorkspaceListPageViewProps) => {
               onClick={props.onCreateWorkspace}
             >
               <Plus className="size-4" />
-              New workspace
+              {t(($) => $.workspaces.actions.newWorkspace)}
             </Button>
           ) : undefined
         }
-        title="Workspaces"
+        title={t(($) => $.workspaces.labels.workspaces)}
       />
       {props.emptyState ? (
         <div className="max-w-section">{props.emptyState}</div>
@@ -276,6 +288,8 @@ const WorkspaceListPageDesktop = (props: WorkspaceListPageViewProps) => {
 }
 
 const WorkspaceListPageMobile = (props: WorkspaceListPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <AppShell>
@@ -289,10 +303,10 @@ const WorkspaceListPageMobile = (props: WorkspaceListPageViewProps) => {
     return (
       <AppShell>
         <ScreenCanvas>
-          <PageHeader title="Workspaces" />
+          <PageHeader title={t(($) => $.workspaces.labels.workspaces)} />
           <LoadErrorState
             error={props.error}
-            title="Workspaces could not be loaded"
+            title={t(($) => $.workspaces.errors.workspacesCouldNotLoad)}
             onRetry={props.onRetry}
           />
         </ScreenCanvas>
@@ -312,7 +326,7 @@ const WorkspaceListPageMobile = (props: WorkspaceListPageViewProps) => {
               <WorkspaceCreateAction onCreateWorkspace={props.onCreateWorkspace} />
             ) : undefined
           }
-          title="Workspaces"
+          title={t(($) => $.workspaces.labels.workspaces)}
         />
 
         {props.emptyState ? (
@@ -333,13 +347,25 @@ const WorkspaceCreateAction = ({
 }: {
   onCreateWorkspace: () => void
 }) => (
-  <Button
-    aria-label="New workspace"
-    className={`${responsiveActionButtonClassName} bg-primary text-primary-foreground hover:bg-primary/90`}
-    type="button"
-    variant="default"
-    onClick={onCreateWorkspace}
-  >
-    <Plus className="size-4" />
-  </Button>
+  <WorkspaceCreateActionContent onCreateWorkspace={onCreateWorkspace} />
 )
+
+const WorkspaceCreateActionContent = ({
+  onCreateWorkspace,
+}: {
+  onCreateWorkspace: () => void
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <Button
+      aria-label={t(($) => $.workspaces.actions.newWorkspace)}
+      className={`${responsiveActionButtonClassName} bg-primary text-primary-foreground hover:bg-primary/90`}
+      type="button"
+      variant="default"
+      onClick={onCreateWorkspace}
+    >
+      <Plus className="size-4" />
+    </Button>
+  )
+}

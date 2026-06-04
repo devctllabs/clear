@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Braces, ChevronRight, FileText, Folder } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
 import { Card } from '@shared/components/ui/card'
@@ -8,16 +9,10 @@ import { Button } from '@shared/components/ui/button'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { SectionHeading } from '@shared/components/layout/Screen'
-import { formatRelativeDate } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import { formatLocationPathLabel } from '@shared/lib/location-path'
 
 import type { SearchResult, SearchResultGroup } from '../types/search.types'
-
-const searchResultGroupLabels: Record<SearchResultGroup['kind'], string> = {
-  deck: 'Decks',
-  folder: 'Folders',
-  note: 'Notes',
-}
 
 export const SearchResults = ({
   emptyDescription,
@@ -37,46 +32,55 @@ export const SearchResults = ({
   onClearSearch?: () => void
   onRetry?: () => void
   query: string
-}) => (
-  <div className="w-full min-w-0 max-w-full space-y-6">
-    <section className="w-full min-w-0 space-y-2">
-      <SectionHeading>Search results</SectionHeading>
-      <p className="text-wrap-anywhere text-sm font-medium text-muted-foreground">
-        Results for "{query.trim()}"
-      </p>
-    </section>
+}) => {
+  const { t } = useTranslation()
+  const searchResultGroupLabels: Record<SearchResultGroup['kind'], string> = {
+    deck: t(($) => $.search.resultGroups.deck),
+    folder: t(($) => $.search.resultGroups.folder),
+    note: t(($) => $.search.resultGroups.note),
+  }
 
-    {loading ? (
-      <SearchResultsLoadingState />
-    ) : error ? (
-      <LoadErrorState
-        error={error}
-        title="Search could not be completed"
-        onRetry={onRetry}
-      />
-    ) : groups === undefined ? null : groups.length > 0 ? (
-      groups.map((group) => (
-        <section className="w-full min-w-0 max-w-full space-y-4" key={group.kind}>
-          <SectionHeading>{searchResultGroupLabels[group.kind]}</SectionHeading>
-          <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-card py-0 shadow-card">
-            {group.results.map((result, index) => (
-              <div key={`${result.kind}-${result.id}`}>
-                <SearchResultRow result={result} />
-                {index < group.results.length - 1 ? (
-                  <div className="mx-6 border-t border-border/60" />
-                ) : null}
-              </div>
-            ))}
-          </Card>
-        </section>
-      ))
-    ) : (
-      <SearchResultsEmptyState title={emptyTitle} onClearSearch={onClearSearch}>
-        {emptyDescription}
-      </SearchResultsEmptyState>
-    )}
-  </div>
-)
+  return (
+    <div className="w-full min-w-0 max-w-full space-y-6">
+      <section className="w-full min-w-0 space-y-2">
+        <SectionHeading>{t(($) => $.search.labels.results)}</SectionHeading>
+        <p className="text-wrap-anywhere text-sm font-medium text-muted-foreground">
+          {t(($) => $.search.labels.resultsFor, { query: query.trim() })}
+        </p>
+      </section>
+
+      {loading ? (
+        <SearchResultsLoadingState />
+      ) : error ? (
+        <LoadErrorState
+          error={error}
+          title={t(($) => $.search.errors.couldNotComplete)}
+          onRetry={onRetry}
+        />
+      ) : groups === undefined ? null : groups.length > 0 ? (
+        groups.map((group) => (
+          <section className="w-full min-w-0 max-w-full space-y-4" key={group.kind}>
+            <SectionHeading>{searchResultGroupLabels[group.kind]}</SectionHeading>
+            <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-card py-0 shadow-card">
+              {group.results.map((result, index) => (
+                <div key={`${result.kind}-${result.id}`}>
+                  <SearchResultRow result={result} />
+                  {index < group.results.length - 1 ? (
+                    <div className="mx-6 border-t border-border/60" />
+                  ) : null}
+                </div>
+              ))}
+            </Card>
+          </section>
+        ))
+      ) : (
+        <SearchResultsEmptyState title={emptyTitle} onClearSearch={onClearSearch}>
+          {emptyDescription}
+        </SearchResultsEmptyState>
+      )}
+    </div>
+  )
+}
 
 const SearchResultsEmptyState = ({
   children,
@@ -103,29 +107,39 @@ const SearchResultsEmptyState = ({
         variant="outline"
         onClick={onClearSearch}
       >
-        Clear search
+        <SearchResultsClearSearchLabel />
       </Button>
     ) : null}
   </div>
 )
 
-const SearchResultsLoadingState = () => (
-  <section
-    aria-label="Searching content"
-    aria-live="polite"
-    className="w-full min-w-0 max-w-full space-y-4"
-    role="status"
-  >
-    <div aria-hidden="true" className="w-full min-w-0 max-w-full space-y-4">
-      <SkeletonBlock className="h-3 w-20" />
-      <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-card py-0 shadow-card">
-        <SearchResultRowSkeleton />
-        <div className="mx-6 border-t border-border/60" />
-        <SearchResultRowSkeleton />
-      </Card>
-    </div>
-  </section>
-)
+const SearchResultsClearSearchLabel = () => {
+  const { t } = useTranslation()
+
+  return t(($) => $.search.actions.clearSearch)
+}
+
+const SearchResultsLoadingState = () => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.search.labels.searchingContent)}
+      aria-live="polite"
+      className="w-full min-w-0 max-w-full space-y-4"
+      role="status"
+    >
+      <div aria-hidden="true" className="w-full min-w-0 max-w-full space-y-4">
+        <SkeletonBlock className="h-3 w-20" />
+        <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-card border border-border bg-card py-0 shadow-card">
+          <SearchResultRowSkeleton />
+          <div className="mx-6 border-t border-border/60" />
+          <SearchResultRowSkeleton />
+        </Card>
+      </div>
+    </section>
+  )
+}
 
 const SearchResultRowSkeleton = () => (
   <div className="flex w-full min-w-0 items-center gap-4 px-6 py-5">
@@ -145,7 +159,14 @@ const SearchResultRowSkeleton = () => (
 )
 
 const SearchResultRow = ({ result }: { result: SearchResult }) => {
+  const { t } = useTranslation()
+  const { formatRelativeDate } = useDateFormatters()
   const target = getSearchResultTarget(result)
+  const resultKindLabels: Record<SearchResult['kind'], string> = {
+    deck: t(($) => $.search.resultKinds.deck),
+    folder: t(($) => $.search.resultKinds.folder),
+    note: t(($) => $.search.resultKinds.note),
+  }
 
   return (
     <Link
@@ -162,7 +183,7 @@ const SearchResultRow = ({ result }: { result: SearchResult }) => {
             {result.title}
           </span>
           <span className="type-label shrink-0 uppercase text-muted-foreground">
-            {result.kind}
+            {resultKindLabels[result.kind]}
           </span>
         </div>
         <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-muted-foreground">

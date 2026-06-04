@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { DesktopPageHeaderSkeleton } from '@shared/components/layout/DesktopShell'
 import {
@@ -78,44 +80,56 @@ export const WorkspaceListLoadingState = ({
   return <WorkspaceListMobileLoadingState />
 }
 
-const WorkspaceListMobileLoadingState = () => (
-  <section
-    aria-label="Loading workspaces"
-    aria-live="polite"
-    className={cn(
-      mobileLaneClassName,
-      mobileBottomNavContentPaddingClassName,
-      'flex min-h-screen flex-col px-5 pt-8 sm:px-6 sm:pt-10',
-    )}
-    role="status"
-  >
-    <div aria-hidden="true">
-      <header className="mb-6 flex items-center justify-between gap-3">
-        <SkeletonBlock className="h-10 w-48 max-w-full rounded-compact" />
-        <SkeletonBlock className="size-10 shrink-0" />
-      </header>
+const WorkspaceListMobileLoadingState = () => {
+  const { t } = useTranslation()
 
-      <div className="space-y-3">
-        <WorkspaceCardSkeleton density="compact" />
-        <WorkspaceCardSkeleton density="compact" />
-        <WorkspaceCardSkeleton density="compact" />
-      </div>
-    </div>
-  </section>
-)
+  return (
+    <section
+      aria-label={t(($) => $.workspaces.labels.loadingWorkspaces)}
+      aria-live="polite"
+      className={cn(
+        mobileLaneClassName,
+        mobileBottomNavContentPaddingClassName,
+        'flex min-h-screen flex-col px-5 pt-8 sm:px-6 sm:pt-10',
+      )}
+      role="status"
+    >
+      <div aria-hidden="true">
+        <header className="mb-6 flex items-center justify-between gap-3">
+          <SkeletonBlock className="h-10 w-48 max-w-full rounded-compact" />
+          <SkeletonBlock className="size-10 shrink-0" />
+        </header>
 
-const WorkspaceListDesktopLoadingState = () => (
-  <section aria-label="Loading workspaces" aria-live="polite" role="status">
-    <DesktopPageHeaderSkeleton
-      rightActionWidths={['w-36']}
-      titleClassName="w-72"
-    />
-    <div aria-hidden="true">
-      <div className={workspaceListDesktopGridClassName}>
-        {Array.from({ length: 6 }, (_, index) => (
-          <WorkspaceCardSkeleton key={index} />
-        ))}
+        <div className="space-y-3">
+          <WorkspaceCardSkeleton density="compact" />
+          <WorkspaceCardSkeleton density="compact" />
+          <WorkspaceCardSkeleton density="compact" />
+        </div>
       </div>
-    </div>
-  </section>
-)
+    </section>
+  )
+}
+
+const WorkspaceListDesktopLoadingState = () => {
+  const { t } = useTranslation()
+
+  return (
+    <section
+      aria-label={t(($) => $.workspaces.labels.loadingWorkspaces)}
+      aria-live="polite"
+      role="status"
+    >
+      <DesktopPageHeaderSkeleton
+        rightActionWidths={['w-36']}
+        titleClassName="w-72"
+      />
+      <div aria-hidden="true">
+        <div className={workspaceListDesktopGridClassName}>
+          {Array.from({ length: 6 }, (_, index) => (
+            <WorkspaceCardSkeleton key={index} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

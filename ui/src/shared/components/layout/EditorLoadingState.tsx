@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
@@ -17,14 +18,16 @@ export type EditorLoadingFormKind = 'deck' | 'folder' | 'generic' | 'workspace'
 export const EditorLoadingState = ({
   backTo,
   formKind = 'generic',
-  title = 'Loading editor',
+  title,
 }: {
   backTo: string
   formKind?: EditorLoadingFormKind
   title?: string
 }) => {
+  const { t } = useTranslation()
   const isDesktop = useIsDesktopLayout()
   const laneClassName = isDesktop ? desktopEditorLaneClassName : editorLaneClassName
+  const resolvedTitle = title ?? t(($) => $.common.labels.loadingEditor)
 
   return (
     <main id="main-content" className="min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -39,7 +42,7 @@ export const EditorLoadingState = ({
         >
           <div className={cn(isDesktop ? 'flex min-w-0 items-center gap-4' : 'contents')}>
             <BackControl
-              ariaLabel="Close editor"
+              ariaLabel={t(($) => $.navigation.actions.closeEditor)}
               fallbackTo={backTo}
               icon={<X className="size-5" />}
             />
@@ -51,7 +54,7 @@ export const EditorLoadingState = ({
                   : 'text-center',
               )}
             >
-              {title}
+              {resolvedTitle}
             </h1>
           </div>
           {isDesktop ? (
@@ -63,7 +66,7 @@ export const EditorLoadingState = ({
       </header>
 
       <section
-        aria-label="Loading editor"
+        aria-label={t(($) => $.common.labels.loadingEditor)}
         aria-live="polite"
         className={cn(
           laneClassName,

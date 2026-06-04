@@ -1,5 +1,6 @@
 import { Folder as FolderIcon, Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import {
   InventoryRowShell,
@@ -7,7 +8,7 @@ import {
 } from '@shared/components/data/InventoryList'
 import { InventoryListWithSort } from '@shared/components/data/InventoryListWithSort'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
-import { formatRelativeDate } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import type { SortPreference } from '@shared/types/sort.types'
 import { createOpenedFromState } from '@shared/lib/navigation-state'
 
@@ -53,6 +54,7 @@ const FolderListContent = ({
   sort: SortPreference
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   if (folders.length === 0) {
@@ -79,12 +81,12 @@ const FolderListContent = ({
       )}
       showSort={folders.length > 1}
       sort={sort}
-      sortAriaLabel="Sort folders"
+      sortAriaLabel={t(($) => $.folders.sort.ariaLabel)}
       sortFieldOptions={[
-        { field: 'title', label: 'Name' },
-        { field: 'updated', label: 'Updated' },
+        { field: 'title', label: t(($) => $.folders.sort.name) },
+        { field: 'updated', label: t(($) => $.folders.sort.updated) },
       ]}
-      title="Folders"
+      title={t(($) => $.folders.labels.folders)}
       onSortChange={onSortChange}
     />
   )
@@ -101,6 +103,29 @@ const FolderRow = ({
   onEdit: () => void
   workspaceId: string
 }) => (
+  <FolderRowContent
+    folder={folder}
+    workspaceId={workspaceId}
+    onDelete={onDelete}
+    onEdit={onEdit}
+  />
+)
+
+const FolderRowContent = ({
+  folder,
+  onDelete,
+  onEdit,
+  workspaceId,
+}: {
+  folder: Folder
+  onDelete: () => void
+  onEdit: () => void
+  workspaceId: string
+}) => {
+  const { t } = useTranslation()
+  const { formatRelativeDate } = useDateFormatters()
+
+  return (
   <InventoryRowShell>
     <Link
       aria-label={folder.name}
@@ -121,16 +146,16 @@ const FolderRow = ({
     </span>
     <div className="pointer-events-auto relative z-20 flex shrink-0 items-center justify-self-end">
       <ActionMenu
-        ariaLabel={`${folder.name} actions`}
+        ariaLabel={t(($) => $.decks.actions.actionMenu, { title: folder.name })}
         items={[
           {
             icon: <Pencil className="size-4 stroke-[2.4]" />,
-            label: 'Edit',
+            label: t(($) => $.common.actions.edit),
             onSelect: onEdit,
           },
           {
             icon: <Trash2 className="size-4 stroke-[2.2]" />,
-            label: 'Delete',
+            label: t(($) => $.common.actions.delete),
             onSelect: onDelete,
             tone: 'danger',
           },
@@ -139,4 +164,5 @@ const FolderRow = ({
       />
     </div>
   </InventoryRowShell>
-)
+  )
+}

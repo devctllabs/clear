@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useDeck } from '@features/decks/hooks/useDecks'
 import { BottomActionErrorStatus } from '@shared/components/feedback/BottomActionErrorStatus'
@@ -26,6 +27,7 @@ export const ReviewSessionPage = ({
   reviewId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deckQuery = useDeck(deckId)
   const reviewSession = useReviewSession(reviewId)
@@ -90,7 +92,7 @@ export const ReviewSessionPage = ({
         <section className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-6 pb-32 pt-24">
           <LoadErrorState
             error={initialError}
-            title="Review could not be loaded"
+            title={t(($) => $.review.errors.reviewCouldNotLoad)}
             onRetry={() => {
               if (deckQuery.isError) {
                 void deckQuery.refetch()
@@ -169,7 +171,7 @@ export const ReviewSessionPage = ({
               className="bottom-44 z-[60] min-[22rem]:bottom-32 md:static md:z-auto md:px-0"
               contentClassName="max-w-xl md:max-w-none"
               error={gradeReview.isError ? gradeReview.error : null}
-              title="Could not grade card"
+              title={t(($) => $.review.errors.couldNotGradeCard)}
             />
             <ReviewSessionActions
               disabled={gradeReview.isPending}

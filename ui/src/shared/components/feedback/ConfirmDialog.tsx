@@ -1,5 +1,6 @@
 import { useId, useRef } from 'react'
 import { CircleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import {
   Dialog,
@@ -9,7 +10,7 @@ import {
   DialogTitle,
 } from '@shared/components/ui/dialog'
 import { Button } from '@shared/components/ui/button'
-import { getUserMessage } from '@shared/errors'
+import { translateDomainError } from '@shared/errors/translation'
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
 
 import { normalizeError } from './LoadErrorState'
@@ -39,11 +40,15 @@ export const ConfirmDialog = ({
   open: boolean
   title: string
 }) => {
+  const { t } = useTranslation()
   const actionErrorId = useId()
   const restoreFocusRef = useRef<HTMLElement | null>(null)
   const showConfirmSpinner = useDelayedBoolean(confirming, 250)
   const normalizedActionError = actionError
     ? normalizeError(actionError.error)
+    : null
+  const actionErrorMessage = normalizedActionError
+    ? translateDomainError(t, normalizedActionError)
     : null
 
   const rememberFocusedElement = () => {
@@ -84,7 +89,7 @@ export const ConfirmDialog = ({
               variant="outline"
               type="button"
             >
-              Cancel
+              {t(($) => $.common.actions.cancel)}
             </Button>
           </DialogClose>
           <Button
@@ -119,7 +124,7 @@ export const ConfirmDialog = ({
             role="alert"
           >
             <span className="font-bold">{actionError.title}</span>.{' '}
-            {getUserMessage(normalizedActionError)}
+            {actionErrorMessage}
           </p>
         ) : null}
       </DialogContent>

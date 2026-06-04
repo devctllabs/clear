@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowUpDown, Check } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import {
@@ -17,11 +18,6 @@ import {
   type SortField,
   type SortPreference,
 } from '@shared/types/sort.types'
-
-const directionLabels: Record<SortDirection, string> = {
-  asc: 'Asc',
-  desc: 'Desc',
-}
 
 export type SortFieldOption = Readonly<{
   field: SortField
@@ -81,64 +77,72 @@ export const SortMenu = ({
   onDirectionChange,
   onFieldChange,
   sort,
-}: SortMenuProps) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <Button
-        aria-label={ariaLabel}
-        className="type-label inline-flex cursor-pointer items-center gap-1 rounded-full px-2 py-1 uppercase text-muted-foreground transition-colors hover:text-primary focus-visible:bg-background focus-visible:text-primary focus-visible:hover:bg-background"
-        type="button"
+}: SortMenuProps) => {
+  const { t } = useTranslation()
+  const directionLabels: Record<SortDirection, string> = {
+    asc: t(($) => $.common.sort.ascending),
+    desc: t(($) => $.common.sort.descending),
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          aria-label={ariaLabel}
+          className="type-label inline-flex cursor-pointer items-center gap-1 rounded-full px-2 py-1 uppercase text-muted-foreground transition-colors hover:text-primary focus-visible:bg-background focus-visible:text-primary focus-visible:hover:bg-background"
+          type="button"
+        >
+          <ArrowUpDown className="size-3.5" />
+          <span>{t(($) => $.common.sort.sort)}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        className="max-w-[calc(100vw-2rem)] min-w-[12rem] rounded-compact border border-border bg-popover p-2 shadow-floating"
+        sideOffset={8}
       >
-        <ArrowUpDown className="size-3.5" />
-        <span>Sort</span>
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent
-      align="end"
-      className="max-w-[calc(100vw-2rem)] min-w-[12rem] rounded-compact border border-border bg-popover p-2 shadow-floating"
-      sideOffset={8}
-    >
-      <DropdownMenuLabel className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground">
-        Column
-      </DropdownMenuLabel>
-      {fieldOptions.map((option) => (
-        <DropdownMenuItem
-          className={dropdownMenuItemClassName({ active: sort.field === option.field })}
-          key={option.field}
-          onSelect={() => {
-            if (option.field !== sort.field) {
-              onFieldChange(option.field)
-            }
-          }}
-        >
-          <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
-            {option.label}
-          </span>
-          {sort.field === option.field ? <Check className="size-4 shrink-0" /> : null}
-        </DropdownMenuItem>
-      ))}
-      <DropdownMenuSeparator className="my-2" />
-      <DropdownMenuLabel className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground">
-        Direction
-      </DropdownMenuLabel>
-      {(['asc', 'desc'] as const).map((direction) => (
-        <DropdownMenuItem
-          className={dropdownMenuItemClassName({
-            active: sort.direction === direction,
-          })}
-          key={direction}
-          onSelect={() => {
-            if (direction !== sort.direction) {
-              onDirectionChange(direction)
-            }
-          }}
-        >
-          <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
-            {directionLabels[direction]}
-          </span>
-          {sort.direction === direction ? <Check className="size-4 shrink-0" /> : null}
-        </DropdownMenuItem>
-      ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
-)
+        <DropdownMenuLabel className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground">
+          {t(($) => $.common.sort.column)}
+        </DropdownMenuLabel>
+        {fieldOptions.map((option) => (
+          <DropdownMenuItem
+            className={dropdownMenuItemClassName({ active: sort.field === option.field })}
+            key={option.field}
+            onSelect={() => {
+              if (option.field !== sort.field) {
+                onFieldChange(option.field)
+              }
+            }}
+          >
+            <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
+              {option.label}
+            </span>
+            {sort.field === option.field ? <Check className="size-4 shrink-0" /> : null}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator className="my-2" />
+        <DropdownMenuLabel className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground">
+          {t(($) => $.common.sort.direction)}
+        </DropdownMenuLabel>
+        {(['asc', 'desc'] as const).map((direction) => (
+          <DropdownMenuItem
+            className={dropdownMenuItemClassName({
+              active: sort.direction === direction,
+            })}
+            key={direction}
+            onSelect={() => {
+              if (direction !== sort.direction) {
+                onDirectionChange(direction)
+              }
+            }}
+          >
+            <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
+              {directionLabels[direction]}
+            </span>
+            {sort.direction === direction ? <Check className="size-4 shrink-0" /> : null}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}

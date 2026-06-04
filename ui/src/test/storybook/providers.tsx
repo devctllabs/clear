@@ -8,6 +8,7 @@ import type { Decorator } from '@storybook/react-vite'
 import { useMemo, type ReactNode } from 'react'
 
 import { routeTree } from '@/routeTree.gen'
+import { AppI18nProvider } from '@core/i18n'
 import { createAppServices, ServicesProvider, type AppServices } from '@core/services'
 
 type StorybookAppProviderProps = {
@@ -56,9 +57,11 @@ export const StorybookAppProvider = ({
 
   return (
     <ServicesProvider services={resolvedServices}>
-      <QueryClientProvider client={queryClient}>
-        <RouterContextProvider router={router}>{children}</RouterContextProvider>
-      </QueryClientProvider>
+      <AppI18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterContextProvider router={router}>{children}</RouterContextProvider>
+        </QueryClientProvider>
+      </AppI18nProvider>
     </ServicesProvider>
   )
 }

@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
 import { EditorShell } from '@shared/components/layout/EditorShell'
@@ -24,6 +25,7 @@ export const NoteEditorPage = ({
   noteId?: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const deckQuery = useDeck(deckId)
   const noteQuery = useNote(deckId, noteId ?? '')
@@ -39,6 +41,10 @@ export const NoteEditorPage = ({
       : `/dashboard/${workspaceId}/decks/${deckId}`
   const backTo = useCloseTarget(fallbackTo)
   const isSubmitting = mode === 'edit' ? updateNote.isPending : createNote.isPending
+  const editorTitle =
+    mode === 'edit'
+      ? t(($) => $.notes.actions.editNote)
+      : t(($) => $.notes.labels.newNote)
 
   useEffect(() => {
     if (mode !== 'edit' || !noteQuery.data) {
@@ -59,7 +65,7 @@ export const NoteEditorPage = ({
       <NoteEditorLoadingState
         activeKind={activeKind}
         backTo={backTo}
-        title={mode === 'edit' ? 'Edit Note' : 'New Note'}
+        title={editorTitle}
       />
     )
   }
@@ -69,7 +75,8 @@ export const NoteEditorPage = ({
       <EditorErrorState
         backTo={backTo}
         error={deckQuery.error}
-        title={mode === 'edit' ? 'Edit Note' : 'New Note'}
+        errorTitle={t(($) => $.decks.errors.deckCouldNotLoad)}
+        title={editorTitle}
         onRetry={() => {
           void deckQuery.refetch()
         }}
@@ -82,7 +89,8 @@ export const NoteEditorPage = ({
       <EditorErrorState
         backTo={backTo}
         error={noteQuery.error}
-        title="Edit Note"
+        errorTitle={t(($) => $.notes.errors.noteCouldNotLoad)}
+        title={t(($) => $.notes.actions.editNote)}
         onRetry={() => {
           void noteQuery.refetch()
         }}
@@ -97,13 +105,13 @@ export const NoteEditorPage = ({
             deckId,
             editor: basicDraft,
             kind: 'basic' as const,
-            title: title.trim() || basicDraft.front.trim() || 'Untitled Note',
+            title: title.trim() || basicDraft.front.trim() || t(($) => $.notes.fields.untitledNote),
           }
         : {
             deckId,
             editor: clozeDraft,
             kind: 'cloze' as const,
-            title: title.trim() || 'Untitled Cloze',
+            title: title.trim() || t(($) => $.notes.fields.untitledCloze),
           }
 
     if (mode === 'edit' && noteId) {
@@ -158,9 +166,9 @@ export const NoteEditorPage = ({
 
   const actionError =
     mode === 'edit' && updateNote.isError
-      ? { error: updateNote.error, title: 'Could not save note' }
+      ? { error: updateNote.error, title: t(($) => $.notes.errors.couldNotSaveNote) }
       : mode === 'create' && createNote.isError
-        ? { error: createNote.error, title: 'Could not create note' }
+        ? { error: createNote.error, title: t(($) => $.notes.errors.couldNotCreateNote) }
         : null
   const contentBottomPadding =
     activeKind === 'cloze'
@@ -173,12 +181,12 @@ export const NoteEditorPage = ({
 
   return (
     <EditorShell
-      actionLabel="Save note"
+      actionLabel={t(($) => $.notes.actions.saveNote)}
       actionError={actionError}
       backTo={backTo}
       isSubmitting={isSubmitting}
       mobileContentBottomPaddingClassName={contentBottomPadding}
-      title={mode === 'edit' ? 'Edit Note' : 'New Note'}
+      title={editorTitle}
       onSubmit={submit}
     >
       <NoteEditorForm

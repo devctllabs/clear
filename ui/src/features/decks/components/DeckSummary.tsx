@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { ProgressRing } from '@shared/components/data/ProgressRing'
 import { studyPanelClassName } from '@shared/components/layout/surfaces'
@@ -15,12 +16,22 @@ export const DeckStatRail = ({
 }: {
   className?: string
   deck: Pick<DeckDetail, 'dueToday' | 'totalNotes'>
-}) => (
-  <div className={cn('grid min-w-0 grid-cols-2 gap-4', className)}>
-    <DeckRailStat label="Due" value={formatNonNegativeInteger(deck.dueToday)} />
-    <DeckRailStat label="Notes" value={formatNonNegativeInteger(deck.totalNotes)} />
-  </div>
-)
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div className={cn('grid min-w-0 grid-cols-2 gap-4', className)}>
+      <DeckRailStat
+        label={t(($) => $.decks.labels.due)}
+        value={formatNonNegativeInteger(deck.dueToday)}
+      />
+      <DeckRailStat
+        label={t(($) => $.decks.labels.notes)}
+        value={formatNonNegativeInteger(deck.totalNotes)}
+      />
+    </div>
+  )
+}
 
 const DeckRailStat = ({ label, value }: { label: string; value: string }) => (
   <div className="min-w-0 flex-1">
@@ -39,31 +50,35 @@ export const DeckSummary = ({
 }: {
   deck: DeckDetail
   studyNowTo: string
-}) => (
-  <Card className={cn(studyPanelClassName, 'space-y-5')}>
-    <div className="flex min-w-0 items-center gap-5">
-      <ProgressRing
-        radius={42}
-        size={92}
-        strokeWidth={5}
-        value={deck.progress}
-        valueClassName="type-technical text-base font-bold"
-      />
+}) => {
+  const { t } = useTranslation()
 
-      <div className="min-w-0 flex-1">
-        <p className="type-label uppercase text-muted-foreground">
-          Mastery
-        </p>
-        <DeckStatRail className="mt-3" deck={deck} />
+  return (
+    <Card className={cn(studyPanelClassName, 'space-y-5')}>
+      <div className="flex min-w-0 items-center gap-5">
+        <ProgressRing
+          radius={42}
+          size={92}
+          strokeWidth={5}
+          value={deck.progress}
+          valueClassName="type-technical text-base font-bold"
+        />
+
+        <div className="min-w-0 flex-1">
+          <p className="type-label uppercase text-muted-foreground">
+            {t(($) => $.decks.labels.mastery)}
+          </p>
+          <DeckStatRail className="mt-3" deck={deck} />
+        </div>
       </div>
-    </div>
 
-    <Button
-      asChild
-      className="type-action h-12 w-full rounded-full bg-primary text-primary-foreground transition-[background-color,transform] hover:bg-primary/90 active:scale-95"
-      variant="default"
-    >
-      <Link to={studyNowTo as never}>Study now</Link>
-    </Button>
-  </Card>
-)
+      <Button
+        asChild
+        className="type-action h-12 w-full rounded-full bg-primary text-primary-foreground transition-[background-color,transform] hover:bg-primary/90 active:scale-95"
+        variant="default"
+      >
+        <Link to={studyNowTo as never}>{t(($) => $.decks.actions.studyNow)}</Link>
+      </Button>
+    </Card>
+  )
+}

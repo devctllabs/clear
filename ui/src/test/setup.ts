@@ -5,6 +5,7 @@ import { afterEach, beforeEach, vi } from 'vitest'
 
 import { queryClient } from '@core/query/query-client'
 import { resetThemeStoreForTests } from '@core/theme'
+import { appI18n, defaultLocale } from '@core/i18n'
 import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
 
 vi.mock('lucide-react/dynamic', async () => {
@@ -62,11 +63,12 @@ class ResizeObserverMock {
 
 window.ResizeObserver = ResizeObserverMock as unknown as typeof ResizeObserver
 
-beforeEach(() => {
+beforeEach(async () => {
   window.matchMedia = createMatchMediaMock()
   window.localStorage.clear()
   window.sessionStorage.clear()
   resetThemeStoreForTests()
+  await appI18n.changeLanguage(defaultLocale)
   mockAppDataStore.reset()
   queryClient.clear()
 })

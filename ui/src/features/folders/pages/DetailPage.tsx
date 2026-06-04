@@ -1,6 +1,7 @@
 import { useState, type ChangeEventHandler, type ReactNode } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { FolderPlus, Layers3, Pencil, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { ResourceCreateMenu } from '@features/dashboard/components/ResourceCreateMenu'
 import { useDecksInFolder, useDeleteDeck } from '@features/decks/hooks/useDecks'
@@ -47,6 +48,7 @@ export const FolderDetailPage = ({
   folderId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [folderSort, setFolderSort] = usePersistedSort('workspace-sort:folders')
   const [deckSort, setDeckSort] = usePersistedSort('workspace-sort:decks')
@@ -133,7 +135,7 @@ export const FolderDetailPage = ({
       items={[
         {
           icon: <Pencil className="size-4 stroke-[2.4]" />,
-          label: 'Edit',
+          label: t(($) => $.common.actions.edit),
           onSelect: () => {
             void navigate({
               params: { folderId: folder.id, workspaceId },
@@ -144,7 +146,7 @@ export const FolderDetailPage = ({
         },
         {
           icon: <Trash2 className="size-4 stroke-[2.2]" />,
-          label: 'Delete',
+          label: t(($) => $.common.actions.delete),
           onSelect: () => openDeleteFolderDialog(folder),
           tone: 'danger',
         },
@@ -156,8 +158,10 @@ export const FolderDetailPage = ({
   const searchResults = (
     <SearchResults
       key={debouncedQuery}
-      emptyDescription={`No folders, decks, or notes matched "${trimmedQuery}".`}
-      emptyTitle="No matches in this folder"
+      emptyDescription={t(($) => $.folders.empty.noMatchesInFolderDescription, {
+        query: trimmedQuery,
+      })}
+      emptyTitle={t(($) => $.folders.empty.noMatchesInFolder)}
       error={searchQuery.error}
       groups={searchQuery.data}
       loading={showSearchLoading}
@@ -185,25 +189,25 @@ export const FolderDetailPage = ({
       actions={[
         {
           icon: <Layers3 className="size-4" />,
-          label: 'New deck',
+          label: t(($) => $.dashboard.actions.newDeck),
           onClick: openCreateDeck,
         },
         {
           icon: <FolderPlus className="size-4" />,
-          label: 'New folder',
+          label: t(($) => $.dashboard.actions.newFolder),
           onClick: openCreateFolder,
           variant: 'outline',
         },
       ]}
-      description="Create a deck, then add notes to build a review queue."
+      description={t(($) => $.dashboard.descriptions.emptyFolder)}
       icon={<Layers3 className="size-6" />}
-      title="Create your first deck"
+      title={t(($) => $.dashboard.empty.createFirstDeck)}
     />
   )
   const folderSection = foldersUnavailable ? (
     <LoadErrorState
       error={foldersQuery.error}
-      title="Folders could not be loaded"
+      title={t(($) => $.dashboard.errors.foldersCouldNotLoad)}
       onRetry={() => {
         void foldersQuery.refetch()
       }}
@@ -221,7 +225,7 @@ export const FolderDetailPage = ({
   const decksSection = decksUnavailable ? (
     <LoadErrorState
       error={decksQuery.error}
-      title="Decks could not be loaded"
+      title={t(($) => $.dashboard.errors.decksCouldNotLoad)}
       onRetry={() => {
         void decksQuery.refetch()
       }}
@@ -269,7 +273,7 @@ export const FolderDetailPage = ({
           showDeckSection,
           showFolderSection,
           state: 'loaded',
-          title: folder?.name ?? 'Folder',
+          title: folder?.name ?? t(($) => $.folders.labels.folder),
           workspaceId,
           onCreateDeck: openCreateDeck,
           onCreateFolder: openCreateFolder,
@@ -288,18 +292,22 @@ export const FolderDetailPage = ({
       <ConfirmDialog
         actionError={
           deleteFolder.isError
-            ? { error: deleteFolder.error, title: 'Could not delete folder' }
+            ? { error: deleteFolder.error, title: t(($) => $.folders.errors.couldNotDeleteFolder) }
             : null
         }
-        confirmLabel="Delete folder"
+        confirmLabel={t(($) => $.folders.actions.deleteFolder)}
         confirming={deleteFolder.isPending}
         description={
           pendingFolder
-            ? `This moves "${pendingFolder.name}" to Trash. You can restore it later.`
+            ? t(($) => $.folders.dialogs.deleteFolderDescription, { name: pendingFolder.name })
             : ''
         }
         open={pendingFolder !== null}
-        title={pendingFolder ? `Delete "${pendingFolder.name}"?` : 'Delete folder?'}
+        title={
+          pendingFolder
+            ? t(($) => $.folders.dialogs.deleteFolderTitle, { name: pendingFolder.name })
+            : t(($) => $.folders.dialogs.deleteFolderFallbackTitle)
+        }
         onConfirm={() => {
           if (pendingFolder) {
             const shouldClosePage = pendingFolder.id === folder?.id
@@ -322,18 +330,22 @@ export const FolderDetailPage = ({
       <ConfirmDialog
         actionError={
           deleteDeck.isError
-            ? { error: deleteDeck.error, title: 'Could not delete deck' }
+            ? { error: deleteDeck.error, title: t(($) => $.decks.errors.couldNotDeleteDeck) }
             : null
         }
-        confirmLabel="Delete deck"
+        confirmLabel={t(($) => $.decks.actions.deleteDeck)}
         confirming={deleteDeck.isPending}
         description={
           pendingDeck
-            ? `This moves "${pendingDeck.title}" to Trash. You can restore it later.`
+            ? t(($) => $.decks.dialogs.deleteDeckDescription, { title: pendingDeck.title })
             : ''
         }
         open={pendingDeck !== null}
-        title={pendingDeck ? `Delete "${pendingDeck.title}"?` : 'Delete deck?'}
+        title={
+          pendingDeck
+            ? t(($) => $.decks.dialogs.deleteDeckTitle, { title: pendingDeck.title })
+            : t(($) => $.decks.dialogs.deleteDeckFallbackTitle)
+        }
         onConfirm={() => {
           if (pendingDeck) {
             deleteDeck.mutate(pendingDeck.id, {
@@ -353,10 +365,10 @@ export const FolderDetailPage = ({
         <BottomStatusStack className={isDesktop ? desktopBottomStatusStackClassName : undefined}>
           {hasFolderRefreshError ? (
             <BottomStatus
-              actionLabel="Check again"
+              actionLabel={t(($) => $.common.actions.checkAgain)}
               dismissKey={foldersQuery.errorUpdateCount}
               error={foldersQuery.error}
-              title="Folders may be out of date"
+              title={t(($) => $.dashboard.errors.foldersMayBeOutOfDate)}
               onAction={() => {
                 void foldersQuery.refetch()
               }}
@@ -364,10 +376,10 @@ export const FolderDetailPage = ({
           ) : null}
           {hasDeckRefreshError ? (
             <BottomStatus
-              actionLabel="Check again"
+              actionLabel={t(($) => $.common.actions.checkAgain)}
               dismissKey={decksQuery.errorUpdateCount}
               error={decksQuery.error}
-              title="Decks may be out of date"
+              title={t(($) => $.dashboard.errors.decksMayBeOutOfDate)}
               onAction={() => {
                 void decksQuery.refetch()
               }}
@@ -418,6 +430,8 @@ type FolderDetailPageViewProps =
     }
 
 const FolderDetailPageDesktop = (props: FolderDetailPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <DesktopPageLayout activeItem="home" homeTarget={props.homeTarget}>
@@ -431,10 +445,10 @@ const FolderDetailPageDesktop = (props: FolderDetailPageViewProps) => {
   if (props.state === 'folder-error') {
     return (
       <DesktopPageLayout activeItem="home" homeTarget={props.homeTarget}>
-        <DesktopPageHeader backTo={props.backTo} title="Folder" />
+        <DesktopPageHeader backTo={props.backTo} title={t(($) => $.folders.labels.folder)} />
         <LoadErrorState
           error={props.error}
-          title="Folder could not be loaded"
+          title={t(($) => $.folders.errors.folderCouldNotLoad)}
           onRetry={props.onRetry}
         />
       </DesktopPageLayout>
@@ -462,7 +476,7 @@ const FolderDetailPageDesktop = (props: FolderDetailPageViewProps) => {
           <SearchBox
             className="mb-0 mt-0"
             onChange={props.onQueryChange}
-            placeholder="Search folders, decks, and notes…"
+            placeholder={t(($) => $.dashboard.descriptions.searchPlaceholder)}
             value={props.query}
           />
         }
@@ -487,6 +501,8 @@ const FolderDetailPageDesktop = (props: FolderDetailPageViewProps) => {
 }
 
 const FolderDetailPageMobile = (props: FolderDetailPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <AppShell>
@@ -504,10 +520,10 @@ const FolderDetailPageMobile = (props: FolderDetailPageViewProps) => {
     return (
       <AppShell>
         <ScreenCanvas>
-          <PageHeader backTo={props.backTo} title="Folder" />
+          <PageHeader backTo={props.backTo} title={t(($) => $.folders.labels.folder)} />
           <LoadErrorState
             error={props.error}
-            title="Folder could not be loaded"
+            title={t(($) => $.folders.errors.folderCouldNotLoad)}
             onRetry={props.onRetry}
           />
         </ScreenCanvas>
@@ -528,7 +544,6 @@ const FolderDetailPageMobile = (props: FolderDetailPageViewProps) => {
             <div className="flex items-center gap-2">
               {props.emptyState === null ? (
                 <ResourceCreateMenu
-                  label="Create"
                   variant="responsive"
                   onCreateDeck={props.onCreateDeck}
                   onCreateFolder={props.onCreateFolder}
@@ -541,7 +556,7 @@ const FolderDetailPageMobile = (props: FolderDetailPageViewProps) => {
         />
         <StickySearch
           onChange={props.onQueryChange}
-          placeholder="Search folders, decks, and notes…"
+          placeholder={t(($) => $.dashboard.descriptions.searchPlaceholder)}
           value={props.query}
         />
         <div>

@@ -8,8 +8,12 @@ import {
 } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-import { noteCreateOptions } from '@features/notes/components/noteCreateOptions'
+import {
+  getNoteKindLabel,
+  noteCreateOptions,
+} from '@features/notes/components/noteCreateOptions'
 import type { NoteKind } from '@features/notes'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { BottomNav, type NavigationTarget } from '@shared/components/layout/BottomNav'
@@ -89,6 +93,7 @@ export const DeckDetailPageView = ({
 }
 
 const DeckDetailPageDesktop = (props: DeckDetailPageViewProps) => {
+  const { t } = useTranslation()
   const notesContentRef = useRef<HTMLDivElement>(null)
   const overviewRef = useRef<HTMLDivElement>(null)
 
@@ -208,10 +213,10 @@ const DeckDetailPageDesktop = (props: DeckDetailPageViewProps) => {
         contentClassName={desktopDetailContentClassName}
         homeTarget={props.homeTarget}
       >
-        <DesktopPageHeader backTo={props.backTo} title="Deck" />
+        <DesktopPageHeader backTo={props.backTo} title={t(($) => $.decks.labels.deck)} />
         <LoadErrorState
           error={props.error}
-          title="Deck could not be loaded"
+          title={t(($) => $.decks.errors.deckCouldNotLoad)}
           onRetry={props.onRetry}
         />
       </DesktopPageLayout>
@@ -237,7 +242,7 @@ const DeckDetailPageDesktop = (props: DeckDetailPageViewProps) => {
             {props.deckActionMenu}
           </>
         }
-        title={props.deck?.title ?? 'Deck'}
+        title={props.deck?.title ?? t(($) => $.decks.labels.deck)}
       />
       <div className={desktopDetailGridClassName}>
         <DeckNotesSearchSection
@@ -272,6 +277,7 @@ const DeckCreateNoteMenu = ({
   onCreateNote: (kind: NoteKind) => void
   variant?: 'default' | 'responsive'
 }) => {
+  const { t } = useTranslation()
   const labelId = useId()
   const isResponsive = variant === 'responsive'
 
@@ -279,7 +285,7 @@ const DeckCreateNoteMenu = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label={isResponsive ? 'Create note' : undefined}
+          aria-label={isResponsive ? t(($) => $.decks.actions.createNote) : undefined}
           className={
             isResponsive
               ? `${responsiveActionButtonClassName} bg-primary text-primary-foreground hover:bg-primary/90`
@@ -289,7 +295,7 @@ const DeckCreateNoteMenu = ({
           variant="default"
         >
           <Plus className="size-4" />
-          {isResponsive ? null : 'Create'}
+          {isResponsive ? null : t(($) => $.common.actions.create)}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -302,9 +308,9 @@ const DeckCreateNoteMenu = ({
           className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground"
           id={labelId}
         >
-          New Note
+          {t(($) => $.decks.actions.newNote)}
         </DropdownMenuLabel>
-        {noteCreateOptions.map(({ Icon, kind, label }) => (
+        {noteCreateOptions.map(({ Icon, kind }) => (
           <DropdownMenuItem
             className={dropdownMenuItemClassName()}
             key={kind}
@@ -314,7 +320,7 @@ const DeckCreateNoteMenu = ({
               <Icon className="size-4" />
             </span>
             <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
-              {label}
+              {getNoteKindLabel(t, kind)}
             </span>
           </DropdownMenuItem>
         ))}
@@ -324,6 +330,8 @@ const DeckCreateNoteMenu = ({
 }
 
 const DeckDetailPageMobile = (props: DeckDetailPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <AppShell>
@@ -341,10 +349,10 @@ const DeckDetailPageMobile = (props: DeckDetailPageViewProps) => {
     return (
       <AppShell>
         <ScreenCanvas>
-          <PageHeader backTo={props.backTo} title="Deck" />
+          <PageHeader backTo={props.backTo} title={t(($) => $.decks.labels.deck)} />
           <LoadErrorState
             error={props.error}
-            title="Deck could not be loaded"
+            title={t(($) => $.decks.errors.deckCouldNotLoad)}
             onRetry={props.onRetry}
           />
         </ScreenCanvas>
@@ -370,7 +378,7 @@ const DeckDetailPageMobile = (props: DeckDetailPageViewProps) => {
               {props.deckActionMenu}
             </div>
           }
-          title={props.deck?.title ?? 'Deck'}
+          title={props.deck?.title ?? t(($) => $.decks.labels.deck)}
         />
         <div className="space-y-4">
           {props.deck ? <DeckSummary deck={props.deck} studyNowTo={props.studyNowTo} /> : null}
@@ -397,9 +405,12 @@ const DeckDesktopOverview = ({
   deck: DeckDetail
   stretch?: boolean
   studyNowTo: string
-}) => (
+}) => {
+  const { t } = useTranslation()
+
+  return (
   <DesktopAsidePanel
-    aria-label="Deck overview"
+    aria-label={t(($) => $.decks.labels.deckOverview)}
     className={cn('flex flex-col gap-5', stretch && 'h-full')}
     role="complementary"
   >
@@ -413,7 +424,7 @@ const DeckDesktopOverview = ({
       />
       <div className="min-w-0 flex-1">
         <p className="type-label uppercase text-muted-foreground">
-          Mastery
+          <DeckMasteryLabel />
         </p>
         <DeckStatRail className="mt-3" deck={deck} />
       </div>
@@ -423,7 +434,20 @@ const DeckDesktopOverview = ({
       className="type-action h-12 w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
       variant="default"
     >
-      <Link to={studyNowTo as never}>Study now</Link>
+      <DeckStudyNowLabel to={studyNowTo} />
     </Button>
   </DesktopAsidePanel>
-)
+  )
+}
+
+const DeckMasteryLabel = () => {
+  const { t } = useTranslation()
+
+  return t(($) => $.decks.labels.mastery)
+}
+
+const DeckStudyNowLabel = ({ to }: { to: string }) => {
+  const { t } = useTranslation()
+
+  return <Link to={to as never}>{t(($) => $.decks.actions.studyNow)}</Link>
+}

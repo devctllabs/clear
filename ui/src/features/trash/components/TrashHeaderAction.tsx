@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ConfirmDialog } from '@shared/components/feedback/ConfirmDialog'
 import { Button } from '@shared/components/ui/button'
@@ -6,6 +7,7 @@ import { Button } from '@shared/components/ui/button'
 import { useEmptyTrash, useTrash } from '../hooks/useTrash'
 
 export const TrashHeaderAction = () => {
+  const { t } = useTranslation()
   const trashQuery = useTrash()
   const emptyTrash = useEmptyTrash()
   const [isEmptyDialogOpen, setIsEmptyDialogOpen] = useState(false)
@@ -31,19 +33,19 @@ export const TrashHeaderAction = () => {
         variant="destructive"
         onClick={openEmptyDialog}
       >
-        Empty
+        {t(($) => $.trash.actions.empty)}
       </Button>
       <ConfirmDialog
         actionError={
           emptyTrash.isError
-            ? { error: emptyTrash.error, title: 'Could not empty trash' }
+            ? { error: emptyTrash.error, title: t(($) => $.trash.errors.couldNotEmptyTrash) }
             : null
         }
-        confirmLabel="Empty trash"
+        confirmLabel={t(($) => $.trash.actions.emptyTrash)}
         confirming={emptyTrash.isPending}
-        description="This permanently deletes everything in Trash. This can't be undone."
+        description={t(($) => $.trash.dialogs.emptyTrashDescription)}
         open={isEmptyDialogOpen}
-        title="Empty trash?"
+        title={t(($) => $.trash.dialogs.emptyTrashTitle)}
         onConfirm={() => {
           emptyTrash.mutate(undefined, {
             onSuccess: () => {

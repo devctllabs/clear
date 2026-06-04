@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   BottomStatus,
@@ -13,11 +14,10 @@ import {
   DesktopPageLayout,
 } from '@shared/components/layout/DesktopShell'
 import { AppShell, PageHeader, ScreenCanvas } from '@shared/components/layout/Screen'
-import { formatRelativeAge } from '@shared/lib/date-format'
-import { formatNonNegativeInteger } from '@shared/lib/number-format'
 import { useActiveWorkspaceId } from '@features/workspaces/hooks/useWorkspaces'
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
 import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 
 import { TrashLoadingState } from '../components/TrashLoadingState'
 import { TrashHeaderAction } from '../components/TrashHeaderAction'
@@ -32,6 +32,8 @@ import {
 import type { TrashItem } from '../types/trash.types'
 
 export const TrashPage = () => {
+  const { t } = useTranslation()
+  const { formatRelativeAge } = useDateFormatters()
   const activeWorkspaceIdQuery = useActiveWorkspaceId()
   const homeTarget = activeWorkspaceIdQuery.data
     ? { to: `/dashboard/${activeWorkspaceIdQuery.data}` }
@@ -84,7 +86,7 @@ export const TrashPage = () => {
       >
         <LoadErrorState
           error={trashQuery.error}
-          title="Trash could not be loaded"
+          title={t(($) => $.trash.errors.trashCouldNotLoad)}
           onRetry={() => {
             void trashQuery.refetch()
           }}
@@ -98,8 +100,13 @@ export const TrashPage = () => {
     lastEmptiedAt: new Date().toISOString(),
   }
   const itemCount = trashState.items.length
-  const summaryLabel = `${formatNonNegativeInteger(itemCount)} item${itemCount === 1 ? '' : 's'}`
-  const summaryAge = `Last emptied ${formatRelativeAge(trashState.lastEmptiedAt)}`
+  const summaryLabel =
+    itemCount === 1
+      ? t(($) => $.trash.labels.itemCount, { count: itemCount })
+      : t(($) => $.trash.labels.itemCountPlural, { count: itemCount })
+  const summaryAge = t(($) => $.trash.labels.lastEmptied, {
+    value: formatRelativeAge(trashState.lastEmptiedAt),
+  })
   const hasTrashRefreshError = trashQuery.isError && trashQuery.data !== undefined
   const hasBottomStatus = hasTrashRefreshError || restoreItem.isError
   const screenBottomPadding = hasTrashRefreshError && restoreItem.isError
@@ -147,19 +154,25 @@ export const TrashPage = () => {
       <ConfirmDialog
         actionError={
           deleteItem.isError
-            ? { error: deleteItem.error, title: 'Could not delete item' }
+            ? { error: deleteItem.error, title: t(($) => $.trash.errors.couldNotDeleteItem) }
             : null
         }
-        confirmLabel="Delete permanently"
+        confirmLabel={t(($) => $.trash.actions.deletePermanently)}
         confirming={deleteItem.isPending}
         description={
           pendingDeleteItem
-            ? `This permanently deletes "${pendingDeleteItem.title}". This can't be undone.`
-            : `This permanently deletes this item. This can't be undone.`
+            ? t(($) => $.trash.dialogs.deleteItemDescription, {
+                title: pendingDeleteItem.title,
+              })
+            : t(($) => $.trash.dialogs.deleteItemFallbackDescription)
         }
         open={pendingDeleteItem !== null}
         title={
-          pendingDeleteItem ? `Delete "${pendingDeleteItem.title}"?` : 'Delete item?'
+          pendingDeleteItem
+            ? t(($) => $.trash.dialogs.deleteItemTitle, {
+                title: pendingDeleteItem.title,
+              })
+            : t(($) => $.trash.dialogs.deleteItemFallbackTitle)
         }
         onConfirm={() => {
           if (!pendingDeleteItem) {
@@ -182,10 +195,10 @@ export const TrashPage = () => {
         <BottomStatusStack className={isDesktop ? desktopBottomStatusStackClassName : undefined}>
           {hasTrashRefreshError ? (
             <BottomStatus
-              actionLabel="Check again"
+              actionLabel={t(($) => $.common.actions.checkAgain)}
               dismissKey={trashQuery.errorUpdateCount}
               error={trashQuery.error}
-              title="Trash may be out of date"
+              title={t(($) => $.trash.errors.trashMayBeOutOfDate)}
               onAction={() => {
                 void trashQuery.refetch()
               }}
@@ -193,9 +206,9 @@ export const TrashPage = () => {
           ) : null}
           {restoreItem.isError ? (
             <BottomStatus
-              dismissLabel="Dismiss error"
+              dismissLabel={t(($) => $.common.actions.dismissError)}
               error={restoreItem.error}
-              title="Could not restore item"
+              title={t(($) => $.trash.errors.couldNotRestoreItem)}
             />
           ) : null}
         </BottomStatusStack>
@@ -217,6 +230,8 @@ const TrashPageShell = ({
   rightSlot?: ReactNode
   screenClassName?: string
 }) => {
+  const { t } = useTranslation()
+
   if (isDesktop) {
     return (
       <DesktopPageLayout
@@ -224,7 +239,7 @@ const TrashPageShell = ({
         contentClassName="mx-auto w-full max-w-page-narrow"
         homeTarget={homeTarget}
       >
-        <DesktopPageHeader rightSlot={rightSlot} title="Trash" />
+        <DesktopPageHeader rightSlot={rightSlot} title={t(($) => $.trash.labels.title)} />
         {children}
       </DesktopPageLayout>
     )
@@ -238,7 +253,7 @@ const TrashPageShell = ({
           className="mb-7"
           reserveDescriptionSpace={false}
           rightSlot={rightSlot}
-          title="Trash"
+          title={t(($) => $.trash.labels.title)}
         />
         {children}
       </ScreenCanvas>

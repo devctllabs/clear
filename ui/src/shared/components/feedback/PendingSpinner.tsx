@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@shared/lib/utils'
 
@@ -11,12 +12,14 @@ export type PendingSpinnerProps = Omit<ComponentPropsWithoutRef<'span'>, 'childr
 export const PendingSpinner = ({
   className,
   decorative = false,
-  label = 'Action in progress',
+  label,
   ...props
 }: PendingSpinnerProps) => {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t(($) => $.common.status.actionInProgress)
   const accessibilityProps = decorative
     ? ({ 'aria-hidden': true } as const)
-    : ({ 'aria-label': label, role: 'status' } as const)
+    : ({ 'aria-label': resolvedLabel, role: 'status' } as const)
 
   return (
     <span

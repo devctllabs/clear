@@ -1,4 +1,5 @@
 import { Folder } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
 import { VisualPicker } from '@shared/components/forms/VisualPicker'
@@ -30,6 +31,7 @@ export const DeckEditorForm = ({
   onTitleChange: (value: string) => void
   title: string
 }) => {
+  const { t } = useTranslation()
   const locationLabel = locationPath ? formatLocationPathLabel(locationPath) : undefined
   const compactLocationLabel = locationPath
     ? formatCompactLocationPath(locationPath)
@@ -52,9 +54,9 @@ export const DeckEditorForm = ({
         </div>
       ) : null}
       <div className="px-8 pt-8">
-        <SectionHeading>Name</SectionHeading>
+        <SectionHeading>{t(($) => $.common.labels.name)}</SectionHeading>
         <label className="sr-only" htmlFor="deck-name">
-          Deck name
+          {t(($) => $.decks.fields.namePlaceholder)}
         </label>
         <textarea
           autoComplete="off"
@@ -64,7 +66,7 @@ export const DeckEditorForm = ({
           )}
           id="deck-name"
           name="deck-name"
-          placeholder="Deck name"
+          placeholder={t(($) => $.decks.fields.namePlaceholder)}
           rows={2}
           value={title}
           onChange={(event) => onTitleChange(event.target.value)}
@@ -72,9 +74,9 @@ export const DeckEditorForm = ({
       </div>
       <hr className="mx-8 border-t border-border" />
       <div className="px-8 py-8">
-        <SectionHeading>Description</SectionHeading>
+        <SectionHeading>{t(($) => $.common.labels.description)}</SectionHeading>
         <label className="sr-only" htmlFor="deck-description">
-          Deck description
+          {t(($) => $.decks.fields.descriptionLabel)}
         </label>
         <textarea
           autoComplete="off"
@@ -84,7 +86,7 @@ export const DeckEditorForm = ({
           )}
           id="deck-description"
           name="deck-description"
-          placeholder="What will this deck help you review?"
+          placeholder={t(($) => $.decks.fields.descriptionPlaceholder)}
           rows={5}
           value={description}
           onChange={(event) => onDescriptionChange(event.target.value)}
@@ -93,8 +95,8 @@ export const DeckEditorForm = ({
       <hr className="mx-8 border-t border-border" />
       <div className="px-8 py-8">
         <VisualPicker
-          description="Choose a cover glyph for this deck."
-          label="Visual"
+          description={t(($) => $.decks.descriptions.editorVisual)}
+          label={t(($) => $.common.labels.visual)}
           presetOptions={deckPresetVisualOptions}
           value={icon}
           onValueChange={onIconChange}

@@ -1,10 +1,8 @@
+import { useTranslation } from 'react-i18next'
+
 import { ConfirmDialog } from '@shared/components/feedback/ConfirmDialog'
 
 import { showSettingsLanguageControl } from '../constants/settings-ui'
-
-const settingsResetDescription = showSettingsLanguageControl
-  ? 'This restores language, timezone, study limits, and FSRS settings.'
-  : 'This restores timezone, study limits, and FSRS settings.'
 
 export const SettingsResetDialog = ({
   actionError,
@@ -21,15 +19,22 @@ export const SettingsResetDialog = ({
   open: boolean
   onConfirm: () => void
   onOpenChange: (open: boolean) => void
-}) => (
-  <ConfirmDialog
-    actionError={actionError}
-    confirmLabel="Reset settings"
-    confirming={confirming}
-    description={settingsResetDescription}
-    open={open}
-    title="Reset all settings?"
-    onConfirm={onConfirm}
-    onOpenChange={onOpenChange}
-  />
-)
+}) => {
+  const { t } = useTranslation()
+  const description = showSettingsLanguageControl
+    ? t(($) => $.settings.dialogs.resetDescriptionWithLanguage)
+    : t(($) => $.settings.dialogs.resetDescription)
+
+  return (
+    <ConfirmDialog
+      actionError={actionError}
+      confirmLabel={t(($) => $.settings.actions.resetSettings)}
+      confirming={confirming}
+      description={description}
+      open={open}
+      title={t(($) => $.settings.dialogs.resetTitle)}
+      onConfirm={onConfirm}
+      onOpenChange={onOpenChange}
+    />
+  )
+}

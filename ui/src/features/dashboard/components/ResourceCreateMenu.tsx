@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FolderPlus, Layers3, Plus } from 'lucide-react'
 
@@ -14,7 +15,7 @@ import {
 } from '@shared/components/ui/dropdown-menu'
 
 export const ResourceCreateMenu = ({
-  label = 'Create',
+  label,
   onCreateDeck,
   onCreateFolder,
   variant = 'default',
@@ -24,14 +25,16 @@ export const ResourceCreateMenu = ({
   onCreateFolder: () => void
   variant?: 'default' | 'responsive'
 }) => {
+  const { t } = useTranslation()
   const labelId = useId()
   const responsive = variant === 'responsive'
+  const resolvedLabel = label ?? t(($) => $.common.actions.create)
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label={responsive ? label : undefined}
+          aria-label={responsive ? resolvedLabel : undefined}
           className={
             responsive
               ? `${responsiveActionButtonClassName} bg-primary text-primary-foreground hover:bg-primary/90`
@@ -41,7 +44,7 @@ export const ResourceCreateMenu = ({
           variant="default"
         >
           <Plus className="size-4" />
-          {responsive ? null : label}
+          {responsive ? null : resolvedLabel}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -54,7 +57,7 @@ export const ResourceCreateMenu = ({
           className="type-label px-3 pb-2 pt-2 uppercase text-muted-foreground"
           id={labelId}
         >
-          New Item
+          {t(($) => $.dashboard.labels.newItem)}
         </DropdownMenuLabel>
         <DropdownMenuItem
           className={dropdownMenuItemClassName()}
@@ -64,7 +67,7 @@ export const ResourceCreateMenu = ({
             <Layers3 className="size-4" />
           </span>
           <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
-            Deck
+            {t(($) => $.decks.labels.deck)}
           </span>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -75,7 +78,7 @@ export const ResourceCreateMenu = ({
             <FolderPlus className="size-4" />
           </span>
           <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0 flex-1">
-            Folder
+            {t(($) => $.folders.labels.folder)}
           </span>
         </DropdownMenuItem>
       </DropdownMenuContent>

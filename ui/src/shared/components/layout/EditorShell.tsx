@@ -1,10 +1,11 @@
 import { CircleAlert, X } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { normalizeError } from '@shared/components/feedback/LoadErrorState'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
 import { Button } from '@shared/components/ui/button'
-import { getUserMessage } from '@shared/errors'
+import { translateDomainError } from '@shared/errors/translation'
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
 import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
 import { useVisualViewportBottomOffset } from '@shared/hooks/useVisualViewportBottomOffset'
@@ -31,11 +32,14 @@ export const EditorActionErrorMessage = ({
   className?: string
   id?: string
 }) => {
+  const { t } = useTranslation()
+
   if (!actionError) {
     return null
   }
 
   const normalizedError = normalizeError(actionError.error)
+  const message = translateDomainError(t, normalizedError)
 
   return (
     <p
@@ -48,7 +52,7 @@ export const EditorActionErrorMessage = ({
       role="alert"
     >
       <span className="font-bold">{actionError.title}</span>.{' '}
-      {getUserMessage(normalizedError)}
+      {message}
     </p>
   )
 }
@@ -72,6 +76,8 @@ export const EditorShell = ({
   onSubmit: () => void
   title: string
 }) => {
+  const { t } = useTranslation()
+
   useVisualViewportBottomOffset()
 
   const actionErrorId = actionError ? 'editor-action-error' : undefined
@@ -110,7 +116,7 @@ export const EditorShell = ({
             )}
           >
             <BackControl
-              ariaLabel="Close editor"
+              ariaLabel={t(($) => $.navigation.actions.closeEditor)}
               fallbackTo={backTo}
               icon={<X className="size-5" />}
             />

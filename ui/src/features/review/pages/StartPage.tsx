@@ -1,5 +1,6 @@
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
@@ -17,6 +18,7 @@ export const ReviewStartPage = ({
   deckId: string
   workspaceId: string
 }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const startReview = useStartReview(deckId)
   const showInitialLoading = useDelayedBoolean(startReview.isPending, 180)
@@ -72,7 +74,7 @@ export const ReviewStartPage = ({
         <section className="mx-auto flex min-h-screen w-full max-w-xl flex-col justify-center px-6 pb-32 pt-24">
           <LoadErrorState
             error={startReview.error}
-            title="Review could not be started"
+            title={t(($) => $.review.errors.reviewCouldNotStart)}
             onRetry={() => {
               startReview.reset()
             }}

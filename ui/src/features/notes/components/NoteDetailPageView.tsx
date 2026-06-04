@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { BottomNav, type NavigationTarget } from '@shared/components/layout/BottomNav'
@@ -17,7 +18,7 @@ import { BackControl } from '@shared/components/layout/Screen'
 import { SkeletonBlock } from '@shared/components/feedback/SkeletonBlock'
 import { Button } from '@shared/components/ui/button'
 import { createOpenedFromState } from '@shared/lib/navigation-state'
-import { formatRelativeDate, formatRelativeTimestamp } from '@shared/lib/date-format'
+import { useDateFormatters } from '@shared/lib/translated-date-format'
 import { formatPercentage } from '@shared/lib/number-format'
 import { cn } from '@shared/lib/utils'
 
@@ -70,6 +71,8 @@ export const NoteDetailPageView = ({
 }
 
 const NoteDetailPageDesktop = (props: NoteDetailPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return (
       <DesktopPageLayout
@@ -89,10 +92,10 @@ const NoteDetailPageDesktop = (props: NoteDetailPageViewProps) => {
         contentClassName={desktopDetailContentClassName}
         homeTarget={props.homeTarget}
       >
-        <DesktopPageHeader backTo={props.backTo} title="Note Details" />
+        <DesktopPageHeader backTo={props.backTo} title={t(($) => $.notes.labels.noteDetails)} />
         <LoadErrorState
           error={props.error}
-          title="Note could not be loaded"
+          title={t(($) => $.notes.errors.noteCouldNotLoad)}
           onRetry={props.onRetry}
         />
       </DesktopPageLayout>
@@ -107,7 +110,7 @@ const NoteDetailPageDesktop = (props: NoteDetailPageViewProps) => {
     >
       <DesktopPageHeader
         backTo={props.backTo}
-        eyebrow="Note Details"
+        eyebrow={t(($) => $.notes.labels.noteDetails)}
         rightSlot={
           props.note ? (
             <>
@@ -118,16 +121,16 @@ const NoteDetailPageDesktop = (props: NoteDetailPageViewProps) => {
                 onClick={props.onEdit}
               >
                 <Pencil className="size-4" />
-                Edit Note
+                {t(($) => $.notes.actions.editNote)}
               </Button>
               {props.noteActionMenu}
             </>
           ) : null
         }
-        title={props.note?.title ?? 'Note Details'}
+        title={props.note?.title ?? t(($) => $.notes.labels.noteDetails)}
       />
       <div className={desktopDetailGridClassName}>
-        <section aria-label="Note content" className="desktop-detail-main min-w-0">
+        <section aria-label={t(($) => $.notes.labels.noteContent)} className="desktop-detail-main min-w-0">
           {props.note ? <NoteDetailContent note={props.note} variant="desktop" /> : null}
         </section>
         {props.note ? (
@@ -141,6 +144,8 @@ const NoteDetailPageDesktop = (props: NoteDetailPageViewProps) => {
 }
 
 const NoteDetailPageMobile = (props: NoteDetailPageViewProps) => {
+  const { t } = useTranslation()
+
   if (props.state === 'loading') {
     return props.showSkeleton ? (
       <NoteDetailLoadingState homeTarget={props.homeTarget} />
@@ -158,7 +163,7 @@ const NoteDetailPageMobile = (props: NoteDetailPageViewProps) => {
         >
           <LoadErrorState
             error={props.error}
-            title="Note could not be loaded"
+            title={t(($) => $.notes.errors.noteCouldNotLoad)}
             onRetry={props.onRetry}
           />
         </section>
@@ -201,7 +206,7 @@ const NoteDetailPageMobile = (props: NoteDetailPageViewProps) => {
               state={createOpenedFromState(props.openedFrom)}
               to="/dashboard/$workspaceId/decks/$deckId/notes/$noteId/edit"
             >
-              Edit Note
+              {t(($) => $.notes.actions.editNote)}
             </Link>
           </Button>
         </div>
@@ -212,21 +217,36 @@ const NoteDetailPageMobile = (props: NoteDetailPageViewProps) => {
 }
 
 const NoteDetailErrorHeader = ({ backTo }: { backTo: string }) => (
-  <header className="fixed inset-x-0 top-0 z-50 w-full bg-background/95 backdrop-blur-md">
+  <NoteDetailErrorHeaderContent backTo={backTo} />
+)
+
+const NoteDetailErrorHeaderContent = ({ backTo }: { backTo: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 w-full bg-background/95 backdrop-blur-md">
     <div className={cn(mobileLaneClassName, 'px-6 pb-2 pt-12')}>
       <div className="grid min-h-11 grid-cols-[44px_1fr_44px] items-center">
         <BackControl fallbackTo={backTo} />
         <h1 className="type-row-title text-center text-foreground">
-          Note Details
+          {t(($) => $.notes.labels.noteDetails)}
         </h1>
         <div aria-hidden="true" />
       </div>
     </div>
-  </header>
-)
+    </header>
+  )
+}
 
 const NoteDetailDesktopLoadingState = ({ backTo }: { backTo: string }) => (
-  <section aria-label="Loading note" aria-live="polite" role="status">
+  <NoteDetailDesktopLoadingContent backTo={backTo} />
+)
+
+const NoteDetailDesktopLoadingContent = ({ backTo }: { backTo: string }) => {
+  const { t } = useTranslation()
+
+  return (
+    <section aria-label={t(($) => $.notes.labels.loadingNote)} aria-live="polite" role="status">
     <DesktopPageHeaderSkeleton
       backTo={backTo}
       rightActionWidths={['w-28', 'w-11']}
@@ -283,8 +303,9 @@ const NoteDetailDesktopLoadingState = ({ backTo }: { backTo: string }) => (
         </DesktopAsidePanel>
       </div>
     </div>
-  </section>
-)
+    </section>
+  )
+}
 
 const NoteDesktopOverview = ({
   deckTitle,
@@ -293,14 +314,28 @@ const NoteDesktopOverview = ({
   deckTitle?: string
   note: NoteDetail
 }) => (
-  <DesktopAsidePanel aria-label="Note metadata" className="space-y-6" role="complementary">
+  <NoteDesktopOverviewContent deckTitle={deckTitle} note={note} />
+)
+
+const NoteDesktopOverviewContent = ({
+  deckTitle,
+  note,
+}: {
+  deckTitle?: string
+  note: NoteDetail
+}) => {
+  const { t } = useTranslation()
+  const { formatRelativeTimestamp, formatUpdatedAge } = useDateFormatters()
+
+  return (
+  <DesktopAsidePanel aria-label={t(($) => $.notes.labels.noteMetadata)} className="space-y-6" role="complementary">
     <section aria-labelledby="note-study-progress-heading">
       <div className="flex min-w-0 items-start justify-between gap-3">
         <h2
           className="type-label uppercase text-muted-foreground"
           id="note-study-progress-heading"
         >
-          Study Progress
+          {t(($) => $.notes.labels.studyProgress)}
         </h2>
         <NoteStatusChip status={note.status} />
       </div>
@@ -312,29 +347,33 @@ const NoteDesktopOverview = ({
 
     <div className="space-y-5 border-t border-border pt-6">
       {deckTitle ? (
-        <NoteMetadataField label="Deck">
+        <NoteMetadataField label={t(($) => $.notes.labels.deck)}>
           <span className="text-wrap-anywhere">{deckTitle}</span>
         </NoteMetadataField>
       ) : null}
       {note.kind === 'basic' ? (
         <>
-          <NoteMetadataField label="Reviewed">
+          <NoteMetadataField label={t(($) => $.notes.labels.reviewed)}>
             {formatRelativeTimestamp(note.reviewedAt, 'past')}
           </NoteMetadataField>
-          <NoteMetadataField label="Due">
+          <NoteMetadataField label={t(($) => $.notes.labels.due)}>
             {formatRelativeTimestamp(note.dueAt, 'future')}
           </NoteMetadataField>
         </>
       ) : null}
-      <NoteMetadataField label="Updated">
-        {formatRelativeDate(note.updatedAt).replace('Updated ', '')}
+      <NoteMetadataField label={t(($) => $.notes.labels.updated)}>
+        {formatUpdatedAge(note.updatedAt)}
       </NoteMetadataField>
     </div>
   </DesktopAsidePanel>
-)
+  )
+}
 
 const NoteStatusChip = ({ status }: { status: NoteDetail['status'] }) => {
-  const label = status === 'mastered' ? 'Mastered' : 'In progress'
+  const { t } = useTranslation()
+  const label = status === 'mastered'
+    ? t(($) => $.notes.labels.mastered)
+    : t(($) => $.notes.labels.inProgress)
 
   return (
     <span
