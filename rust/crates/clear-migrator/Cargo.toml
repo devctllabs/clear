@@ -1,0 +1,13 @@
+[package]
+name = "clear-migrator"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+build = "build.rs"
+
+[dependencies]
+rusqlite = { version = "0.32.1", features = ["bundled"] }
+thiserror = "2.0.17"
+
+[dev-dependencies]
+tempfile = "3.23.0"

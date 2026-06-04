@@ -1,0 +1,29 @@
+{
+  "name": "@local/mock-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "codegen": "tsx scripts/codegen-admin-openapi.ts && openapi-ts && tsx scripts/codegen-mock-runtime.ts",
+    "codegen:contract": "tsx scripts/codegen-admin-openapi.ts && openapi-ts",
+    "codegen:mock-runtime": "tsx scripts/codegen-mock-runtime.ts",
+    "dev": "tsx src/server.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.7",
+    "hono": "^4.10.7",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.97.1",
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.28.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.4",
+    "yaml": "^2.8.1"
+  }
+}

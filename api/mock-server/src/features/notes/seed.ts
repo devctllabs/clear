@@ -1,0 +1,173 @@
+// Generated starter from .mockapi/profile.toml.
+// This file is reviewable scaffold and may be edited.
+
+import type { SeedContext } from '../../generated/mock-admin/state/seed.ts'
+import type { MockState } from '../../generated/mock-admin/contract/index.ts'
+
+export const seedNoteRecords = (context: SeedContext): MockState['notes'] => [
+    {
+      deckId: 'cognitive-biases',
+      dueAt: context.fromSeedNow(-11),
+      editor: {
+        back: 'Anchoring pulls judgment toward the first number or frame that appears.',
+        front: 'What happens when an initial number shapes later judgment?',
+      },
+      id: 'anchoring',
+      kind: 'basic',
+      progress: 64,
+      reviewedAt: context.fromSeedNow(-15),
+      status: 'mastered',
+      title: 'Anchoring',
+      updatedAt: context.fromSeedNow(-15),
+    },
+    {
+      cards: [
+        {
+          clozeId: 'c1',
+          dueAt: context.fromSeedNow(-10),
+          id: 'availability-heuristic-card-1',
+          progress: 53,
+          reviewedAt: context.fromSeedNow(-14),
+          status: 'in-progress',
+          title: 'Availability Heuristic',
+        },
+      ],
+      deckId: 'cognitive-biases',
+      dueAt: context.fromSeedNow(-10),
+      editor: {
+        body: 'Availability bias makes {{c1::vivid examples}} feel more common than they really are.',
+      },
+      id: 'availability-heuristic',
+      kind: 'cloze',
+      progress: 53,
+      reviewedAt: context.fromSeedNow(-14),
+      status: 'in-progress',
+      title: 'Availability Heuristic',
+      updatedAt: context.fromSeedNow(-14),
+    },
+    {
+      deckId: 'cognitive-biases',
+      dueAt: context.fromSeedNow(-4),
+      editor: {
+        back: 'People usually feel losses more strongly than equivalent gains.',
+        front: 'Which bias makes losses feel heavier than gains?',
+      },
+      id: 'loss-aversion',
+      kind: 'basic',
+      progress: 69,
+      reviewedAt: context.fromSeedNow(-8),
+      status: 'in-progress',
+      title: 'Loss Aversion',
+      updatedAt: context.fromSeedNow(-8),
+    },
+    {
+      deckId: 'world-history',
+      dueAt: context.fromSeedNow(-3),
+      editor: {
+        back: 'A shift in production and transport lowered costs and expanded output.',
+        front: 'What drove the Industrial Revolution?',
+      },
+      id: 'industrial-revolution-causes',
+      kind: 'basic',
+      progress: 74,
+      reviewedAt: context.fromSeedNow(-6),
+      status: 'in-progress',
+      title: 'Industrial Revolution Causes',
+      updatedAt: context.fromSeedNow(-6),
+    },
+    {
+      deckId: 'world-history',
+      dueAt: context.fromSeedNow(2),
+      editor: {
+        back: 'Postwar institutions were designed to reduce conflict and stabilize international cooperation.',
+        front: 'Why were postwar institutions created after major conflict?',
+      },
+      id: 'postwar-institutions',
+      kind: 'basic',
+      progress: 58,
+      reviewedAt: context.fromSeedNow(-3),
+      status: 'in-progress',
+      title: 'Postwar Institutions',
+      updatedAt: context.fromSeedNow(-3),
+    },
+    {
+      deckId: 'political-thought',
+      dueAt: context.fromSeedNow(-5),
+      editor: {
+        back: 'Rule of law means public power operates through known rules rather than personal discretion.',
+        front: 'What does rule of law require from public power?',
+      },
+      id: 'rule-of-law',
+      kind: 'basic',
+      progress: 57,
+      reviewedAt: context.fromSeedNow(-7),
+      status: 'mastered',
+      title: 'Rule of Law',
+      updatedAt: context.fromSeedNow(-7),
+    },
+    {
+      deckId: 'political-thought',
+      dueAt: context.fromSeedNow(-1),
+      editor: {
+        back: 'Federalism divides governing authority across national and regional institutions.',
+        front: 'What does federalism divide across levels of government?',
+      },
+      id: 'federalism',
+      kind: 'basic',
+      progress: 47,
+      reviewedAt: context.fromSeedNow(-4),
+      status: 'in-progress',
+      title: 'Federalism',
+      updatedAt: context.fromSeedNow(-4),
+    },
+    {
+      deckId: 'political-thought',
+      dueAt: context.fromSeedNow(2),
+      editor: {
+        back: 'Separated powers distribute authority so each branch can restrain the others.',
+        front: 'Why does separation of powers matter in institutional design?',
+      },
+      id: 'separation-of-powers',
+      kind: 'basic',
+      progress: 58,
+      reviewedAt: context.fromSeedNow(-2),
+      status: 'in-progress',
+      title: 'Separation of Powers',
+      updatedAt: context.fromSeedNow(-2),
+    },
+    {
+      deckId: 'statistics-basics',
+      dueAt: context.fromSeedNow(-6),
+      editor: {
+        back: 'Sampling error is the gap between a sample estimate and the true population value caused by chance variation.',
+        front: 'What is sampling error?',
+      },
+      id: 'sampling-error',
+      kind: 'basic',
+      progress: 51,
+      reviewedAt: context.fromSeedNow(-9),
+      status: 'in-progress',
+      title: 'Sampling Error',
+      updatedAt: context.fromSeedNow(-9),
+    },
+    {
+      deletedAt: context.fromSeedNow(-17),
+      deckId: 'statistics-basics',
+      dueAt: context.fromSeedNow(-20),
+      editor: {
+        back: 'A base rate is the background frequency you should account for before focusing on a vivid case.',
+        front: 'What is a base rate?',
+      },
+      id: 'base-rates',
+      kind: 'basic',
+      progress: 48,
+      reviewedAt: context.fromSeedNow(-20),
+      status: 'in-progress',
+      title: 'Base Rates',
+      updatedAt: context.fromSeedNow(-20),
+    },
+  ]
+
+export const seedNotes = (context: SeedContext): Pick<MockState, "notes"> => ({
+  notes: seedNoteRecords(context),
+})

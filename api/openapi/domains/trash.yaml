@@ -1,0 +1,133 @@
+paths:
+  trash:
+    get:
+      operationId: getTrash
+      tags:
+        - Trash
+      summary: Read trash state.
+      responses:
+        '200':
+          description: Trash state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrashState'
+              examples:
+                empty:
+                  value:
+                    items: []
+                    lastEmptiedAt: '2026-05-15T12:00:00.000Z'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    delete:
+      operationId: emptyTrash
+      tags:
+        - Trash
+      summary: Permanently empty trash.
+      responses:
+        '200':
+          description: Empty trash state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrashState'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  restoreTrashItem:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/ItemId'
+    post:
+      operationId: restoreTrashItem
+      tags:
+        - Trash
+      summary: Restore a trash item.
+      responses:
+        '204':
+          description: Trash item restored.
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  trashItemById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/ItemId'
+    delete:
+      operationId: deleteTrashItem
+      tags:
+        - Trash
+      summary: Permanently delete a trash item.
+      responses:
+        '204':
+          description: Trash item deleted.
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    TrashKind:
+      type: string
+      enum:
+        - deck
+        - folder
+        - note
+        - workspace
+
+    TrashItem:
+      type: object
+      additionalProperties: false
+      required:
+        - deletedAt
+        - id
+        - kind
+        - locationPath
+        - title
+      properties:
+        deletedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        kind:
+          $ref: '#/components/schemas/TrashKind'
+        locationPath:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        title:
+          type: string
+
+    TrashState:
+      type: object
+      additionalProperties: false
+      required:
+        - items
+        - lastEmptiedAt
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TrashItem'
+        lastEmptiedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+      examples:
+        - items:
+            - deletedAt: '2026-05-10T12:00:00.000Z'
+              id: vocabulary-notes
+              kind: note
+              locationPath:
+                - Editorial Production
+                - Civic Theory Review
+              title: Vocabulary Notes
+          lastEmptiedAt: '2026-05-01T12:00:00.000Z'

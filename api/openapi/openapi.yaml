@@ -1,0 +1,152 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Clear Web API
+  version: 0.1.0
+  description: HTTP contract for the Clear web service layer.
+  license:
+    identifier: LicenseRef-Proprietary
+    name: Proprietary
+servers:
+  - url: /api/v1
+security: []
+tags:
+  - name: Bootstrap
+    description: Runtime bootstrap operations.
+  - name: Workspaces
+    description: Workspace collection and active workspace operations.
+  - name: Folders
+    description: Folder collection operations.
+  - name: Decks
+    description: Deck collection operations.
+  - name: Notes
+    description: Note collection and editor operations.
+  - name: Review
+    description: Review workflow operations.
+  - name: Settings
+    description: User settings operations.
+  - name: Trash
+    description: Trash state and restore/delete operations.
+  - name: Search
+    description: Scoped content search operations.
+paths:
+  /bootstrap:
+    $ref: './domains/bootstrap.yaml#/paths/bootstrap'
+  /workspaces:
+    $ref: './domains/workspaces.yaml#/paths/workspaces'
+  /workspaces/active:
+    $ref: './domains/workspaces.yaml#/paths/activeWorkspace'
+  /workspaces/{workspaceId}:
+    $ref: './domains/workspaces.yaml#/paths/workspaceById'
+  /workspaces/{workspaceId}/folders:
+    $ref: './domains/folders.yaml#/paths/workspaceFolders'
+  /workspaces/{workspaceId}/decks:
+    $ref: './domains/decks.yaml#/paths/workspaceDecks'
+  /folders:
+    $ref: './domains/folders.yaml#/paths/folders'
+  /folders/{folderId}:
+    $ref: './domains/folders.yaml#/paths/folderById'
+  /folders/{folderId}/folders:
+    $ref: './domains/folders.yaml#/paths/folderFolders'
+  /folders/{folderId}/decks:
+    $ref: './domains/decks.yaml#/paths/folderDecks'
+  /folders/{folderId}/path:
+    $ref: './domains/folders.yaml#/paths/folderPath'
+  /decks:
+    $ref: './domains/decks.yaml#/paths/decks'
+  /decks/{deckId}:
+    $ref: './domains/decks.yaml#/paths/deckById'
+  /decks/{deckId}/notes:
+    $ref: './domains/notes.yaml#/paths/deckNotes'
+  /decks/{deckId}/reviews:
+    $ref: './domains/review.yaml#/paths/deckReviews'
+  /reviews/{reviewId}:
+    $ref: './domains/review.yaml#/paths/reviewById'
+  /notes:
+    $ref: './domains/notes.yaml#/paths/notes'
+  /notes/{noteId}:
+    $ref: './domains/notes.yaml#/paths/noteById'
+  /reviews/{reviewId}/cards/{cardId}/grade:
+    $ref: './domains/review.yaml#/paths/gradeReviewSessionCard'
+  /settings:
+    $ref: './domains/settings.yaml#/paths/settings'
+  /settings/defaults:
+    $ref: './domains/settings.yaml#/paths/settingsDefaults'
+  /settings/reset:
+    $ref: './domains/settings.yaml#/paths/resetSettings'
+  /trash:
+    $ref: './domains/trash.yaml#/paths/trash'
+  /trash/items/{itemId}/restore:
+    $ref: './domains/trash.yaml#/paths/restoreTrashItem'
+  /trash/items/{itemId}:
+    $ref: './domains/trash.yaml#/paths/trashItemById'
+  /search:
+    $ref: './domains/search.yaml#/paths/search'
+components:
+  parameters:
+    DeckId:
+      $ref: './shared/components.yaml#/components/parameters/DeckId'
+    FolderId:
+      $ref: './shared/components.yaml#/components/parameters/FolderId'
+    ItemId:
+      $ref: './shared/components.yaml#/components/parameters/ItemId'
+    NoteId:
+      $ref: './shared/components.yaml#/components/parameters/NoteId'
+    CardId:
+      $ref: './shared/components.yaml#/components/parameters/CardId'
+    ReviewId:
+      $ref: './shared/components.yaml#/components/parameters/ReviewId'
+    SortDirection:
+      $ref: './shared/components.yaml#/components/parameters/SortDirection'
+    DeckSortField:
+      $ref: './shared/components.yaml#/components/parameters/DeckSortField'
+    FolderSortField:
+      $ref: './shared/components.yaml#/components/parameters/FolderSortField'
+    NoteSortField:
+      $ref: './shared/components.yaml#/components/parameters/NoteSortField'
+    WorkspaceId:
+      $ref: './shared/components.yaml#/components/parameters/WorkspaceId'
+  responses:
+    BadRequest:
+      $ref: './shared/components.yaml#/components/responses/BadRequest'
+    Conflict:
+      $ref: './shared/components.yaml#/components/responses/Conflict'
+    Forbidden:
+      $ref: './shared/components.yaml#/components/responses/Forbidden'
+    NotFound:
+      $ref: './shared/components.yaml#/components/responses/NotFound'
+    Timeout:
+      $ref: './shared/components.yaml#/components/responses/Timeout'
+    Unauthorized:
+      $ref: './shared/components.yaml#/components/responses/Unauthorized'
+    Unexpected:
+      $ref: './shared/components.yaml#/components/responses/Unexpected'
+    Unavailable:
+      $ref: './shared/components.yaml#/components/responses/Unavailable'
+    Validation:
+      $ref: './shared/components.yaml#/components/responses/Validation'
+  schemas:
+    ActiveWorkspace:
+      $ref: './domains/workspaces.yaml#/components/schemas/ActiveWorkspace'
+    BootstrapResult:
+      $ref: './domains/bootstrap.yaml#/components/schemas/BootstrapResult'
+    Deck:
+      $ref: './domains/decks.yaml#/components/schemas/Deck'
+    DomainError:
+      $ref: './shared/components.yaml#/components/schemas/DomainError'
+    Folder:
+      $ref: './domains/folders.yaml#/components/schemas/Folder'
+    NoteDetail:
+      $ref: './domains/notes.yaml#/components/schemas/NoteDetail'
+    ReviewCard:
+      $ref: './domains/review.yaml#/components/schemas/ReviewCard'
+    ReviewSession:
+      $ref: './domains/review.yaml#/components/schemas/ReviewSession'
+    SearchResultGroup:
+      $ref: './domains/search.yaml#/components/schemas/SearchResultGroup'
+    Settings:
+      $ref: './domains/settings.yaml#/components/schemas/Settings'
+    TrashState:
+      $ref: './domains/trash.yaml#/components/schemas/TrashState'
+    Workspace:
+      $ref: './domains/workspaces.yaml#/components/schemas/Workspace'

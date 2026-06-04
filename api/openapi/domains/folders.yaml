@@ -1,0 +1,227 @@
+paths:
+  workspaceFolders:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/WorkspaceId'
+    get:
+      operationId: listWorkspaceFolders
+      tags:
+        - Folders
+      summary: List folders at the workspace root.
+      parameters:
+        - $ref: '../shared/components.yaml#/components/parameters/FolderSortField'
+        - $ref: '../shared/components.yaml#/components/parameters/SortDirection'
+      responses:
+        '200':
+          description: Folders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  folderFolders:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/FolderId'
+    get:
+      operationId: listFolderFolders
+      tags:
+        - Folders
+      summary: List folders under a folder.
+      parameters:
+        - $ref: '../shared/components.yaml#/components/parameters/FolderSortField'
+        - $ref: '../shared/components.yaml#/components/parameters/SortDirection'
+      responses:
+        '200':
+          description: Folders.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  folders:
+    post:
+      operationId: createFolder
+      tags:
+        - Folders
+      summary: Create a folder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderDraft'
+      responses:
+        '201':
+          description: Created folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  folderById:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/FolderId'
+    get:
+      operationId: getFolder
+      tags:
+        - Folders
+      summary: Get a folder by ID.
+      responses:
+        '200':
+          description: Folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    put:
+      operationId: updateFolder
+      tags:
+        - Folders
+      summary: Update a folder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FolderDraft'
+      responses:
+        '200':
+          description: Updated folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          $ref: '../shared/components.yaml#/components/responses/BadRequest'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '422':
+          $ref: '../shared/components.yaml#/components/responses/Validation'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+    delete:
+      operationId: deleteFolder
+      tags:
+        - Folders
+      summary: Move a folder to trash.
+      responses:
+        '204':
+          description: Folder moved to trash.
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '409':
+          $ref: '../shared/components.yaml#/components/responses/Conflict'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+  folderPath:
+    parameters:
+      - $ref: '../shared/components.yaml#/components/parameters/FolderId'
+    get:
+      operationId: getFolderPath
+      tags:
+        - Folders
+      summary: Get the display path for a folder.
+      responses:
+        '200':
+          description: Folder path labels.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolderPath'
+        '404':
+          $ref: '../shared/components.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../shared/components.yaml#/components/responses/Unexpected'
+
+components:
+  schemas:
+    Folder:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - id
+        - name
+        - parentId
+        - updatedAt
+        - workspaceId
+      properties:
+        description:
+          type: string
+        id:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+        updatedAt:
+          $ref: '../shared/components.yaml#/components/schemas/DateTime'
+        workspaceId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+      examples:
+        - description: Reference materials and study decks.
+          id: academic
+          name: Academic
+          parentId: editorial-production
+          updatedAt: '2026-05-15T12:00:00.000Z'
+          workspaceId: editorial-production
+
+    FolderDraft:
+      type: object
+      additionalProperties: false
+      required:
+        - description
+        - name
+        - parentId
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+          minLength: 1
+        parentId:
+          $ref: '../shared/components.yaml#/components/schemas/Id'
+
+    FolderPath:
+      type: object
+      additionalProperties: false
+      required:
+        - segments
+      properties:
+        segments:
+          type: array
+          items:
+            type: string
+      example:
+        segments:
+          - Academic
+          - Research Methods

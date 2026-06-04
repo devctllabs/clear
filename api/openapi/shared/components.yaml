@@ -1,0 +1,280 @@
+components:
+  parameters:
+    WorkspaceId:
+      name: workspaceId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Workspace identifier.
+
+    FolderId:
+      name: folderId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Folder identifier.
+
+    DeckId:
+      name: deckId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Deck identifier.
+
+    NoteId:
+      name: noteId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Note identifier.
+
+    CardId:
+      name: cardId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Review card identifier.
+
+    ReviewId:
+      name: reviewId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Review session identifier.
+
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Id'
+      description: Trash item identifier.
+
+    DeckSortField:
+      name: sortField
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/DeckSortField'
+      description: Optional field used for deck collection sorting.
+
+    FolderSortField:
+      name: sortField
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/FolderSortField'
+      description: Optional field used for folder collection sorting.
+
+    NoteSortField:
+      name: sortField
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/NoteSortField'
+      description: Optional field used for note collection sorting.
+
+    SortDirection:
+      name: sortDirection
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/SortDirection'
+      description: Optional collection sorting direction.
+
+  responses:
+    BadRequest:
+      description: The request was malformed.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+          examples:
+            badRequest:
+              value:
+                type: unexpected
+                message: Request body is malformed.
+                retryable: false
+
+    Validation:
+      description: The request failed domain validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+          examples:
+            validation:
+              value:
+                type: validation
+                message: Invalid input.
+                retryable: false
+                fieldErrors:
+                  title:
+                    - Title is required.
+
+    Unauthorized:
+      description: Authentication is required.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+    Forbidden:
+      description: The caller is not allowed to perform this action.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+          examples:
+            notFound:
+              value:
+                type: not_found
+                message: Workspace not found.
+                retryable: false
+                entity: workspace
+                entityId: editorial-production
+
+    Conflict:
+      description: The request conflicts with current resource state.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+    Timeout:
+      description: The operation timed out.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+    Unavailable:
+      description: The service is temporarily unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+    Unexpected:
+      description: An unexpected error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DomainError'
+
+  schemas:
+    Id:
+      type: string
+      minLength: 1
+      example: editorial-production
+
+    DateTime:
+      type: string
+      format: date-time
+      example: '2026-05-15T12:00:00.000Z'
+
+    DeckSortField:
+      type: string
+      enum:
+        - dueToday
+        - title
+        - updated
+      example: title
+
+    FolderSortField:
+      type: string
+      enum:
+        - title
+        - updated
+      example: title
+
+    NoteSortField:
+      type: string
+      enum:
+        - title
+        - updated
+      example: title
+
+    SortDirection:
+      type: string
+      enum:
+        - asc
+        - desc
+      example: asc
+
+    VisualIconName:
+      type: string
+      minLength: 1
+      description: Lucide icon name used by the UI visual picker.
+      example: book-open
+
+    DomainErrorType:
+      type: string
+      enum:
+        - conflict
+        - forbidden
+        - not_found
+        - offline
+        - timeout
+        - unauthorized
+        - unexpected
+        - unavailable
+        - validation
+      example: validation
+
+    FieldErrors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+      example:
+        title:
+          - Title is required.
+
+    DomainError:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+        - retryable
+        - type
+      properties:
+        type:
+          $ref: '#/components/schemas/DomainErrorType'
+        message:
+          type: string
+          minLength: 1
+        retryable:
+          type: boolean
+        fieldErrors:
+          $ref: '#/components/schemas/FieldErrors'
+        entity:
+          type: string
+        entityId:
+          type: string
+      examples:
+        - type: validation
+          message: Invalid input.
+          retryable: false
+          fieldErrors:
+            title:
+              - Title is required.
+        - type: not_found
+          message: Note not found.
+          retryable: false
+          entity: note
+          entityId: constitutional-crisis

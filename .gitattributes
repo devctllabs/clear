@@ -1,0 +1,9 @@
+# Generated files
+ui/src/routeTree.gen.ts linguist-generated -diff
+**/generated/** linguist-generated -diff
+api/mock-server/openapi/admin.yaml linguist-generated -diff
+api/mock-server/openapi/admin.source.yaml linguist-generated -diff
+api/mock-server/openapi-ts.config.ts linguist-generated -diff
+api/mock-server/scripts/codegen-admin-openapi.ts linguist-generated -diff
+api/mock-server/scripts/codegen-mock-runtime.ts linguist-generated -diff
+api/mock-server/scripts/lib/mockRuntimeCodegen.ts linguist-generated -diff

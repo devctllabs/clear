@@ -1,0 +1,53 @@
+# Local workspace helpers
+.agents/
+.impeccable/live/sessions/
+.clear/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output and caches
+dist/
+dist-ssr/
+coverage/
+target/
+.vite/
+.cache/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+
+# Tauri generated schemas
+rust/tauri/gen/
+
+# Local runtime data
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+
+# Env and logs
+.env
+.env.*
+!.env.example
+*.local
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+
+*storybook.log
+storybook-static
+
+_bmad/
+_bmad-output/
+skills/bmad-*

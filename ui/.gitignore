@@ -1,0 +1,12 @@
+dist/
+dist-ssr/
+storybook-static/
+node_modules/
+coverage/
+.vite/
+*.tsbuildinfo
+*.local
+*.log
+.DS_Store
+
+*storybook.log

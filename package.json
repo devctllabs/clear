@@ -1,0 +1,28 @@
+{
+  "name": "clear",
+  "private": true,
+  "scripts": {
+    "build:tauri": "pnpm --dir rust/tauri build",
+    "build:ui": "pnpm --dir ui build",
+    "check:rust": "cargo check --manifest-path rust/Cargo.toml",
+    "check:tauri": "cargo check --manifest-path rust/tauri/Cargo.toml",
+    "check:ui": "pnpm --dir ui check",
+    "codegen:api": "pnpm --dir ui codegen:api",
+    "codegen:mock-api": "pnpm --dir api/mock-server codegen",
+    "dev:mock-api": "pnpm --dir api/mock-server dev",
+    "dev:tauri": "pnpm --dir rust/tauri dev",
+    "dev:ui": "pnpm --dir ui dev",
+    "info:tauri": "pnpm --dir rust/tauri info",
+    "lint:ui": "pnpm --dir ui lint",
+    "build:mock-api": "pnpm --dir api/mock-server build",
+    "test:mock-api": "pnpm --dir api/mock-server test",
+    "test:rust": "cargo test --manifest-path rust/Cargo.toml",
+    "test:ui": "pnpm --dir ui test",
+    "test:ui:unit": "pnpm --dir ui test:unit",
+    "test:ui:storybook": "pnpm --dir ui test:storybook"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2"
+  }
+}
