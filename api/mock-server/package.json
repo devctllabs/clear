@@ -15,7 +15,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.7",
     "hono": "^4.10.7",
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.97.1",
