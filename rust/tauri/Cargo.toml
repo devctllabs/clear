@@ -19,5 +19,5 @@ log = "0.4"
 clear-core = { path = "../crates/clear-core" }
 clear-migrator = { path = "../crates/clear-migrator" }
 serde = { version = "1.0.228", features = ["derive"] }
-tauri = { version = "2.10.3", features = [] }
+tauri = { version = "2.11.2", features = [] }
 tauri-plugin-log = "2.6.0"
