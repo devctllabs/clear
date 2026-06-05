@@ -26,21 +26,27 @@ jobs:
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: "11"
+
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version: "22"
+          cache: pnpm
 
-      - name: Install commitlint
-        run: npm install -D @commitlint/cli @commitlint/config-conventional
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Validate PR title
         if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          printf '%s\n' "$PR_TITLE" | npx commitlint --verbose
+          printf '%s\n' "$PR_TITLE" | pnpm exec commitlint --verbose
 
       - name: Validate last commit
         run: |
-          npx commitlint --last --verbose
+          pnpm exec commitlint --last --verbose

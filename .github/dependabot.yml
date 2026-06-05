@@ -9,18 +9,71 @@ updates:
     directory: /rust
     schedule:
       interval: weekly
+    groups:
+      tauri-stack:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - tauri*
+          - tauri-plugin*
 
   - package-ecosystem: npm
-    directory: /ui
+    directory: /
     schedule:
       interval: weekly
+    groups:
+      tanstack:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - "@tanstack/*"
 
-  - package-ecosystem: npm
-    directory: /api/mock-server
-    schedule:
-      interval: weekly
+      ui-runtime:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - react
+          - react-dom
+          - "@radix-ui/*"
+          - "@tauri-apps/*"
+          - axios
+          - class-variance-authority
+          - clsx
+          - i18next
+          - react-i18next
+          - react-markdown
+          - remark-gfm
+          - tailwind-merge
+          - tailwindcss
+          - "@tailwindcss/*"
+          - zod
+          - zustand
+          - lucide-react
 
-  - package-ecosystem: npm
-    directory: /rust/tauri
-    schedule:
-      interval: weekly
+      tooling:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - "@storybook/*"
+          - "storybook*"
+          - "@vitest/*"
+          - vitest
+          - "@testing-library/*"
+          - jsdom
+          - msw
+          - playwright
+          - eslint*
+          - typescript*
+          - vite
+          - "@vitejs/*"
+          - "@hey-api/openapi-ts"
+          - depcheck
+          - globals
