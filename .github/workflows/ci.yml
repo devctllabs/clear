@@ -97,11 +97,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.96
-
       - name: Install Linux system dependencies
         run: |
           sudo apt-get update
@@ -115,6 +110,30 @@ jobs:
             libssl-dev \
             librsvg2-dev \
             pkg-config
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.96
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-registry
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo target
+        uses: actions/cache@v5
+        with:
+          path: rust/target/
+          key: ${{ runner.os }}-cargo-target-1.96-${{ hashFiles('rust/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-target-1.96-
 
       - name: Run Rust check
         run: cargo check --manifest-path rust/Cargo.toml
