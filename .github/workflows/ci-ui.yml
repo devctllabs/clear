@@ -1,0 +1,76 @@
+name: CI UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-ui.yml
+      - package.json
+      - pnpm-lock.yaml
+      - ui/**
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-ui.yml
+      - package.json
+      - pnpm-lock.yaml
+      - ui/**
+
+concurrency:
+  group: ci-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: "11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Read Playwright version
+        id: playwright-version
+        uses: mikefarah/yq@v4.53.3
+        with:
+          cmd: yq '.importers.ui.devDependencies.playwright.version' pnpm-lock.yaml
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.result }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm setup:ui
+
+      - name: Generate UI codegen outputs
+        run: pnpm codegen:ui
+
+      - name: Check generated UI codegen drift
+        run: git diff --exit-code -- ui/src/shared/services/api/generated ui/src/routeTree.gen.ts
+
+      - name: Run UI check
+        run: pnpm check:ui
+
+      - name: Run UI lint
+        run: pnpm lint:ui
+
+      - name: Run UI tests
+        run: pnpm test:ui

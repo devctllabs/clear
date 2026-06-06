@@ -56,6 +56,18 @@ Install dependencies from the repository root:
 pnpm install
 ```
 
+If you plan to run the browser-backed UI tests or Storybook browser checks locally, install Chromium once:
+
+```bash
+pnpm setup:ui
+```
+
+If you change the UI API client or routes, regenerate the checked-in outputs with:
+
+```bash
+pnpm codegen:ui
+```
+
 ## Run in mock mode
 
 This is the fastest way to explore the UI. It runs Vite with in-browser mock
