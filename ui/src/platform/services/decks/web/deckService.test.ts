@@ -1,13 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { http, HttpResponse } from 'msw'
 
-const apiMocks = vi.hoisted(() => ({
-  createDeck: vi.fn(),
-  deleteDeck: vi.fn(),
-  getDeck: vi.fn(),
-  listFolderDecks: vi.fn(),
-  listWorkspaceDecks: vi.fn(),
-  updateDeck: vi.fn(),
-}))
+import type { Deck, DeckDraft } from '@api-generated/clear-api'
+import { DomainErrorType } from '@shared/errors'
+import {
+  apiUrl,
+  expectErr,
+  expectOk,
+  setupWebApiMsw,
+} from '@/test/web-api-msw'
+
+import { webDeckService } from './deckService'
+
+const server = setupWebApiMsw()
 
 const deck = {
   description: 'Global institutions.',
@@ -20,48 +25,160 @@ const deck = {
   totalNotes: 3,
   updatedAt: '2026-05-15T12:00:00.000Z',
   workspaceId: 'independent-study',
-}
+} satisfies Deck
 
-const loadWebDeckService = async () => {
-  vi.doMock('@api-generated/clear-api', () => apiMocks)
-
-  return (await import('./deckService')).webDeckService
-}
+const draft = {
+  description: 'Updated global institutions.',
+  icon: 'book-open',
+  parentId: 'reading-notes',
+  title: 'World History Updated',
+} as const satisfies DeckDraft
 
 describe('webDeckService', () => {
-  beforeEach(() => {
-    vi.resetModules()
-    vi.clearAllMocks()
+  it('creates decks through the web API', async () => {
+    server.use(
+      http.post(apiUrl('/decks'), async ({ request }) => {
+        expect(await request.json()).toEqual(draft)
+
+        return HttpResponse.json(deck, { status: 201 })
+      }),
+    )
+
+    await expect(webDeckService.create(draft)).resolves.toEqual({
+      ok: true,
+      value: deck,
+    })
   })
 
-  it('uses the workspace endpoint for root decks', async () => {
-    apiMocks.listWorkspaceDecks.mockResolvedValue({ data: [deck] })
-    const webDeckService = await loadWebDeckService()
+  it('moves decks to trash through the web API', async () => {
+    server.use(
+      http.delete(apiUrl('/decks/:deckId'), ({ params }) => {
+        expect(params.deckId).toBe('world-history')
 
-    const result = await webDeckService.listWorkspaceRoot('independent-study', {
-      direction: 'desc',
-      field: 'updated',
-    })
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
 
-    expect(result.ok ? result.value : []).toEqual([deck])
-    expect(apiMocks.listWorkspaceDecks).toHaveBeenCalledWith({
-      path: { workspaceId: 'independent-study' },
-      query: { sortDirection: 'desc', sortField: 'updated' },
-    })
-    expect(apiMocks.listFolderDecks).not.toHaveBeenCalled()
+    expectOk(await webDeckService.delete('world-history'))
   })
 
-  it('uses the folder endpoint for folder decks', async () => {
-    apiMocks.listFolderDecks.mockResolvedValue({ data: [deck] })
-    const webDeckService = await loadWebDeckService()
+  it('loads a deck by id through the web API', async () => {
+    server.use(
+      http.get(apiUrl('/decks/:deckId'), ({ params }) => {
+        expect(params.deckId).toBe('world-history')
 
-    const result = await webDeckService.listFolderChildren('reading-notes')
+        return HttpResponse.json(deck)
+      }),
+    )
 
-    expect(result.ok ? result.value : []).toEqual([deck])
-    expect(apiMocks.listFolderDecks).toHaveBeenCalledWith({
-      path: { folderId: 'reading-notes' },
-      query: {},
+    await expect(webDeckService.getById('world-history')).resolves.toEqual({
+      ok: true,
+      value: deck,
     })
-    expect(apiMocks.listWorkspaceDecks).not.toHaveBeenCalled()
+  })
+
+  it('lists folder decks with sort query params', async () => {
+    server.use(
+      http.get(apiUrl('/folders/:folderId/decks'), ({ params, request }) => {
+        const url = new URL(request.url)
+
+        expect(params.folderId).toBe('reading-notes')
+        expect(url.searchParams.get('sortDirection')).toBe('desc')
+        expect(url.searchParams.get('sortField')).toBe('updated')
+
+        return HttpResponse.json([deck])
+      }),
+    )
+
+    await expect(
+      webDeckService.listFolderChildren('reading-notes', {
+        direction: 'desc',
+        field: 'updated',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      value: [deck],
+    })
+  })
+
+  it('lists workspace root decks with sort query params', async () => {
+    server.use(
+      http.get(apiUrl('/workspaces/:workspaceId/decks'), ({ params, request }) => {
+        const url = new URL(request.url)
+
+        expect(params.workspaceId).toBe('independent-study')
+        expect(url.searchParams.get('sortDirection')).toBe('asc')
+        expect(url.searchParams.get('sortField')).toBe('title')
+
+        return HttpResponse.json([deck])
+      }),
+    )
+
+    await expect(
+      webDeckService.listWorkspaceRoot('independent-study', {
+        direction: 'asc',
+        field: 'title',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      value: [deck],
+    })
+  })
+
+  it('updates decks through the web API', async () => {
+    server.use(
+      http.put(apiUrl('/decks/:deckId'), async ({ params, request }) => {
+        expect(params.deckId).toBe('world-history')
+        expect(await request.json()).toEqual(draft)
+
+        return HttpResponse.json({ ...deck, ...draft })
+      }),
+    )
+
+    await expect(webDeckService.update('world-history', draft)).resolves.toEqual({
+      ok: true,
+      value: { ...deck, ...draft },
+    })
+  })
+
+  it('maps API validation errors to domain validation errors', async () => {
+    server.use(
+      http.post(apiUrl('/decks'), () =>
+        HttpResponse.json(
+          {
+            fieldErrors: {
+              title: ['Title is required.'],
+            },
+            message: 'Invalid deck.',
+            retryable: false,
+            type: DomainErrorType.Validation,
+          },
+          { status: 422 },
+        ),
+      ),
+    )
+
+    expect(expectErr(await webDeckService.create(draft))).toEqual({
+      fieldErrors: {
+        title: ['Title is required.'],
+      },
+      message: 'Invalid deck.',
+      retryable: false,
+      type: DomainErrorType.Validation,
+    })
+  })
+
+  it('maps malformed success responses to service unavailable', async () => {
+    server.use(
+      http.get(apiUrl('/decks/:deckId'), () =>
+        HttpResponse.json({ id: 'not-a-deck' }),
+      ),
+    )
+
+    expect(expectErr(await webDeckService.getById('world-history'))).toMatchObject({
+      message: 'Failed to load deck.',
+      retryable: true,
+      type: DomainErrorType.Unavailable,
+    })
   })
 })

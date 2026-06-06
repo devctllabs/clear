@@ -1,15 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { http, HttpResponse } from 'msw'
 
-const apiMocks = vi.hoisted(() => ({
-  createNote: vi.fn(),
-  deleteNote: vi.fn(),
-  getNote: vi.fn(),
-  listNotesByDeck: vi.fn(),
-  updateNote: vi.fn(),
-}))
+import type {
+  NoteDetail,
+  NoteDraft,
+  NoteListItem,
+  NoteRef,
+} from '@api-generated/clear-api'
+import { apiUrl, expectOk, setupWebApiMsw } from '@/test/web-api-msw'
 
-const note = {
-  deckId: 'world-history',
+import { webNoteService } from './noteService'
+
+const server = setupWebApiMsw()
+
+const noteListItem = {
   dueAt: '2026-05-16T12:00:00.000Z',
   id: 'industrial-revolution-causes',
   kind: 'basic',
@@ -18,80 +22,119 @@ const note = {
   status: 'mastered',
   title: 'Industrial Revolution Causes',
   updatedAt: '2026-05-12T12:00:00.000Z',
-}
+} satisfies NoteListItem
+
+const noteDetail = {
+  deckId: 'world-history',
+  dueAt: noteListItem.dueAt,
+  editor: { back: 'Back', front: 'Front' },
+  id: noteListItem.id,
+  kind: 'basic',
+  progress: noteListItem.progress,
+  reviewedAt: noteListItem.reviewedAt,
+  status: noteListItem.status,
+  title: noteListItem.title,
+  updatedAt: noteListItem.updatedAt,
+} satisfies NoteDetail
 
 const noteRef = {
-  deckId: note.deckId,
-  id: note.id,
-}
+  deckId: 'world-history',
+  id: noteListItem.id,
+} satisfies NoteRef
 
-const loadWebNoteService = async () => {
-  vi.doMock('@api-generated/clear-api', () => apiMocks)
-
-  return (await import('./noteService')).webNoteService
-}
+const draft = {
+  deckId: 'world-history',
+  editor: { back: 'Updated back', front: 'Updated front' },
+  kind: 'basic',
+  title: 'Updated Industrial Revolution Causes',
+} satisfies NoteDraft
 
 describe('webNoteService', () => {
-  beforeEach(() => {
-    vi.resetModules()
-    vi.clearAllMocks()
+  it('creates notes through the web API and returns a slim note ref', async () => {
+    server.use(
+      http.post(apiUrl('/notes'), async ({ request }) => {
+        expect(await request.json()).toEqual(draft)
+
+        return HttpResponse.json(noteRef, { status: 201 })
+      }),
+    )
+
+    const result = expectOk(await webNoteService.create(draft))
+
+    expect(result).toEqual(noteRef)
+    expect(result).not.toHaveProperty('editor')
+    expect(result).not.toHaveProperty('progress')
   })
 
-  it('lists deck notes with the slim list item response', async () => {
-    apiMocks.listNotesByDeck.mockResolvedValue({ data: [note] })
-    const webNoteService = await loadWebNoteService()
+  it('moves notes to trash through the web API', async () => {
+    server.use(
+      http.delete(apiUrl('/notes/:noteId'), ({ params }) => {
+        expect(params.noteId).toBe(noteListItem.id)
 
-    const result = await webNoteService.listByDeck('world-history', {
-      direction: 'desc',
-      field: 'updated',
-    })
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
 
-    expect(result.ok ? result.value : []).toEqual([note])
-    expect(result.ok ? result.value[0] : undefined).not.toHaveProperty('editor')
-    expect(result.ok ? result.value[0] : undefined).not.toHaveProperty('bodySegments')
-    expect(result.ok ? result.value[0] : undefined).not.toHaveProperty('cards')
-    expect(apiMocks.listNotesByDeck).toHaveBeenCalledWith({
-      path: { deckId: 'world-history' },
-      query: { sortDirection: 'desc', sortField: 'updated' },
+    expectOk(await webNoteService.delete(noteListItem.id))
+  })
+
+  it('loads note detail by note id through the web API', async () => {
+    server.use(
+      http.get(apiUrl('/notes/:noteId'), ({ params }) => {
+        expect(params.noteId).toBe(noteListItem.id)
+
+        return HttpResponse.json(noteDetail)
+      }),
+    )
+
+    await expect(
+      webNoteService.getById('ignored-by-web-service', noteListItem.id),
+    ).resolves.toEqual({
+      ok: true,
+      value: noteDetail,
     })
   })
 
-  it('creates notes with the slim note ref response', async () => {
-    apiMocks.createNote.mockResolvedValue({ data: noteRef })
-    const webNoteService = await loadWebNoteService()
-    const draft = {
-      deckId: 'world-history',
-      editor: { back: 'Back', front: 'Front' },
-      kind: 'basic' as const,
-      title: 'Industrial Revolution Causes',
-    }
+  it('lists deck notes with sort query params and slim list items', async () => {
+    server.use(
+      http.get(apiUrl('/decks/:deckId/notes'), ({ params, request }) => {
+        const url = new URL(request.url)
 
-    const result = await webNoteService.create(draft)
+        expect(params.deckId).toBe('world-history')
+        expect(url.searchParams.get('sortDirection')).toBe('desc')
+        expect(url.searchParams.get('sortField')).toBe('updated')
 
-    expect(result.ok ? result.value : undefined).toEqual(noteRef)
-    expect(result.ok ? result.value : undefined).not.toHaveProperty('editor')
-    expect(result.ok ? result.value : undefined).not.toHaveProperty('progress')
-    expect(apiMocks.createNote).toHaveBeenCalledWith({ body: draft })
+        return HttpResponse.json([noteListItem])
+      }),
+    )
+
+    const result = expectOk(
+      await webNoteService.listByDeck('world-history', {
+        direction: 'desc',
+        field: 'updated',
+      }),
+    )
+
+    expect(result).toEqual([noteListItem])
+    expect(result[0]).not.toHaveProperty('editor')
+    expect(result[0]).not.toHaveProperty('bodySegments')
+    expect(result[0]).not.toHaveProperty('cards')
   })
 
-  it('updates notes with the slim note ref response', async () => {
-    apiMocks.updateNote.mockResolvedValue({ data: noteRef })
-    const webNoteService = await loadWebNoteService()
-    const draft = {
-      deckId: 'world-history',
-      editor: { back: 'Updated back', front: 'Updated front' },
-      kind: 'basic' as const,
-      title: 'Updated Industrial Revolution Causes',
-    }
+  it('updates notes through the web API and returns a slim note ref', async () => {
+    server.use(
+      http.put(apiUrl('/notes/:noteId'), async ({ params, request }) => {
+        expect(params.noteId).toBe(noteListItem.id)
+        expect(await request.json()).toEqual(draft)
 
-    const result = await webNoteService.update(note.id, draft)
+        return HttpResponse.json(noteRef)
+      }),
+    )
 
-    expect(result.ok ? result.value : undefined).toEqual(noteRef)
-    expect(result.ok ? result.value : undefined).not.toHaveProperty('editor')
-    expect(result.ok ? result.value : undefined).not.toHaveProperty('progress')
-    expect(apiMocks.updateNote).toHaveBeenCalledWith({
-      body: draft,
-      path: { noteId: note.id },
-    })
+    const result = expectOk(await webNoteService.update(noteListItem.id, draft))
+
+    expect(result).toEqual(noteRef)
+    expect(result).not.toHaveProperty('editor')
+    expect(result).not.toHaveProperty('progress')
   })
 })

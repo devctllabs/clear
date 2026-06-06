@@ -1,14 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
+import { http, HttpResponse } from 'msw'
 
-const apiMocks = vi.hoisted(() => ({
-  createFolder: vi.fn(),
-  deleteFolder: vi.fn(),
-  getFolder: vi.fn(),
-  getFolderPath: vi.fn(),
-  listFolderFolders: vi.fn(),
-  listWorkspaceFolders: vi.fn(),
-  updateFolder: vi.fn(),
-}))
+import type { Folder, FolderDraft } from '@api-generated/clear-api'
+import { apiUrl, expectOk, setupWebApiMsw } from '@/test/web-api-msw'
+
+import { webFolderService } from './folderService'
+
+const server = setupWebApiMsw()
 
 const folder = {
   description: 'Reference materials.',
@@ -17,62 +15,133 @@ const folder = {
   parentId: 'independent-study',
   updatedAt: '2026-05-15T12:00:00.000Z',
   workspaceId: 'independent-study',
-}
+} satisfies Folder
 
-const loadWebFolderService = async () => {
-  vi.doMock('@api-generated/clear-api', () => apiMocks)
-
-  return (await import('./folderService')).webFolderService
-}
+const draft = {
+  description: 'Updated reference materials.',
+  name: 'Reading Notes Updated',
+  parentId: 'independent-study',
+} satisfies FolderDraft
 
 describe('webFolderService', () => {
-  beforeEach(() => {
-    vi.resetModules()
-    vi.clearAllMocks()
+  it('creates folders through the web API', async () => {
+    server.use(
+      http.post(apiUrl('/folders'), async ({ request }) => {
+        expect(await request.json()).toEqual(draft)
+
+        return HttpResponse.json(folder, { status: 201 })
+      }),
+    )
+
+    await expect(webFolderService.create(draft)).resolves.toEqual({
+      ok: true,
+      value: folder,
+    })
   })
 
-  it('uses the workspace endpoint for root folders', async () => {
-    apiMocks.listWorkspaceFolders.mockResolvedValue({ data: [folder] })
-    const webFolderService = await loadWebFolderService()
+  it('moves folders to trash through the web API', async () => {
+    server.use(
+      http.delete(apiUrl('/folders/:folderId'), ({ params }) => {
+        expect(params.folderId).toBe('reading-notes')
 
-    const result = await webFolderService.listWorkspaceRoot('independent-study', {
-      direction: 'asc',
-      field: 'title',
-    })
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
 
-    expect(result.ok ? result.value : []).toEqual([folder])
-    expect(apiMocks.listWorkspaceFolders).toHaveBeenCalledWith({
-      path: { workspaceId: 'independent-study' },
-      query: { sortDirection: 'asc', sortField: 'title' },
-    })
-    expect(apiMocks.listFolderFolders).not.toHaveBeenCalled()
+    expectOk(await webFolderService.delete('reading-notes'))
   })
 
-  it('uses the folder endpoint for nested folders', async () => {
-    apiMocks.listFolderFolders.mockResolvedValue({ data: [folder] })
-    const webFolderService = await loadWebFolderService()
+  it('loads a folder by id through the web API', async () => {
+    server.use(
+      http.get(apiUrl('/folders/:folderId'), ({ params }) => {
+        expect(params.folderId).toBe('reading-notes')
 
-    const result = await webFolderService.listFolderChildren('reading-notes')
+        return HttpResponse.json(folder)
+      }),
+    )
 
-    expect(result.ok ? result.value : []).toEqual([folder])
-    expect(apiMocks.listFolderFolders).toHaveBeenCalledWith({
-      path: { folderId: 'reading-notes' },
-      query: {},
+    await expect(webFolderService.getById('reading-notes')).resolves.toEqual({
+      ok: true,
+      value: folder,
     })
-    expect(apiMocks.listWorkspaceFolders).not.toHaveBeenCalled()
   })
 
   it('maps folder path response segments', async () => {
-    apiMocks.getFolderPath.mockResolvedValue({
-      data: { segments: ['Reading Notes', 'History'] },
+    server.use(
+      http.get(apiUrl('/folders/:folderId/path'), ({ params }) => {
+        expect(params.folderId).toBe('history')
+
+        return HttpResponse.json({ segments: ['Reading Notes', 'History'] })
+      }),
+    )
+
+    await expect(webFolderService.getPath('history')).resolves.toEqual({
+      ok: true,
+      value: ['Reading Notes', 'History'],
     })
-    const webFolderService = await loadWebFolderService()
+  })
 
-    const result = await webFolderService.getPath('history')
+  it('lists nested folders with sort query params', async () => {
+    server.use(
+      http.get(apiUrl('/folders/:folderId/folders'), ({ params, request }) => {
+        const url = new URL(request.url)
 
-    expect(result.ok ? result.value : []).toEqual(['Reading Notes', 'History'])
-    expect(apiMocks.getFolderPath).toHaveBeenCalledWith({
-      path: { folderId: 'history' },
+        expect(params.folderId).toBe('reading-notes')
+        expect(url.searchParams.get('sortDirection')).toBe('desc')
+        expect(url.searchParams.get('sortField')).toBe('updated')
+
+        return HttpResponse.json([folder])
+      }),
+    )
+
+    await expect(
+      webFolderService.listFolderChildren('reading-notes', {
+        direction: 'desc',
+        field: 'updated',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      value: [folder],
+    })
+  })
+
+  it('lists workspace root folders with sort query params', async () => {
+    server.use(
+      http.get(apiUrl('/workspaces/:workspaceId/folders'), ({ params, request }) => {
+        const url = new URL(request.url)
+
+        expect(params.workspaceId).toBe('independent-study')
+        expect(url.searchParams.get('sortDirection')).toBe('asc')
+        expect(url.searchParams.get('sortField')).toBe('title')
+
+        return HttpResponse.json([folder])
+      }),
+    )
+
+    await expect(
+      webFolderService.listWorkspaceRoot('independent-study', {
+        direction: 'asc',
+        field: 'title',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      value: [folder],
+    })
+  })
+
+  it('updates folders through the web API', async () => {
+    server.use(
+      http.put(apiUrl('/folders/:folderId'), async ({ params, request }) => {
+        expect(params.folderId).toBe('reading-notes')
+        expect(await request.json()).toEqual(draft)
+
+        return HttpResponse.json({ ...folder, ...draft })
+      }),
+    )
+
+    await expect(webFolderService.update('reading-notes', draft)).resolves.toEqual({
+      ok: true,
+      value: { ...folder, ...draft },
     })
   })
 })
