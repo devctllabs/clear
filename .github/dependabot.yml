@@ -9,6 +9,10 @@ updates:
     directory: /rust
     schedule:
       interval: weekly
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       tauri-stack:
         applies-to: version-updates
@@ -23,6 +27,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       tanstack:
         applies-to: version-updates
