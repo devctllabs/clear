@@ -64,6 +64,16 @@ updates:
           - zustand
           - lucide-react
 
+      codegen:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - "@hey-api/openapi-ts"
+          - "@tanstack/router-plugin"
+          - "@tanstack/router-cli"
+
       tooling:
         applies-to: version-updates
         update-types:
@@ -82,6 +92,5 @@ updates:
           - typescript*
           - vite
           - "@vitejs/*"
-          - "@hey-api/openapi-ts"
           - depcheck
           - globals

@@ -1,0 +1,61 @@
+name: CI Mock API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-mock-api.yml
+      - package.json
+      - pnpm-lock.yaml
+      - api/**
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/ci-mock-api.yml
+      - package.json
+      - pnpm-lock.yaml
+      - api/**
+
+concurrency:
+  group: ci-mock-api-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  mock-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: "11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate mock API assets
+        run: pnpm codegen:mock-api
+
+      - name: Check mock API codegen drift
+        run: git diff --exit-code -- api/mock-server/openapi api/mock-server/src/generated
+
+      - name: Run mock API check
+        run: pnpm --dir api/mock-server check
+
+      - name: Run mock API tests
+        run: pnpm test:mock-api
+
+      - name: Run mock API build
+        run: pnpm build:mock-api

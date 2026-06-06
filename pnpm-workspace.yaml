@@ -2,6 +2,7 @@ packages:
   - api/mock-server
   - ui
   - rust/tauri
+minimumReleaseAge: 0
 allowBuilds:
   esbuild: true
   msw: true

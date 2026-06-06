@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "check": "tsc -b",
-    "codegen:api": "openapi-ts",
+    "codegen": "openapi-ts && tsr generate",
+    "setup": "playwright install --with-deps chromium",
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -50,6 +51,7 @@
     "@storybook/addon-vitest": "10.3.6",
     "@storybook/react-vite": "10.3.6",
     "@tanstack/router-plugin": "^1.167.32",
+    "@tanstack/router-cli": "^1.167.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
