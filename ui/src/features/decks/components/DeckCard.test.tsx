@@ -226,7 +226,8 @@ describe('DeckCard', () => {
 
     expect(screen.getByRole('button', { name: 'Review' })).toHaveClass('bg-card')
     expect(screen.getByText('0%')).toBeInTheDocument()
-    expect(screen.getByText('Due Today').nextElementSibling).toHaveTextContent('0')
+    expect(screen.getByText(/Due Today:/)).toHaveClass('sr-only')
+    expect(screen.getByText('0')).toHaveClass('type-metric')
     expect(screen.queryByText('-3')).not.toBeInTheDocument()
     expect(screen.queryByText(/NaN|Infinity/)).not.toBeInTheDocument()
   })
@@ -251,8 +252,11 @@ describe('DeckCard', () => {
 
     await user.click(screen.getByRole('button', { name: 'Open Biology deck' }))
     expect(onOpen).toHaveBeenCalledWith(baseDeck)
-    const dueMetadata = screen.getByText('Due').closest('div')
-    expect(dueMetadata).toHaveClass('flex-col')
+    const dueLabel = screen.getByText(/Due Today:/)
+    expect(dueLabel).toHaveClass('sr-only')
+    const dueMetadata = screen.getByText('18').closest('div')
+    expect(dueMetadata).toHaveClass('items-center', 'gap-1.5')
+    expect(dueMetadata).not.toHaveClass('flex-col')
     expect(dueMetadata).not.toHaveClass('rounded-full')
     expect(dueMetadata).not.toHaveClass('bg-muted')
     expect(screen.getByText('18')).toHaveClass('text-xs')
