@@ -434,7 +434,7 @@ const DeckDesktopOverview = ({
       className="type-action h-12 w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
       variant="default"
     >
-      <DeckStudyNowLabel to={studyNowTo} />
+      <Link to={studyNowTo as never}>{t(($) => $.decks.actions.studyNow)}</Link>
     </Button>
   </DesktopAsidePanel>
   )
@@ -444,10 +444,4 @@ const DeckMasteryLabel = () => {
   const { t } = useTranslation()
 
   return t(($) => $.decks.labels.mastery)
-}
-
-const DeckStudyNowLabel = ({ to }: { to: string }) => {
-  const { t } = useTranslation()
-
-  return <Link to={to as never}>{t(($) => $.decks.actions.studyNow)}</Link>
 }

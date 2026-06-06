@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, Pencil, Trash2 } from 'lucide-react'
+import { ArrowRight, Clock3, Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
@@ -53,6 +53,7 @@ export const DeckCard = ({
   const openDeckLabel = t(($) => $.decks.actions.openDeck, { title: deckTitle })
   const deckActionsLabel = t(($) => $.decks.actions.actionMenu, { title: deckTitle })
   const reviewLabel = t(($) => $.common.actions.review)
+  const dueTodayA11yLabel = t(($) => $.decks.labels.dueToday)
 
   const openDeck = () => {
     onOpen(deck)
@@ -107,11 +108,14 @@ export const DeckCard = ({
           />
         </div>
         <div className="pointer-events-none relative z-20 col-start-2 col-end-4 row-start-2 flex min-w-0 flex-wrap items-center gap-2 min-[380px]:gap-x-4 min-[380px]:gap-y-3 sm:col-end-5">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="flex min-w-8 shrink-0 flex-col items-start gap-0.5">
-              <span className="text-[0.6875rem] font-semibold uppercase leading-none text-muted-foreground">
-                {t(($) => $.decks.labels.due)}
-              </span>
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 shrink-0 items-center gap-1.5">
+              <Clock3
+                aria-hidden="true"
+                className="size-3.5 shrink-0 text-muted-foreground"
+                strokeWidth={2.3}
+              />
+              <span className="sr-only">{dueTodayA11yLabel}: </span>
               <span className="type-technical text-xs font-bold leading-none text-foreground">
                 {dueTodayLabel}
               </span>
@@ -177,43 +181,46 @@ export const DeckCard = ({
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <ProgressRing value={deck.progress} />
-          <div className="pointer-events-auto">
-            <ActionMenu
-              ariaLabel={deckActionsLabel}
-              items={[
-                {
-                  icon: <Pencil className="size-4 stroke-[2.4]" />,
-                  label: t(($) => $.common.actions.edit),
-                  onSelect: () => {
-                    onEdit(deck)
-                  },
+        <div className="pointer-events-auto shrink-0">
+          <ActionMenu
+            ariaLabel={deckActionsLabel}
+            items={[
+              {
+                icon: <Pencil className="size-4 stroke-[2.4]" />,
+                label: t(($) => $.common.actions.edit),
+                onSelect: () => {
+                  onEdit(deck)
                 },
-                {
-                  icon: <Trash2 className="size-4 stroke-[2.2]" />,
-                  label: t(($) => $.common.actions.delete),
-                  onSelect: () => onDelete(deck),
-                  tone: 'danger',
-                },
-              ]}
-              triggerFocusSurface="card"
-            />
-          </div>
+              },
+              {
+                icon: <Trash2 className="size-4 stroke-[2.2]" />,
+                label: t(($) => $.common.actions.delete),
+                onSelect: () => onDelete(deck),
+                tone: 'danger',
+              },
+            ]}
+            triggerFocusSurface="card"
+          />
         </div>
       </div>
-      <div className="pointer-events-none relative z-20 flex min-w-0 items-center justify-between">
-        <div>
-          <span className="type-label uppercase text-muted-foreground">
-            {t(($) => $.decks.labels.dueToday)}
-          </span>
-          <p className="type-metric text-primary">
-            {dueTodayLabel}
-          </p>
+      <div className="pointer-events-none relative z-20 flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-4">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex min-w-0 shrink-0 items-center gap-2">
+            <Clock3
+              aria-hidden="true"
+              className="size-4 shrink-0 text-muted-foreground"
+              strokeWidth={2.3}
+            />
+            <span className="sr-only">{dueTodayA11yLabel}: </span>
+            <span className="type-metric text-primary">
+              {dueTodayLabel}
+            </span>
+          </div>
+          <ProgressRing value={deck.progress} />
         </div>
         <Button
           className={cn(
-            'type-action pointer-events-auto h-auto rounded-full px-8 py-3.5 transition-[background-color,color,transform] active:scale-95',
+            'type-action pointer-events-auto ml-auto h-auto rounded-full px-8 py-3.5 transition-[background-color,color,transform] active:scale-95',
             hasDueToday
               ? 'bg-primary text-primary-foreground hover:bg-primary/90'
               : 'border border-border bg-card text-foreground hover:bg-muted',

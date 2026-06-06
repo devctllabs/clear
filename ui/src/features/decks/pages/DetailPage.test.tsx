@@ -266,6 +266,14 @@ describe('DeckDetailPage', () => {
     expect(await screen.findByText(deckDescription)).toBeInTheDocument()
     const studyNowLinks = screen.getAllByRole('link', { name: 'Study now' })
     expect(studyNowLinks).toHaveLength(1)
+    expect(studyNowLinks[0]).toHaveClass(
+      'type-action',
+      'h-12',
+      'w-full',
+      'rounded-full',
+      'bg-primary',
+      'text-primary-foreground',
+    )
     const createButton = await screen.findByRole('button', { name: 'Create' })
     const deckActions = await screen.findByRole('button', { name: 'World History actions' })
 
