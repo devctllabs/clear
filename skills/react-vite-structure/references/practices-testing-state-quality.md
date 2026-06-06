@@ -252,6 +252,81 @@ When a feature uses injected services:
 - Test `shared/errors/*`, `shared/services/api/error-mapping.test.ts`, `platform/tauri/tauri-error.test.ts`, and `core/query/domain-query.test.ts` near their implementations.
 - Avoid mocking web/Tauri transport directly in React components when service injection is available.
 
+### Web Service Adapter Tests
+
+Test `platform/services/*/web/*.test.ts` at the HTTP boundary when a web adapter wraps a generated SDK or shared API client. Prefer MSW over mocking generated SDK functions when the test should prove URL building, path/query/body serialization, response validation, and API error mapping.
+
+Keep MSW opt-in unless most tests need HTTP interception. Put shared helpers under `src/test/`, return a file-local server from the setup helper, and use strict unhandled-request behavior:
+
+```typescript
+// src/test/web-api-msw.ts
+import { afterAll, afterEach, beforeAll } from 'vitest';
+import { setupServer } from 'msw/node';
+
+export const WEB_API_BASE_URL = 'http://app.test/api/v1';
+export const apiUrl = (path: `/${string}`) => `${WEB_API_BASE_URL}${path}`;
+
+export const setupWebApiMsw = () => {
+  const server = setupServer();
+
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
+  return server;
+};
+```
+
+If the generated client keeps global configuration, set the test base URL in the helper and restore the original config in `afterAll`.
+
+Prefer handlers that assert transport details instead of only returning static JSON:
+
+```typescript
+// src/platform/services/products/web/productService.test.ts
+import { describe, expect, it } from 'vitest';
+import { http, HttpResponse } from 'msw';
+
+import { apiUrl, setupWebApiMsw } from '@/test/web-api-msw';
+
+import { webProductService } from './productService';
+
+const server = setupWebApiMsw();
+
+const product = {
+  id: 'notebook',
+  name: 'Notebook',
+  updatedAt: '2026-05-15T12:00:00.000Z',
+};
+
+describe('webProductService', () => {
+  it('lists category products with path and sort query params', async () => {
+    server.use(
+      http.get(apiUrl('/categories/:categoryId/products'), ({ params, request }) => {
+        const url = new URL(request.url);
+
+        expect(params.categoryId).toBe('stationery');
+        expect(url.searchParams.get('sortDirection')).toBe('desc');
+        expect(url.searchParams.get('sortField')).toBe('updated');
+
+        return HttpResponse.json([product]);
+      }),
+    );
+
+    await expect(
+      webProductService.listCategoryProducts('stationery', {
+        direction: 'desc',
+        field: 'updated',
+      }),
+    ).resolves.toEqual({
+      ok: true,
+      value: [product],
+    });
+  });
+});
+```
+
+Cover each public web adapter method with focused success tests. Include representative tests for request bodies, `204`/void responses, API errors, and malformed successful responses when the client performs runtime response validation. Keep UI, hook, and page tests on injected fake services unless the test intentionally exercises the HTTP boundary.
+
 ---
 
 ## State Management Options
