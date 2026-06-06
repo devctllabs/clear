@@ -377,11 +377,11 @@ describe('DashboardPage', () => {
     renderRoute('/dashboard/independent-study')
 
     fireEvent.change(await screen.findByPlaceholderText('Search folders, decks, and notes…'), {
-      target: { value: 'neural' },
+      target: { value: 'institutions' },
     })
 
     expect(await screen.findByRole('heading', { name: 'Search results' })).toBeInTheDocument()
-    expect(await screen.findByText('Neural Models')).toBeInTheDocument()
+    expect(await screen.findByText('Postwar Institutions')).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'Folders' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sort folders' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sort decks' })).not.toBeInTheDocument()
@@ -460,8 +460,8 @@ describe('DashboardPage', () => {
 
     expect(
       appearsBefore(
-        screen.getByRole('heading', { name: 'World History' }),
         screen.getByRole('heading', { name: 'Cognitive Biases' }),
+        screen.getByRole('heading', { name: 'World History' }),
       ),
     ).toBe(true)
     expect(JSON.parse(window.localStorage.getItem('workspace-sort:decks') ?? '{}')).toMatchObject(

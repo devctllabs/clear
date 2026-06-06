@@ -7,7 +7,7 @@ import type {
   ReviewStartResult,
 } from '../../generated/clear-web-api/contract/types.gen.ts'
 import type { ReviewSessionRecord } from '../../generated/mock-admin/contract/index.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
 import type { DeckRepository } from '../decks/repository.ts'
@@ -26,15 +26,27 @@ const elapsedSeconds = (startedAt: string, now: string) =>
   Math.max(0, Math.floor((Date.parse(now) - Date.parse(startedAt)) / 1000))
 
 export class ReviewService {
-  constructor(
-    private readonly reviews: ReviewRepository,
-    private readonly notes: NotesRepository,
-    private readonly decks: DeckRepository,
-    private readonly noteService: NotesService,
-    private readonly stateStore: MockStateRepository,
-  ) {}
+  private readonly reviews: ReviewRepository
+  private readonly notes: NotesRepository
+  private readonly decks: DeckRepository
+  private readonly noteService: NotesService
+  private readonly stateStore: MockStateStore
 
-  startReviewSession(deckId: string): ReviewStartResult {
+  constructor(
+    reviews: ReviewRepository,
+    notes: NotesRepository,
+    decks: DeckRepository,
+    noteService: NotesService,
+    stateStore: MockStateStore,
+  ) {
+    this.reviews = reviews
+    this.notes = notes
+    this.decks = decks
+    this.noteService = noteService
+    this.stateStore = stateStore
+  }
+
+  async startReviewSession(deckId: string): Promise<ReviewStartResult> {
     const deck = this.decks.require(deckId)
     const queue = this.buildQueue(deckId)
 
@@ -45,7 +57,7 @@ export class ReviewService {
       }
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const dueQueue = queue.filter((entry) => entry.dueAt <= now)
@@ -63,7 +75,7 @@ export class ReviewService {
           status: 'active',
         }
 
-        this.reviews.create(session as unknown as ReviewSessionRecord)
+        await this.reviews.create(session as unknown as ReviewSessionRecord)
 
         return session
       }
@@ -78,7 +90,7 @@ export class ReviewService {
         startedAt: now,
       }
 
-      this.reviews.create(session as unknown as ReviewSessionRecord)
+      await this.reviews.create(session as unknown as ReviewSessionRecord)
 
       return session
     })
@@ -88,7 +100,7 @@ export class ReviewService {
     return this.reviews.require(reviewId)
   }
 
-  gradeReviewSessionCard(reviewId: string, cardId: string, grade: ReviewGrade): ReviewSession {
+  async gradeReviewSessionCard(reviewId: string, cardId: string, grade: ReviewGrade): Promise<ReviewSession> {
     const session = this.reviews.require(reviewId)
     const queue = this.buildQueue(session.deckId)
     const currentIndex = queue.findIndex((entry) => entry.card.id === cardId)
@@ -97,9 +109,9 @@ export class ReviewService {
       throw conflict(`Review card ${cardId} is not the current card for session ${reviewId}`)
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
-      this.noteService.gradeNoteCard(queue[currentIndex].noteId, cardId, grade)
+      await this.noteService.gradeNoteCard(queue[currentIndex].noteId, cardId, grade)
       const nextQueue = this.buildQueue(session.deckId)
       const durationSeconds = elapsedSeconds(session.startedAt, now)
 
@@ -110,7 +122,7 @@ export class ReviewService {
           nextQueue.findIndex((candidate) => candidate.card.id === entry.card.id) > currentIndex,
         ) ?? remainingDue[0]
 
-        const updated = this.reviews.update(reviewId, (current) => ({
+        const updated = await this.reviews.update(reviewId, (current) => ({
           ...(current as DueReviewSession),
           completedAt: completed ? now : (current as DueReviewSession).completedAt,
           currentCard: completed ? null : nextCard?.card ?? null,

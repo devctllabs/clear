@@ -29,18 +29,19 @@ describe('createAppServices', () => {
       runtime: 'web',
     })
 
-    vi.stubEnv('VITE_SERVICE_MODE', 'mock')
-    expect(createAppServices()).toMatchObject({
-      bootstrap: mockBootstrapService,
-      configuredMode: 'mock',
-      mode: 'mock',
-      runtime: 'web',
-    })
-
     vi.stubEnv('VITE_SERVICE_MODE', 'unknown')
     expect(createAppServices()).toMatchObject({
       configuredMode: 'auto',
       mode: 'web',
+      runtime: 'web',
+    })
+  })
+
+  it('supports explicit mock services for tests and Storybook', () => {
+    expect(createAppServices('mock')).toMatchObject({
+      bootstrap: mockBootstrapService,
+      configuredMode: 'mock',
+      mode: 'mock',
       runtime: 'web',
     })
   })

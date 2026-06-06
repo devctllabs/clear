@@ -143,7 +143,7 @@ describe('FolderDetailPage', () => {
       '/dashboard/independent-study',
     )
     expect(await screen.findByText('History')).toBeInTheDocument()
-    expect(await screen.findByText('Reading Review Queue')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Decks' })).not.toBeInTheDocument()
 
     await user.click(await screen.findByRole('link', { name: 'History' }))
     expect(await screen.findByRole('heading', { name: 'History' })).toBeInTheDocument()
@@ -239,7 +239,7 @@ describe('FolderDetailPage', () => {
     await user.keyboard('{Escape}')
     expect(await screen.findByRole('button', { name: 'Reading Notes actions' })).toBeInTheDocument()
     expect(await screen.findByText('History')).toBeInTheDocument()
-    expect(await screen.findByText('Reading Review Queue')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Decks' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Folders' }).closest('[class*="max-w-section"]')).not.toBeNull()
     expect(screen.queryByText('Folder')).not.toBeInTheDocument()
     expect(await screen.findByRole('link', { name: 'Back' })).toHaveAttribute(
@@ -257,9 +257,9 @@ describe('FolderDetailPage', () => {
 
   it('keeps a single folder deck row constrained to the scan column', async () => {
     mockMatchMedia(true)
-    renderRoute('/dashboard/independent-study/folders/philosophy')
+    renderRoute('/dashboard/independent-study/folders/reference')
 
-    const deckButton = await screen.findByRole('button', { name: 'Open Social Theory deck' })
+    const deckButton = await screen.findByRole('button', { name: 'Open Statistics Basics deck' })
     const decksHeading = await screen.findByRole('heading', { name: 'Decks' })
     const deckSection = deckButton.closest('section')
     const listSurface = deckSection?.querySelector('.overflow-hidden')
@@ -272,15 +272,15 @@ describe('FolderDetailPage', () => {
   })
 
   it('searches recursively inside a folder', async () => {
-    renderRoute('/dashboard/independent-study/folders/reading-notes')
+    renderRoute('/dashboard/independent-study/folders/reference')
 
     fireEvent.change(await screen.findByPlaceholderText('Search folders, decks, and notes…'), {
-      target: { value: 'neural' },
+      target: { value: 'sampling' },
     })
 
     expect(await screen.findByRole('heading', { name: 'Search results' })).toBeInTheDocument()
-    expect(await screen.findByText('Neural Models')).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'Folders' })).not.toBeInTheDocument()
+    expect(await screen.findByText('Sampling Error')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Decks' })).not.toBeInTheDocument()
   })
 
   it('clears empty folder search results back to folder content', async () => {
@@ -328,7 +328,7 @@ describe('FolderDetailPage', () => {
 
     expect(screen.queryByRole('heading', { name: 'Search results' })).not.toBeInTheDocument()
     expect(screen.getByText('History')).toBeInTheDocument()
-    expect(screen.getByText('Reading Review Queue')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Decks' })).not.toBeInTheDocument()
   })
 
   it('opens folder-scoped creation from the inline create menu', async () => {

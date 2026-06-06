@@ -1,6 +1,6 @@
 import type { NoteDetailRecord } from '../../generated/mock-admin/contract/index.ts'
 import { notFound } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { visible } from '../../lib/softDelete.ts'
 import { byStringField } from '../../lib/sort.ts'
 
@@ -28,10 +28,14 @@ const sortNotes = (
 }
 
 export class NotesRepository {
-  constructor(private readonly stateStore: MockStateRepository) {}
+  private readonly stateStore: MockStateStore
+
+  constructor(stateStore: MockStateStore) {
+    this.stateStore = stateStore
+  }
 
   all() {
-    return this.stateStore.getSlice('notes')
+    return this.stateStore.findEntities('notes')
   }
 
   visible() {
@@ -39,7 +43,7 @@ export class NotesRepository {
   }
 
   find(noteId: string) {
-    return this.all().find((note) => note.id === noteId)
+    return this.stateStore.findEntity('notes', noteId)
   }
 
   require(noteId: string, options: { includeDeleted?: boolean } = {}) {
@@ -53,52 +57,33 @@ export class NotesRepository {
     return note
   }
 
-  create(note: NoteDetailRecord) {
-    this.stateStore.setSlice('notes', [note, ...this.all()])
-    return note
+  async create(note: NoteDetailRecord) {
+    return this.stateStore.createEntity('notes', note, { prepend: true })
   }
 
-  update(noteId: string, updater: (note: NoteDetailRecord) => NoteDetailRecord) {
-    let next: NoteDetailRecord | undefined
-
-    this.stateStore.setSlice('notes', this.all().map((note) => {
-      if (note.id !== noteId) {
-        return note
-      }
-
-      next = updater(note)
-
-      return next
-    }))
-
-    return next ?? this.require(noteId, { includeDeleted: true })
+  async update(noteId: string, updater: (note: NoteDetailRecord) => NoteDetailRecord) {
+    return (
+      await this.stateStore.updateEntity('notes', noteId, updater)
+    ) ?? this.require(noteId, { includeDeleted: true })
   }
 
-  touch(noteId: string, updatedAt: string) {
+  async touch(noteId: string, updatedAt: string) {
     return this.update(noteId, (note) => ({ ...note, updatedAt }))
   }
 
-  markDeleted(noteId: string, deletedAt: string) {
+  async markDeleted(noteId: string, deletedAt: string) {
     return this.update(noteId, (note) => ({ ...note, deletedAt }))
   }
 
-  restore(noteId: string) {
+  async restore(noteId: string) {
     return this.update(noteId, (note) => {
       const { deletedAt: _deletedAt, ...restored } = note
       return restored
     })
   }
 
-  remove(noteId: string) {
-    const existing = this.find(noteId)
-
-    if (!existing) {
-      return undefined
-    }
-
-    this.stateStore.setSlice('notes', this.all().filter((note) => note.id !== noteId))
-
-    return existing
+  async remove(noteId: string) {
+    return this.stateStore.deleteEntity('notes', noteId)
   }
 
   listByDeck(deckId: string, options: { sortField?: NoteSortField; sortDirection?: SortDirection } = {}) {

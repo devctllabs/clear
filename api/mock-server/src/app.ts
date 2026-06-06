@@ -21,20 +21,21 @@ export type NewMockApiAppOptions = {
   controllers?: MockApiControllers
 }
 
-export const newMockApiApp = ({
+export const newMockApiApp = async ({
   basePath = "/api/v1",
-  controllers = newMemoryMockApiControllers(),
+  controllers,
 }: NewMockApiAppOptions = {}) => {
   const app = new Hono()
+  const mockControllers = controllers ?? await newMemoryMockApiControllers()
 
   app.use('*', cors())
   registerGeneratedMockRoutes(app, {
-    controllers,
+    controllers: mockControllers,
     runtime: adminRuntime,
   })
   registerGeneratedMockRoutes(app, {
     basePath: basePath,
-    controllers,
+    controllers: mockControllers,
     runtime: clearWebApiRuntime,
   })
 

@@ -1,22 +1,21 @@
 import type { TrashService } from '@features/trash/services/trashService'
-import { ok } from '@shared/errors'
-import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
+import type { TrashState } from '@features/trash/types/trash.types'
+import { mockApi } from '@platform/mock/mockApi'
+import { toMockDomainResult, toMockVoidDomainResult } from '@platform/mock/mockDomainResult'
 
 export const mockTrashService: TrashService = {
   async deleteItem(itemId) {
-    mockAppDataStore.deleteTrashItem(itemId)
-
-    return ok(undefined)
+    return toMockVoidDomainResult(() => mockApi.trashService.deleteTrashItem(itemId))
   },
   async empty() {
-    return ok(mockAppDataStore.emptyTrash())
+    return toMockDomainResult(() => mockApi.trashService.emptyTrash(), toTrashState)
   },
   async list() {
-    return ok(mockAppDataStore.listTrash())
+    return toMockDomainResult(() => mockApi.trashService.getTrash(), toTrashState)
   },
   async restoreItem(itemId) {
-    mockAppDataStore.restoreTrashItem(itemId)
-
-    return ok(undefined)
+    return toMockVoidDomainResult(() => mockApi.trashService.restoreTrashItem(itemId))
   },
 }
+
+const toTrashState = (trash: unknown): TrashState => trash as TrashState

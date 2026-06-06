@@ -1,14 +1,11 @@
 import type {
-  NoteDetailRecord,
-} from '../../generated/mock-admin/contract/index.ts'
-import type {
   NoteDraft,
   NoteListItem,
   NoteRef,
 } from '../../generated/clear-web-api/contract/types.gen.ts'
 import type { ReviewGrade } from '../../generated/clear-web-api/contract/types.gen.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
 import type { DeckRepository } from '../decks/repository.ts'
 import { summarizeDeckNotes } from '../decks/stats.ts'
@@ -26,14 +23,28 @@ import type { TrashRepository } from '../trash/repository.ts'
 import type { WorkspaceRepository } from '../workspaces/repository.ts'
 
 export class NotesService {
+  private readonly notes: NotesRepository
+  private readonly decks: DeckRepository
+  private readonly workspaces: WorkspaceRepository
+  private readonly trash: TrashRepository
+  private readonly paths: LocationPathResolver
+  private readonly stateStore: MockStateStore
+
   constructor(
-    private readonly notes: NotesRepository,
-    private readonly decks: DeckRepository,
-    private readonly workspaces: WorkspaceRepository,
-    private readonly trash: TrashRepository,
-    private readonly paths: LocationPathResolver,
-    private readonly stateStore: MockStateRepository,
-  ) {}
+    notes: NotesRepository,
+    decks: DeckRepository,
+    workspaces: WorkspaceRepository,
+    trash: TrashRepository,
+    paths: LocationPathResolver,
+    stateStore: MockStateStore,
+  ) {
+    this.notes = notes
+    this.decks = decks
+    this.workspaces = workspaces
+    this.trash = trash
+    this.paths = paths
+    this.stateStore = stateStore
+  }
 
   listNotesByDeck(deckId: string, query?: { sortField?: string; sortDirection?: string }): NoteListItem[] {
     const deck = this.decks.require(deckId)
@@ -44,18 +55,18 @@ export class NotesService {
     return this.notes.listByDeck(deck.id ?? '', { sortField, sortDirection }).map(toNoteListItem)
   }
 
-  createNote(draft: NoteDraft): NoteRef {
+  async createNote(draft: NoteDraft): Promise<NoteRef> {
     const deck = this.decks.require(draft.deckId)
     const workspaceId = deck.workspaceId
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const noteId = ids.next('note')
       const note = buildNoteDetail(draft, noteId, now, ids)
-      const created = this.notes.create(note)
+      const created = await this.notes.create(note)
 
-      this.recomputeDeckStats(draft.deckId, workspaceId, now)
+      await this.recomputeDeckStats(draft.deckId, workspaceId, now)
 
       return {
         deckId: created.deckId,
@@ -68,26 +79,26 @@ export class NotesService {
     return this.notes.require(noteId)
   }
 
-  updateNote(noteId: string, draft: NoteDraft): NoteRef {
+  async updateNote(noteId: string, draft: NoteDraft): Promise<NoteRef> {
     const current = this.notes.require(noteId)
     const currentDeckId = current.deckId
     const currentWorkspaceId = this.decks.require(currentDeckId).workspaceId
     const nextDeck = this.decks.require(draft.deckId)
     const nextWorkspaceId = nextDeck.workspaceId
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const replacement = buildNoteDetail(draft, noteId, now, ids)
-      const updated = this.notes.update(noteId, () => ({
+      const updated = await this.notes.update(noteId, () => ({
         ...replacement,
         id: noteId,
         updatedAt: now,
       }))
 
-      this.recomputeDeckStats(currentDeckId, currentWorkspaceId, now)
+      await this.recomputeDeckStats(currentDeckId, currentWorkspaceId, now)
       if (currentDeckId !== draft.deckId) {
-        this.recomputeDeckStats(draft.deckId, nextWorkspaceId, now)
+        await this.recomputeDeckStats(draft.deckId, nextWorkspaceId, now)
       }
 
       return {
@@ -97,21 +108,21 @@ export class NotesService {
     })
   }
 
-  deleteNote(noteId: string) {
+  async deleteNote(noteId: string) {
     const note = this.notes.require(noteId)
     const deck = this.decks.require(note.deckId)
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const deletedAt = this.stateStore.now()
-      this.notes.markDeleted(noteId, deletedAt)
-      this.trash.addItem({
+      await this.notes.markDeleted(noteId, deletedAt)
+      await this.trash.addItem({
         deletedAt,
         id: note.id ?? '',
         kind: 'note',
         locationPath: this.paths.noteLocationPath(note),
         title: note.title,
       })
-      this.recomputeDeckStats(deck.id ?? '', deck.workspaceId, deletedAt)
+      await this.recomputeDeckStats(deck.id ?? '', deck.workspaceId, deletedAt)
     })
   }
 
@@ -119,7 +130,7 @@ export class NotesService {
     return this.notes.listByDeck(deckId).flatMap((note) => buildReviewCards(note))
   }
 
-  gradeNoteCard(noteId: string, cardId: string, grade: ReviewGrade) {
+  async gradeNoteCard(noteId: string, cardId: string, grade: ReviewGrade) {
     const note = this.notes.require(noteId)
     const deck = this.decks.require(note.deckId)
     const now = this.stateStore.now()
@@ -133,8 +144,8 @@ export class NotesService {
       throw conflict(`Review card ${cardId} does not belong to note ${noteId}`)
     }
 
-    return this.stateStore.transaction(() => {
-      const updated = this.notes.update(noteId, (current) => {
+    return this.stateStore.transaction(async () => {
+      const updated = await this.notes.update(noteId, (current) => {
         if (current.kind === 'basic') {
           return gradeBasicNote(current, grade, dueAt, now)
         }
@@ -142,22 +153,22 @@ export class NotesService {
         return gradeClozeCard(current, cardId, grade, dueAt, now)
       })
 
-      this.recomputeDeckStats(deck.id ?? '', deck.workspaceId, now)
+      await this.recomputeDeckStats(deck.id ?? '', deck.workspaceId, now)
 
       return updated
     })
   }
 
-  private recomputeDeckStats(deckId: string, workspaceId: string, updatedAt: string) {
+  private async recomputeDeckStats(deckId: string, workspaceId: string, updatedAt: string) {
     const notes = this.notes.listByDeck(deckId)
     const nextStats = summarizeDeckNotes(notes, updatedAt)
 
-    this.decks.update(deckId, (deck) => ({
+    await this.decks.update(deckId, (deck) => ({
       ...deck,
       ...nextStats,
       updatedAt,
     }))
 
-    this.workspaces.touch(workspaceId, updatedAt)
+    await this.workspaces.touch(workspaceId, updatedAt)
   }
 }

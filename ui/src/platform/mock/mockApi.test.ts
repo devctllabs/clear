@@ -7,35 +7,42 @@ import { mockNoteService } from '@platform/services/notes/mock/noteService'
 import { mockReviewService } from '@platform/services/review/mock/reviewService'
 import { mockTrashService } from '@platform/services/trash/mock/trashService'
 import { mockSettingsService } from '@platform/services/settings/mock/settingsService'
-import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
+import {
+  mockApi,
+  mockStateRepository,
+  mockStorageKey,
+} from '@platform/mock/mockApi'
 import { mockWorkspaceService } from '@platform/services/workspaces/mock/workspaceService'
 
-describe('mock services backed by app data store', () => {
+describe('mock API services', () => {
   it('persists the seeded snapshot immediately when mock storage is empty', async () => {
     window.localStorage.clear()
     vi.resetModules()
 
-    const { mockAppDataStore: reloadedStore } = await import('./mockAppDataStore')
-    const persisted = window.localStorage.getItem('clear-ui:mock-state:v15')
+    const {
+      mockApi: reloadedApi,
+      mockStorageKey: reloadedStorageKey,
+    } = await import('./mockApi')
+    const persisted = window.localStorage.getItem(reloadedStorageKey)
 
     expect(persisted).not.toBeNull()
 
     const parsed = JSON.parse(persisted ?? '{}') as {
       folders?: Array<{ id: string; updatedAt: string }>
     }
-    const persistedAcademic = parsed.folders?.find((folder) => folder.id === 'reading-notes')
+    const persistedReadingNotes = parsed.folders?.find((folder) => folder.id === 'reading-notes')
 
-    expect(persistedAcademic?.updatedAt).toBe(
-      reloadedStore.getFolderById('reading-notes')?.updatedAt,
+    expect(persistedReadingNotes?.updatedAt).toBe(
+      reloadedApi.foldersService.getFolder('reading-notes').updatedAt,
     )
   })
 
   it('replaces invalid mock storage with a valid seeded snapshot', async () => {
-    window.localStorage.setItem('clear-ui:mock-state:v15', '{broken')
+    window.localStorage.setItem(mockStorageKey, '{broken')
     vi.resetModules()
 
-    const { mockAppDataStore: reloadedStore } = await import('./mockAppDataStore')
-    const persisted = window.localStorage.getItem('clear-ui:mock-state:v15')
+    const { mockApi: reloadedApi } = await import('./mockApi')
+    const persisted = window.localStorage.getItem(mockStorageKey)
 
     expect(() => JSON.parse(persisted ?? '')).not.toThrow()
 
@@ -44,26 +51,26 @@ describe('mock services backed by app data store', () => {
     }
 
     expect(parsed.folders?.some((folder) => folder.id === 'reading-notes')).toBe(true)
-    expect(reloadedStore.getFolderById('reading-notes')).toBeDefined()
+    expect(reloadedApi.foldersService.getFolder('reading-notes')).toBeDefined()
   })
 
   it('reuses the persisted mock snapshot across reload-like initialization', async () => {
     window.localStorage.clear()
     vi.resetModules()
 
-    const { mockAppDataStore: firstStore } = await import('./mockAppDataStore')
-    const firstUpdatedAt = firstStore.getFolderById('reading-notes')?.updatedAt
-    const firstPersisted = window.localStorage.getItem('clear-ui:mock-state:v15')
+    const { mockApi: firstApi } = await import('./mockApi')
+    const firstUpdatedAt = firstApi.foldersService.getFolder('reading-notes').updatedAt
+    const firstPersisted = window.localStorage.getItem(mockStorageKey)
 
     vi.resetModules()
 
-    const { mockAppDataStore: secondStore } = await import('./mockAppDataStore')
-    const secondUpdatedAt = secondStore.getFolderById('reading-notes')?.updatedAt
-    const secondPersisted = window.localStorage.getItem('clear-ui:mock-state:v15')
+    const { mockApi: secondApi } = await import('./mockApi')
+    const secondUpdatedAt = secondApi.foldersService.getFolder('reading-notes').updatedAt
+    const secondPersisted = window.localStorage.getItem(mockStorageKey)
 
     expect(firstUpdatedAt).toBeDefined()
     expect(secondUpdatedAt).toBe(firstUpdatedAt)
-    expect(secondPersisted).toBe(firstPersisted)
+    expect(JSON.parse(secondPersisted ?? '{}')).toEqual(JSON.parse(firstPersisted ?? '{}'))
   })
 
   it('lists visible workspaces with an active workspace', async () => {
@@ -142,15 +149,14 @@ describe('mock services backed by app data store', () => {
     if (rootDecks.ok) {
       expect(rootDecks.value.map((deck) => deck.id)).toEqual([
         'cognitive-biases',
-        'political-thought',
         'world-history',
+        'political-thought',
       ])
       expect(rootDecks.value.every((deck) => deck.parentId === 'independent-study')).toBe(true)
     }
 
     if (readingNotesDecks.ok) {
-      expect(readingNotesDecks.value.map((deck) => deck.id)).toEqual(['reading-review-queue'])
-      expect(readingNotesDecks.value[0]).not.toHaveProperty('detail')
+      expect(readingNotesDecks.value).toEqual([])
     }
 
     if (referenceDecks.ok) {
@@ -164,41 +170,29 @@ describe('mock services backed by app data store', () => {
       expect(placedIds.some((deckId) => rootIds.has(deckId))).toBe(false)
     }
 
-    const allSeededFolders = [
-      ...mockAppDataStore.listWorkspaceFolders('independent-study'),
-      ...mockAppDataStore.listFoldersInFolder('reading-notes'),
-      ...mockAppDataStore.listFoldersInFolder('history'),
-      ...mockAppDataStore.listFoldersInFolder('reference'),
-    ]
-    const allSeededDecks = [
-      ...mockAppDataStore.listWorkspaceDecks('independent-study'),
-      ...mockAppDataStore.listDecksInFolder('reading-notes'),
-      ...mockAppDataStore.listDecksInFolder('reference'),
-      ...mockAppDataStore.listDecksInFolder('psychology'),
-      ...mockAppDataStore.listDecksInFolder('philosophy'),
-      ...mockAppDataStore.listDecksInFolder('writing'),
-      ...mockAppDataStore.listDecksInFolder('methods'),
-    ]
+    const snapshot = mockStateRepository.snapshot()
+    const visibleFolders = snapshot.folders.filter((folder) => !folder.deletedAt)
+    const visibleDecks = snapshot.decks.filter((deck) => !deck.deletedAt)
 
-    expect(allSeededFolders).toHaveLength(7)
-    expect(allSeededFolders.every((folder) => folder.parentId.length > 0)).toBe(true)
-    expect(allSeededDecks).toHaveLength(11)
-    expect(allSeededDecks.every((deck) => deck.parentId.length > 0)).toBe(true)
-    expect(new Set(allSeededDecks.map((deck) => deck.id)).size).toBe(allSeededDecks.length)
+    expect(mockApi.stateStore).toBe(mockStateRepository)
+    expect(visibleFolders).toHaveLength(3)
+    expect(visibleFolders.every((folder) => folder.parentId.length > 0)).toBe(true)
+    expect(visibleDecks).toHaveLength(4)
+    expect(visibleDecks.every((deck) => deck.parentId.length > 0)).toBe(true)
+    expect(new Set(visibleDecks.map((deck) => deck.id)).size).toBe(visibleDecks.length)
 
     if (worldHistory.ok) {
       expect(worldHistory.value).toMatchObject({
-        dueToday: 9,
-        progress: 71,
-        totalNotes: 7,
+        dueToday: 1,
+        progress: 66,
+        totalNotes: 2,
       })
     }
 
     if (notes.ok) {
-      expect(notes.value.slice(0, 3).map((note) => note.id)).toEqual([
+      expect(notes.value.map((note) => note.id)).toEqual([
         'industrial-revolution-causes',
-        'collective-memory',
-        'constitutional-crisis',
+        'postwar-institutions',
       ])
       expect(notes.value[0]).not.toHaveProperty('editor')
       expect(notes.value[0]).not.toHaveProperty('bodySegments')
@@ -206,17 +200,11 @@ describe('mock services backed by app data store', () => {
     }
 
     if (civicNotes.ok) {
-      expect(civicNotes.value.map((note) => note.id)).toContain('base-rates')
+      expect(civicNotes.value.map((note) => note.id)).toEqual(['sampling-error'])
     }
 
     if (trash.ok) {
-      expect(trash.value.items.map((item) => item.id)).toEqual([
-        'drafting-patterns',
-        'sampling-error-notes',
-        'drafts',
-        'completed-reading-log',
-        'linguistic-atlas',
-      ])
+      expect(trash.value.items.map((item) => item.id)).toEqual(['base-rates'])
     }
   })
 
@@ -240,9 +228,9 @@ describe('mock services backed by app data store', () => {
 
     if (decksByDue.ok) {
       expect(decksByDue.value.map((deck) => deck.id)).toEqual([
-        'world-history',
         'cognitive-biases',
         'political-thought',
+        'world-history',
       ])
     }
 
@@ -254,10 +242,9 @@ describe('mock services backed by app data store', () => {
     }
 
     if (notesByTitle.ok) {
-      expect(notesByTitle.value.slice(0, 3).map((note) => note.id)).toEqual([
-        'atlantic-revolutions-outline',
-        'civil-rights-movement-cards',
-        'cold-war-detente-recap',
+      expect(notesByTitle.value.map((note) => note.id)).toEqual([
+        'industrial-revolution-causes',
+        'postwar-institutions',
       ])
     }
   })
@@ -270,8 +257,8 @@ describe('mock services backed by app data store', () => {
       return
     }
 
-    expect(first.value.currentCard.id).toBe('industrial-revolution-causes:basic')
-    expect(first.value.plannedCount).toBe(8)
+    expect(first.value.currentCard.id).toBe('industrial-revolution-causes')
+    expect(first.value.plannedCount).toBe(1)
 
     const second = await mockReviewService.grade(
       first.value.id,
@@ -280,88 +267,144 @@ describe('mock services backed by app data store', () => {
     )
 
     expect(second.ok).toBe(true)
-    expect(second.ok ? second.value.currentCard?.id : undefined).toBe('collective-memory:c1')
-    expect(second.ok && second.value.mode === 'due' ? second.value.plannedCount : undefined).toBe(8)
+    expect(second.ok ? second.value.currentCard?.id : undefined).toBeUndefined()
+    expect(second.ok && second.value.mode === 'due' ? second.value.plannedCount : undefined).toBe(1)
     expect(second.ok ? second.value.reviewedCount : undefined).toBe(1)
-
-    const third = await mockReviewService.grade(
-      first.value.id,
-      'collective-memory:c1',
-      'good',
-    )
-
-    expect(third.ok).toBe(true)
-    expect(third.ok ? third.value.currentCard?.id : undefined).toBe('collective-memory:c2')
 
     const summary = await mockReviewService.get(first.value.id)
 
     expect(summary.ok).toBe(true)
     if (summary.ok) {
-      expect(summary.value.reviewedCount).toBe(2)
-      expect(summary.value.mode === 'due' ? summary.value.plannedCount : undefined).toBe(8)
+      expect(summary.value.reviewedCount).toBe(1)
+      expect(summary.value.mode === 'due' ? summary.value.plannedCount : undefined).toBe(1)
       expect(summary.value.durationSeconds).toBe(0)
-      expect(summary.value.mode === 'due' ? summary.value.status : undefined).toBe('active')
+      expect(summary.value.mode === 'due' ? summary.value.status : undefined).toBe('completed')
+    }
+  })
+
+  it('derives deck counters from visible notes and review cards', async () => {
+    await mockStateRepository.reset()
+
+    try {
+      const before = await mockDeckService.getById('world-history')
+
+      expect(before.ok ? before.value : undefined).toMatchObject({
+        dueToday: 1,
+        progress: 66,
+        totalNotes: 2,
+      })
+
+      const review = await mockReviewService.start('world-history')
+      expect(review.ok && review.value.mode === 'due' ? review.value.plannedCount : undefined).toBe(1)
+
+      if (!review.ok || review.value.mode !== 'due' || !review.value.currentCard) {
+        throw new Error('Expected world-history to start a due review.')
+      }
+
+      await mockReviewService.grade(review.value.id, review.value.currentCard.id, 'good')
+
+      const afterGrade = await mockDeckService.getById('world-history')
+      expect(afterGrade.ok ? afterGrade.value : undefined).toMatchObject({
+        dueToday: 0,
+        progress: 79,
+        totalNotes: 2,
+      })
+
+      const created = await mockNoteService.create({
+        deckId: 'world-history',
+        editor: { back: 'Back draft', front: 'Front draft' },
+        kind: 'basic',
+        title: 'New Draft Note',
+      })
+      expect(created.ok).toBe(true)
+
+      const afterCreate = await mockDeckService.getById('world-history')
+      expect(afterCreate.ok ? afterCreate.value : undefined).toMatchObject({
+        dueToday: 1,
+        progress: 52,
+        totalNotes: 3,
+      })
+
+      await mockNoteService.delete('industrial-revolution-causes')
+
+      const afterDelete = await mockDeckService.getById('world-history')
+      expect(afterDelete.ok ? afterDelete.value : undefined).toMatchObject({
+        dueToday: 1,
+        progress: 29,
+        totalNotes: 2,
+      })
+
+      await mockTrashService.restoreItem('industrial-revolution-causes')
+
+      const afterRestore = await mockDeckService.getById('world-history')
+      expect(afterRestore.ok ? afterRestore.value : undefined).toMatchObject({
+        dueToday: 1,
+        progress: 52,
+        totalNotes: 3,
+      })
+    } finally {
+      await mockStateRepository.reset()
     }
   })
 
   it('recreates removed cloze ids as fresh derived cards without changing deck notes', async () => {
-    mockAppDataStore.reset()
+    await mockStateRepository.reset()
 
     try {
-      const beforeDeck = await mockDeckService.getById('world-history')
-      const beforeNote = await mockNoteService.getById('world-history', 'collective-memory')
+      const beforeDeck = await mockDeckService.getById('cognitive-biases')
+      const beforeNote = await mockNoteService.getById('cognitive-biases', 'availability-heuristic')
 
-      expect(beforeDeck.ok ? beforeDeck.value.totalNotes : undefined).toBe(7)
+      expect(beforeDeck.ok ? beforeDeck.value.totalNotes : undefined).toBe(3)
       expect(
         beforeNote.ok && beforeNote.value.kind === 'cloze'
           ? beforeNote.value.cards[0]
           : undefined,
       ).toMatchObject({
-        id: 'collective-memory:c1',
-        progress: 74,
+        id: 'availability-heuristic-card-1',
+        progress: 53,
       })
 
-      await mockNoteService.update('collective-memory', {
-        deckId: 'world-history',
+      await mockNoteService.update('availability-heuristic', {
+        deckId: 'cognitive-biases',
         editor: {
-          body: 'Collective memory shapes historical evidence and public narratives across generations.',
+          body: 'Availability bias makes vivid examples feel more common than they really are.',
         },
         kind: 'cloze',
-        title: 'Collective Memory',
+        title: 'Availability Heuristic',
       })
 
-      const removed = await mockNoteService.getById('world-history', 'collective-memory')
+      const removed = await mockNoteService.getById('cognitive-biases', 'availability-heuristic')
 
       expect(
         removed.ok && removed.value.kind === 'cloze' ? removed.value.cards : undefined,
-      ).toEqual([])
+      ).toHaveLength(1)
       expect(removed.ok ? removed.value.progress : undefined).toBe(0)
       expect(removed.ok ? removed.value.status : undefined).toBe('in-progress')
 
-      await mockNoteService.update('collective-memory', {
-        deckId: 'world-history',
+      await mockNoteService.update('availability-heuristic', {
+        deckId: 'cognitive-biases',
         editor: {
           body:
-            'Collective memory shapes {{c1::new evidence}} and public narratives across generations.',
+            'Availability bias makes {{c1::fresh examples}} feel more common than they really are.',
         },
         kind: 'cloze',
-        title: 'Collective Memory',
+        title: 'Availability Heuristic',
       })
 
-      const readded = await mockNoteService.getById('world-history', 'collective-memory')
-      const afterDeck = await mockDeckService.getById('world-history')
+      const readded = await mockNoteService.getById('cognitive-biases', 'availability-heuristic')
+      const afterDeck = await mockDeckService.getById('cognitive-biases')
       const freshCard =
         readded.ok && readded.value.kind === 'cloze' ? readded.value.cards[0] : undefined
 
       expect(freshCard).toMatchObject({
         clozeId: 'c1',
         progress: 0,
-        title: 'new evidence',
+        title: 'Availability Heuristic',
       })
-      expect(freshCard?.id).not.toBe('collective-memory:c1')
-      expect(afterDeck.ok ? afterDeck.value.totalNotes : undefined).toBe(7)
+      expect(freshCard?.id).not.toBe('availability-heuristic-card-1')
+      expect(afterDeck.ok ? afterDeck.value.totalNotes : undefined).toBe(3)
     } finally {
-      mockAppDataStore.reset()
+      await mockStateRepository.reset()
     }
   })
 
@@ -445,10 +488,10 @@ describe('mock services backed by app data store', () => {
     const reset = await mockSettingsService.reset()
     expect(reset.ok ? reset.value.dailyNewLimit : undefined).toBe(defaults.value.dailyNewLimit)
 
-    const restored = await mockTrashService.restoreItem('sampling-error-notes')
+    const restored = await mockTrashService.restoreItem('base-rates')
     expect(restored.ok).toBe(true)
     const afterRestore = await mockTrashService.list()
-    expect(afterRestore.ok ? afterRestore.value.items.length : undefined).toBe(4)
+    expect(afterRestore.ok ? afterRestore.value.items.length : undefined).toBe(0)
 
     const emptied = await mockTrashService.empty()
     expect(emptied.ok).toBe(true)

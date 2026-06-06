@@ -68,21 +68,11 @@ If you change the UI API client or routes, regenerate the checked-in outputs wit
 pnpm codegen:ui
 ```
 
-## Run in mock mode
+## Run with the mock API
 
-This is the fastest way to explore the UI. It runs Vite with in-browser mock
-services, so no backend process is required.
-
-```bash
-VITE_SERVICE_MODE=mock pnpm dev:ui
-```
-
-Open `http://localhost:5173`.
-
-## Web mode with mock API
-
-Use this mode to exercise the generated API client against the local mock API
-server. Run both commands from the repository root in separate terminals.
+Use this mode for local UI development against the generated API client and
+mock API server. Run both commands from the repository root in separate
+terminals.
 
 Terminal 1:
 

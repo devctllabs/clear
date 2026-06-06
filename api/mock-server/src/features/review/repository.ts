@@ -1,16 +1,20 @@
 import type { ReviewSessionRecord } from '../../generated/mock-admin/contract/index.ts'
 import { notFound } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 
 export class ReviewRepository {
-  constructor(private readonly stateStore: MockStateRepository) {}
+  private readonly stateStore: MockStateStore
+
+  constructor(stateStore: MockStateStore) {
+    this.stateStore = stateStore
+  }
 
   all() {
-    return this.stateStore.getSlice('reviewSessions')
+    return this.stateStore.findEntities('reviewSessions')
   }
 
   find(reviewId: string) {
-    return this.all().find((session) => session.id === reviewId)
+    return this.stateStore.findEntity('reviewSessions', reviewId)
   }
 
   require(reviewId: string) {
@@ -23,25 +27,13 @@ export class ReviewRepository {
     return session
   }
 
-  create(session: ReviewSessionRecord) {
-    this.stateStore.setSlice('reviewSessions', [session, ...this.all()])
-    return session
+  async create(session: ReviewSessionRecord) {
+    return this.stateStore.createEntity('reviewSessions', session, { prepend: true })
   }
 
-  update(reviewId: string, updater: (session: ReviewSessionRecord) => ReviewSessionRecord) {
-    let next: ReviewSessionRecord | undefined
-
-    this.stateStore.setSlice('reviewSessions', this.all().map((session) => {
-      if (session.id !== reviewId) {
-        return session
-      }
-
-      next = updater(session)
-
-      return next
-    }))
-
-    return next ?? this.require(reviewId)
+  async update(reviewId: string, updater: (session: ReviewSessionRecord) => ReviewSessionRecord) {
+    return (
+      await this.stateStore.updateEntity('reviewSessions', reviewId, updater)
+    ) ?? this.require(reviewId)
   }
-
 }

@@ -4,11 +4,19 @@ import { FolderRepository } from '../folders/repository.ts'
 import { WorkspaceRepository } from '../workspaces/repository.ts'
 
 export class LocationPathResolver {
+  private readonly workspaces: WorkspaceRepository
+  private readonly folders: FolderRepository
+  private readonly decks: DeckRepository
+
   constructor(
-    private readonly workspaces: WorkspaceRepository,
-    private readonly folders: FolderRepository,
-    private readonly decks: DeckRepository,
-  ) {}
+    workspaces: WorkspaceRepository,
+    folders: FolderRepository,
+    decks: DeckRepository,
+  ) {
+    this.workspaces = workspaces
+    this.folders = folders
+    this.decks = decks
+  }
 
   workspacePath(workspaceId: string) {
     const workspace = this.workspaces.require(workspaceId)

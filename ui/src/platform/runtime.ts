@@ -2,16 +2,17 @@ import { getRuntimeKind } from '@shared/lib/runtime-profile'
 
 export type ServiceMode = 'auto' | 'mock' | 'tauri' | 'web'
 export type ResolvedServiceMode = Exclude<ServiceMode, 'auto'>
+export type ConfiguredServiceMode = Exclude<ServiceMode, 'mock'>
 
-const serviceModes = ['auto', 'mock', 'tauri', 'web'] as const
+const configuredServiceModes = ['auto', 'tauri', 'web'] as const
 
-const isValidServiceMode = (value: string | undefined): value is ServiceMode =>
-  typeof value === 'string' && serviceModes.includes(value as ServiceMode)
+const isValidConfiguredServiceMode = (value: string | undefined): value is ConfiguredServiceMode =>
+  typeof value === 'string' && configuredServiceModes.includes(value as ConfiguredServiceMode)
 
-export const getConfiguredServiceMode = (): ServiceMode => {
+export const getConfiguredServiceMode = (): ConfiguredServiceMode => {
   const value = import.meta.env.VITE_SERVICE_MODE?.trim().toLowerCase()
 
-  return isValidServiceMode(value) ? value : 'auto'
+  return isValidConfiguredServiceMode(value) ? value : 'auto'
 }
 
 export const resolveServiceMode = (

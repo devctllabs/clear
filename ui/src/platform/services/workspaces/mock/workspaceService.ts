@@ -1,48 +1,55 @@
 import type { WorkspaceService } from '@features/workspaces/services/workspaceService'
-import { domainError, err, ok } from '@shared/errors'
-import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
+import type { Workspace, WorkspaceDraft } from '@features/workspaces/types/workspace.types'
+import { mockApi } from '@platform/mock/mockApi'
+import { toMockDomainResult, toMockVoidDomainResult } from '@platform/mock/mockDomainResult'
 
 export const mockWorkspaceService: WorkspaceService = {
   async create(draft) {
-    return ok(mockAppDataStore.createWorkspace(draft))
+    return toMockDomainResult(
+      () => mockApi.workspacesService.createWorkspace(toWorkspaceDraft(draft)),
+      toWorkspace,
+    )
   },
   async delete(workspaceId) {
-    return ok(mockAppDataStore.deleteWorkspace(workspaceId))
+    return toMockDomainResult(
+      () => mockApi.workspacesService.deleteWorkspace(workspaceId),
+      ({ activeWorkspaceId }) => activeWorkspaceId,
+    )
   },
   async getActiveId() {
-    return ok(mockAppDataStore.getActiveWorkspaceId())
+    return toMockDomainResult(
+      () => mockApi.workspacesService.getActiveWorkspace(),
+      ({ workspaceId }) => workspaceId,
+    )
   },
   async getById(workspaceId) {
-    const workspace = mockAppDataStore.getWorkspaceById(workspaceId)
-
-    return workspace
-      ? ok(workspace)
-      : err(domainError.notFound('Workspace not found.', 'workspace', workspaceId))
+    return toMockDomainResult(
+      () => mockApi.workspacesService.getWorkspace(workspaceId),
+      toWorkspace,
+    )
   },
   async list() {
-    const workspaces = mockAppDataStore.listWorkspaces()
-
-    return ok({
-      activeWorkspaceId: workspaces.length > 0 ? mockAppDataStore.getActiveWorkspaceId() : null,
-      workspaces,
-    })
+    return toMockDomainResult(
+      () => mockApi.workspacesService.listWorkspaces(),
+      (result) => ({
+        activeWorkspaceId: result.activeWorkspaceId,
+        workspaces: result.workspaces.map(toWorkspace),
+      }),
+    )
   },
   async setActiveId(workspaceId) {
-    const workspace = mockAppDataStore.getWorkspaceById(workspaceId)
-
-    if (!workspace) {
-      return err(domainError.notFound('Workspace not found.', 'workspace', workspaceId))
-    }
-
-    mockAppDataStore.setActiveWorkspaceId(workspaceId)
-
-    return ok(undefined)
+    return toMockVoidDomainResult(() =>
+      mockApi.workspacesService.setActiveWorkspace(workspaceId),
+    )
   },
   async update(workspaceId, draft) {
-    const workspace = mockAppDataStore.updateWorkspace(workspaceId, draft)
-
-    return workspace
-      ? ok(workspace)
-      : err(domainError.notFound('Workspace not found.', 'workspace', workspaceId))
+    return toMockDomainResult(
+      () => mockApi.workspacesService.updateWorkspace(workspaceId, toWorkspaceDraft(draft)),
+      toWorkspace,
+    )
   },
 }
+
+const toWorkspace = (workspace: unknown): Workspace => workspace as Workspace
+
+const toWorkspaceDraft = (draft: WorkspaceDraft) => draft

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createAppServices } from '@core/services'
+import { mockStorageKey } from '@platform/mock/mockApi'
 import { ok } from '@shared/errors'
 import { renderRoute } from '@/test/renderRoute'
 import { mockMatchMedia } from '@/test/matchMedia'
@@ -141,8 +142,8 @@ describe('WorkspaceListPage', () => {
       await screen.findByRole('heading', { name: 'Reading Archive' }),
     ).toBeInTheDocument()
     expect(
-      JSON.parse(window.localStorage.getItem('clear-ui:mock-state:v15') ?? '{}'),
-    ).toMatchObject({ activeWorkspaceId: 'reading-archive' })
+      JSON.parse(window.localStorage.getItem(mockStorageKey) ?? '{}'),
+    ).toMatchObject({ activeWorkspace: { workspaceId: 'reading-archive' } })
   })
 
   it('renders desktop navigation and workspace actions at the desktop breakpoint', async () => {

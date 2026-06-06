@@ -240,7 +240,7 @@ describe('ReviewSessionPage', () => {
     })
 
     expect(screen.getByRole('heading', { name: 'Review' })).toBeInTheDocument()
-    expect(screen.getByText(/Collective memory shapes/)).toBeInTheDocument()
+    expect(screen.getByText(/Industrial Revolution/)).toBeInTheDocument()
 
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Show answer' }))
@@ -258,7 +258,7 @@ describe('ReviewSessionPage', () => {
     fireEvent.click(disabledGoodButton)
     expect(grade).toHaveBeenCalledTimes(1)
     expect(screen.queryByRole('status', { name: 'Loading review' })).not.toBeInTheDocument()
-    expect(screen.getByText(/Collective memory shapes/)).toBeInTheDocument()
+    expect(screen.getByText(/Industrial Revolution/)).toBeInTheDocument()
     expect(
       disabledGoodButton.querySelector('[data-slot="pending-spinner"]'),
     ).not.toBeInTheDocument()
@@ -267,7 +267,7 @@ describe('ReviewSessionPage', () => {
       await vi.advanceTimersByTimeAsync(249)
     })
     expect(screen.queryByRole('status', { name: 'Loading review' })).not.toBeInTheDocument()
-    expect(screen.getByText(/Collective memory shapes/)).toBeInTheDocument()
+    expect(screen.getByText(/Industrial Revolution/)).toBeInTheDocument()
     expect(
       disabledGoodButton.querySelector('[data-slot="pending-spinner"]'),
     ).not.toBeInTheDocument()
@@ -276,7 +276,7 @@ describe('ReviewSessionPage', () => {
       await vi.advanceTimersByTimeAsync(1)
     })
     expect(screen.queryByRole('status', { name: 'Loading review' })).not.toBeInTheDocument()
-    expect(screen.getByText(/Collective memory shapes/)).toBeInTheDocument()
+    expect(screen.getByText(/Industrial Revolution/)).toBeInTheDocument()
     const pendingGoodButton = screen.getByRole('button', { name: 'Good' })
     expect(pendingGoodButton).toHaveAccessibleName('Good')
     expect(pendingGoodButton.querySelector('[data-slot="pending-spinner"]')).toBeInTheDocument()

@@ -1,3 +1,5 @@
+import { DEFAULT_SETTINGS } from '@local/mock-server/browser'
+
 import type { ContentSearchService } from '@features/content-search/services/contentSearchService'
 import type { BootstrapService } from '@features/bootstrap'
 import type { SearchResultGroup } from '@features/content-search/types/search.types'
@@ -40,7 +42,6 @@ import {
   defaultSortPreference,
   type SortPreference,
 } from '@shared/types/sort.types'
-import { defaultSettings } from '@platform/mock/mockAppDataStore'
 
 import {
   baseBasicNoteDetail,
@@ -109,7 +110,7 @@ export const createTrashItem = (item: Partial<TrashItem> = {}): TrashItem => ({
 })
 
 export const createSettings = (settings: Partial<Settings> = {}): Settings => ({
-  ...defaultSettings(),
+  ...(structuredClone(DEFAULT_SETTINGS) as Settings),
   ...settings,
 })
 
