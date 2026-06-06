@@ -6,7 +6,7 @@ const json = async <T>(response: Response) => response.json() as Promise<T>
 
 describe('mock api app', () => {
   it('creates counter ids and exposes them through the workspace list', async () => {
-    const app = newMockApiApp()
+    const app = await newMockApiApp()
 
     const createResponse = await app.fetch(
       new Request('http://localhost/api/v1/workspaces', {
@@ -38,7 +38,7 @@ describe('mock api app', () => {
   })
 
   it('mounts the product routes under a custom base path', async () => {
-    const app = newMockApiApp({ basePath: '/custom' })
+    const app = await newMockApiApp({ basePath: '/custom' })
 
     const response = await app.fetch(new Request('http://localhost/custom/workspaces'))
     expect(response.status).toBe(200)
@@ -50,7 +50,7 @@ describe('mock api app', () => {
   })
 
   it('keeps seeded deck stats aligned with seeded notes', async () => {
-    const app = newMockApiApp()
+    const app = await newMockApiApp()
 
     const response = await app.fetch(new Request('http://localhost/__mock/state'))
 
@@ -70,7 +70,7 @@ describe('mock api app', () => {
   })
 
   it('exposes admin state reset and inspection endpoints', async () => {
-    const app = newMockApiApp()
+    const app = await newMockApiApp()
 
     const createResponse = await app.fetch(
       new Request('http://localhost/api/v1/workspaces', {

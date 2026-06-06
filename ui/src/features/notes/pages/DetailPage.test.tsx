@@ -145,10 +145,15 @@ describe('NoteDetailPage', () => {
     expect(await screen.findByText('BASIC')).toBeInTheDocument()
 
     renderRoute(
-      '/dashboard/independent-study/decks/world-history/notes/collective-memory',
+      '/dashboard/independent-study/decks/cognitive-biases/notes/availability-heuristic',
     )
 
-    expect(await screen.findByText('Collective Memory')).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', {
+        level: 2,
+        name: 'Availability Heuristic',
+      }),
+    ).toBeInTheDocument()
     expect(await screen.findByText('CLOZE')).toBeInTheDocument()
   })
 
@@ -192,7 +197,7 @@ describe('NoteDetailPage', () => {
     expect(within(noteContent).queryByText('TITLE')).not.toBeInTheDocument()
     expect(within(noteContent).getByText('BASIC')).toBeInTheDocument()
     expect(within(noteContent).queryByText(/UPDATED/)).not.toBeInTheDocument()
-    expect(within(noteContent).queryByText('Mastered')).not.toBeInTheDocument()
+    expect(within(noteContent).queryByText('In progress')).not.toBeInTheDocument()
     expect(within(noteContent).getByText('FRONT')).toBeInTheDocument()
     expect(within(noteContent).getByText('BACK')).toBeInTheDocument()
 
@@ -201,7 +206,7 @@ describe('NoteDetailPage', () => {
     expect(
       within(metadata).getByRole('heading', { name: 'Study Progress' }),
     ).toBeInTheDocument()
-    const status = within(metadata).getByText('Mastered')
+    const status = within(metadata).getByText('In progress')
     expect(status).toBeInTheDocument()
     expect(status).toHaveClass('border-border', 'text-muted-foreground')
     expect(status).not.toHaveClass('bg-primary')
@@ -246,10 +251,10 @@ describe('NoteDetailPage', () => {
 
   it('keeps derived card timing in desktop cloze content instead of the right panel', async () => {
     mockMatchMedia(true)
-    renderRoute('/dashboard/independent-study/decks/world-history/notes/collective-memory')
+    renderRoute('/dashboard/independent-study/decks/cognitive-biases/notes/availability-heuristic')
 
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Collective Memory' }),
+      await screen.findByRole('heading', { level: 1, name: 'Availability Heuristic' }),
     ).toBeInTheDocument()
 
     const noteContent = await screen.findByRole('region', { name: 'Note content' })

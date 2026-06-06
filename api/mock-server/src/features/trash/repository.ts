@@ -1,16 +1,20 @@
 import type { TrashStateRecord, TrashItem } from '../../generated/mock-admin/contract/index.ts'
 import { notFound } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 
 export class TrashRepository {
-  constructor(private readonly stateStore: MockStateRepository) {}
+  private readonly stateStore: MockStateStore
+
+  constructor(stateStore: MockStateStore) {
+    this.stateStore = stateStore
+  }
 
   get() {
     return this.stateStore.getSlice('trash')
   }
 
-  set(trash: TrashStateRecord) {
-    this.stateStore.setSlice('trash', trash)
+  async set(trash: TrashStateRecord) {
+    await this.stateStore.setSlice('trash', trash)
     return this.get()
   }
 
@@ -28,10 +32,10 @@ export class TrashRepository {
     return this.get().items.find((candidate) => candidate.id === itemId)
   }
 
-  addItem(item: TrashItem) {
+  async addItem(item: TrashItem) {
     const trash = this.get()
 
-    this.stateStore.setSlice('trash', {
+    await this.stateStore.setSlice('trash', {
       ...trash,
       items: [item, ...trash.items.filter((candidate) => candidate.id !== item.id)],
     })
@@ -39,10 +43,10 @@ export class TrashRepository {
     return this.get()
   }
 
-  removeItem(itemId: string) {
+  async removeItem(itemId: string) {
     const trash = this.get()
 
-    this.stateStore.setSlice('trash', {
+    await this.stateStore.setSlice('trash', {
       ...trash,
       items: trash.items.filter((item) => item.id !== itemId),
     })
@@ -50,8 +54,8 @@ export class TrashRepository {
     return this.get()
   }
 
-  empty(lastEmptiedAt: string) {
-    this.stateStore.setSlice('trash', {
+  async empty(lastEmptiedAt: string) {
+    await this.stateStore.setSlice('trash', {
       items: [],
       lastEmptiedAt,
     })

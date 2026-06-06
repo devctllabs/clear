@@ -1,6 +1,6 @@
 import type { FolderRecord } from '../../generated/mock-admin/contract/index.ts'
 import { notFound } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { visible } from '../../lib/softDelete.ts'
 import { byStringField } from '../../lib/sort.ts'
 
@@ -28,10 +28,14 @@ const sortFolders = (
 }
 
 export class FolderRepository {
-  constructor(private readonly stateStore: MockStateRepository) {}
+  private readonly stateStore: MockStateStore
+
+  constructor(stateStore: MockStateStore) {
+    this.stateStore = stateStore
+  }
 
   all() {
-    return this.stateStore.getSlice('folders')
+    return this.stateStore.findEntities('folders')
   }
 
   visible() {
@@ -39,7 +43,7 @@ export class FolderRepository {
   }
 
   find(folderId: string) {
-    return this.all().find((folder) => folder.id === folderId)
+    return this.stateStore.findEntity('folders', folderId)
   }
 
   require(folderId: string, options: { includeDeleted?: boolean } = {}) {
@@ -53,52 +57,33 @@ export class FolderRepository {
     return folder
   }
 
-  create(folder: FolderRecord) {
-    this.stateStore.setSlice('folders', [folder, ...this.all()])
-    return folder
+  async create(folder: FolderRecord) {
+    return this.stateStore.createEntity('folders', folder, { prepend: true })
   }
 
-  update(folderId: string, updater: (folder: FolderRecord) => FolderRecord) {
-    let next: FolderRecord | undefined
-
-    this.stateStore.setSlice('folders', this.all().map((folder) => {
-      if (folder.id !== folderId) {
-        return folder
-      }
-
-      next = updater(folder)
-
-      return next
-    }))
-
-    return next ?? this.require(folderId, { includeDeleted: true })
+  async update(folderId: string, updater: (folder: FolderRecord) => FolderRecord) {
+    return (
+      await this.stateStore.updateEntity('folders', folderId, updater)
+    ) ?? this.require(folderId, { includeDeleted: true })
   }
 
-  touch(folderId: string, updatedAt: string) {
+  async touch(folderId: string, updatedAt: string) {
     return this.update(folderId, (folder) => ({ ...folder, updatedAt }))
   }
 
-  markDeleted(folderId: string, deletedAt: string) {
+  async markDeleted(folderId: string, deletedAt: string) {
     return this.update(folderId, (folder) => ({ ...folder, deletedAt }))
   }
 
-  restore(folderId: string) {
+  async restore(folderId: string) {
     return this.update(folderId, (folder) => {
       const { deletedAt: _deletedAt, ...restored } = folder
       return restored
     })
   }
 
-  remove(folderId: string) {
-    const existing = this.find(folderId)
-
-    if (!existing) {
-      return undefined
-    }
-
-    this.stateStore.setSlice('folders', this.all().filter((folder) => folder.id !== folderId))
-
-    return existing
+  async remove(folderId: string) {
+    return this.stateStore.deleteEntity('folders', folderId)
   }
 
   listByWorkspace(workspaceId: string, options: { sortField?: FolderSortField; sortDirection?: SortDirection } = {}) {

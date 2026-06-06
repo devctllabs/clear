@@ -5,8 +5,8 @@ import type {
   FolderSearchResultGroup,
   NoteSearchResult,
   NoteSearchResultGroup,
-  SearchRequest,
   SearchSearchResultGroup,
+  SearchRequest,
 } from '../../generated/clear-web-api/contract/types.gen.ts'
 import type { DeckRecord, FolderRecord, NoteDetailRecord } from '../../generated/mock-admin/contract/index.ts'
 import type { DeckRepository } from '../decks/repository.ts'
@@ -15,8 +15,6 @@ import type { LocationPathResolver } from '../location-path/resolver.ts'
 import type { NotesRepository } from '../notes/repository.ts'
 import type { WorkspaceRepository } from '../workspaces/repository.ts'
 
-type SearchContext = SearchRequest['scope']
-
 const includesQuery = (value: string, query: string) =>
   value.toLowerCase().includes(query.toLowerCase())
 
@@ -24,13 +22,25 @@ const sortByUpdatedDesc = <T extends { updatedAt: string }>(items: T[]) =>
   [...items].sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
 
 export class SearchService {
+  private readonly workspaces: WorkspaceRepository
+  private readonly folders: FolderRepository
+  private readonly decks: DeckRepository
+  private readonly notes: NotesRepository
+  private readonly paths: LocationPathResolver
+
   constructor(
-    private readonly workspaces: WorkspaceRepository,
-    private readonly folders: FolderRepository,
-    private readonly decks: DeckRepository,
-    private readonly notes: NotesRepository,
-    private readonly paths: LocationPathResolver,
-  ) {}
+    workspaces: WorkspaceRepository,
+    folders: FolderRepository,
+    decks: DeckRepository,
+    notes: NotesRepository,
+    paths: LocationPathResolver,
+  ) {
+    this.workspaces = workspaces
+    this.folders = folders
+    this.decks = decks
+    this.notes = notes
+    this.paths = paths
+  }
 
   searchContent(request: SearchRequest): SearchSearchResultGroup[] {
     const query = request.query.trim()
@@ -90,7 +100,7 @@ export class SearchService {
   }
 
   private searchDeck(deckId: string, query: string) {
-    const deck = this.decks.require(deckId)
+    this.decks.require(deckId)
     const noteResults = sortByUpdatedDesc(
       this.notes.visible().filter((note) => note.deckId === deckId && this.matchesNote(note, query)),
     ).map((note) => this.toNoteSearchResult(note))

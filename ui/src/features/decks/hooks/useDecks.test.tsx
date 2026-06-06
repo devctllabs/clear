@@ -31,7 +31,7 @@ describe('deck hooks', () => {
         ),
       ).toBe(true),
     )
-    expect(result.current.detail.data?.totalNotes).toBe(7)
+    expect(result.current.detail.data?.totalNotes).toBe(2)
 
     let createdId = ''
     await act(async () => {

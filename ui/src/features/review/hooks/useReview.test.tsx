@@ -29,7 +29,7 @@ describe('review hooks', () => {
       await result.current.start.mutateAsync()
     })
     await waitFor(() => {
-      expect(result.current.session.data?.mode).toBe('practice')
+      expect(result.current.session.data?.mode).toBe('due')
       expect(result.current.session.data?.currentCard).toBeDefined()
     })
 
@@ -45,9 +45,10 @@ describe('review hooks', () => {
         grade: 'good',
       })
     })
-    await waitFor(() => expect(result.current.grade.data?.mode).toBe('practice'))
+    await waitFor(() => expect(result.current.grade.data?.mode).toBe('due'))
     expect(result.current.grade.data?.reviewedCount).toBe(1)
-    expect(result.current.grade.data?.currentCard).toBeDefined()
+    expect(result.current.grade.data?.currentCard).toBeUndefined()
+    expect(result.current.grade.data?.mode === 'due' ? result.current.grade.data.status : undefined).toBe('completed')
     await waitFor(() => expect(result.current.session.data?.reviewedCount).toBe(1))
   })
 })

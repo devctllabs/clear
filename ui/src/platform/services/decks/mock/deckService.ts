@@ -1,30 +1,47 @@
 import type { DeckService } from '@features/decks/services/deckService'
-import { domainError, err, ok } from '@shared/errors'
-import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
+import type { Deck, DeckDetail, DeckDraft } from '@features/decks/types/deck.types'
+import { mockApi } from '@platform/mock/mockApi'
+import { toMockDomainResult, toMockVoidDomainResult } from '@platform/mock/mockDomainResult'
+import { toSortQuery } from '@shared/services/api/adapters/sortQuery'
 
 export const mockDeckService: DeckService = {
   async create(draft) {
-    return ok(mockAppDataStore.createDeck(draft))
+    return toMockDomainResult(
+      () => mockApi.decksService.createDeck(toDeckDraft(draft)),
+      toDeck,
+    )
   },
   async delete(deckId) {
-    mockAppDataStore.deleteDeck(deckId)
-
-    return ok(undefined)
+    return toMockVoidDomainResult(() => mockApi.decksService.deleteDeck(deckId))
   },
   async getById(deckId) {
-    const deck = mockAppDataStore.getDeckById(deckId)
-
-    return deck ? ok(deck) : err(domainError.notFound('Deck not found.', 'deck', deckId))
+    return toMockDomainResult(
+      () => mockApi.decksService.getDeck(deckId),
+      toDeckDetail,
+    )
   },
   async listFolderChildren(folderId, sort) {
-    return ok(mockAppDataStore.listDecksInFolder(folderId, sort))
+    return toMockDomainResult(
+      () => mockApi.decksService.listFolderDecks(folderId, toSortQuery(sort)),
+      (decks) => decks.map(toDeck),
+    )
   },
   async listWorkspaceRoot(workspaceId, sort) {
-    return ok(mockAppDataStore.listWorkspaceDecks(workspaceId, sort))
+    return toMockDomainResult(
+      () => mockApi.decksService.listWorkspaceDecks(workspaceId, toSortQuery(sort)),
+      (decks) => decks.map(toDeck),
+    )
   },
   async update(deckId, draft) {
-    const deck = mockAppDataStore.updateDeck(deckId, draft)
-
-    return deck ? ok(deck) : err(domainError.notFound('Deck not found.', 'deck', deckId))
+    return toMockDomainResult(
+      () => mockApi.decksService.updateDeck(deckId, toDeckDraft(draft)),
+      toDeckDetail,
+    )
   },
 }
+
+const toDeck = (deck: unknown): Deck => deck as Deck
+
+const toDeckDetail = (deck: unknown): DeckDetail => deck as DeckDetail
+
+const toDeckDraft = (draft: DeckDraft) => draft

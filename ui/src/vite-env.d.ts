@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_CLEAR_API_BASE_URL?: string
-  readonly VITE_SERVICE_MODE?: 'auto' | 'web' | 'tauri' | 'mock'
+  readonly VITE_SERVICE_MODE?: 'auto' | 'web' | 'tauri'
 }
 
 interface ImportMeta {

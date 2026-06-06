@@ -1,7 +1,7 @@
 import type { DeckDraft } from '../../generated/clear-web-api/contract/types.gen.ts'
 import type { DeckRecord } from '../../generated/mock-admin/contract/index.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
 import type { FolderRepository } from '../folders/repository.ts'
 import type { LocationPathResolver } from '../location-path/resolver.ts'
@@ -11,15 +11,31 @@ import type { WorkspaceRepository } from '../workspaces/repository.ts'
 import { DeckRepository } from './repository.ts'
 
 export class DeckService {
+  private readonly decks: DeckRepository
+  private readonly workspaces: WorkspaceRepository
+  private readonly folders: FolderRepository
+  private readonly notes: NotesRepository
+  private readonly trash: TrashRepository
+  private readonly paths: LocationPathResolver
+  private readonly stateStore: MockStateStore
+
   constructor(
-    private readonly decks: DeckRepository,
-    private readonly workspaces: WorkspaceRepository,
-    private readonly folders: FolderRepository,
-    private readonly notes: NotesRepository,
-    private readonly trash: TrashRepository,
-    private readonly paths: LocationPathResolver,
-    private readonly stateStore: MockStateRepository,
-  ) {}
+    decks: DeckRepository,
+    workspaces: WorkspaceRepository,
+    folders: FolderRepository,
+    notes: NotesRepository,
+    trash: TrashRepository,
+    paths: LocationPathResolver,
+    stateStore: MockStateStore,
+  ) {
+    this.decks = decks
+    this.workspaces = workspaces
+    this.folders = folders
+    this.notes = notes
+    this.trash = trash
+    this.paths = paths
+    this.stateStore = stateStore
+  }
 
   listWorkspaceDecks(workspaceId: string, query?: { sortField?: string; sortDirection?: string }) {
     this.workspaces.require(workspaceId)
@@ -31,7 +47,7 @@ export class DeckService {
     return this.decks.listByParent(folderId, this.parseSortQuery(query))
   }
 
-  createDeck(draft: DeckDraft): DeckRecord {
+  async createDeck(draft: DeckDraft): Promise<DeckRecord> {
     const parent = this.resolveParent(draft.parentId)
     const duplicate = this.decks.visible().some(
       (deck) => deck.parentId === draft.parentId && deck.title === draft.title,
@@ -41,7 +57,7 @@ export class DeckService {
       throw conflict(`Deck titled ${draft.title} already exists in this location`)
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const deck: DeckRecord = {
@@ -57,11 +73,11 @@ export class DeckService {
         workspaceId: parent.workspaceId,
       }
 
-      this.decks.create(deck)
-      this.touchFolderAncestors(draft.parentId, now)
-      this.workspaces.touch(parent.workspaceId, now)
+      const created = await this.decks.create(deck)
+      await this.touchFolderAncestors(draft.parentId, now)
+      await this.workspaces.touch(parent.workspaceId, now)
 
-      return deck
+      return created
     })
   }
 
@@ -69,7 +85,7 @@ export class DeckService {
     return this.decks.require(deckId)
   }
 
-  updateDeck(deckId: string, draft: DeckDraft) {
+  async updateDeck(deckId: string, draft: DeckDraft) {
     const current = this.decks.require(deckId)
     const nextParent = this.resolveParent(draft.parentId)
     const duplicate = this.decks.visible().some(
@@ -80,9 +96,9 @@ export class DeckService {
       throw conflict(`Deck titled ${draft.title} already exists in this location`)
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
-      const updated = this.decks.update(deckId, (deck) => ({
+      const updated = await this.decks.update(deckId, (deck) => ({
         ...deck,
         description: draft.description,
         icon: draft.icon,
@@ -92,28 +108,28 @@ export class DeckService {
         workspaceId: nextParent.workspaceId,
       }))
 
-      this.touchFolderAncestors(current.parentId, now)
-      this.touchFolderAncestors(draft.parentId, now)
-      this.workspaces.touch(current.workspaceId, now)
+      await this.touchFolderAncestors(current.parentId, now)
+      await this.touchFolderAncestors(draft.parentId, now)
+      await this.workspaces.touch(current.workspaceId, now)
       if (nextParent.workspaceId !== current.workspaceId) {
-        this.workspaces.touch(nextParent.workspaceId, now)
+        await this.workspaces.touch(nextParent.workspaceId, now)
       }
 
       return updated
     })
   }
 
-  deleteDeck(deckId: string) {
+  async deleteDeck(deckId: string) {
     const deck = this.decks.require(deckId)
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const deletedAt = this.stateStore.now()
       const deckPath = this.paths.deckLocationPath(deckId)
 
       for (const note of this.notes.listByDeck(deckId)) {
         const notePath = this.paths.noteLocationPath(note)
-        this.notes.markDeleted(note.id ?? '', deletedAt)
-        this.trash.addItem({
+        await this.notes.markDeleted(note.id ?? '', deletedAt)
+        await this.trash.addItem({
           deletedAt,
           id: note.id ?? '',
           kind: 'note',
@@ -122,16 +138,16 @@ export class DeckService {
         })
       }
 
-      this.decks.markDeleted(deckId, deletedAt)
-      this.trash.addItem({
+      await this.decks.markDeleted(deckId, deletedAt)
+      await this.trash.addItem({
         deletedAt,
         id: deck.id ?? '',
         kind: 'deck',
         locationPath: deckPath,
         title: deck.title,
       })
-      this.touchFolderAncestors(deck.parentId, deletedAt)
-      this.workspaces.touch(deck.workspaceId, deletedAt)
+      await this.touchFolderAncestors(deck.parentId, deletedAt)
+      await this.workspaces.touch(deck.workspaceId, deletedAt)
     })
   }
 
@@ -160,15 +176,15 @@ export class DeckService {
     } as const
   }
 
-  private touchFolderAncestors(parentId: string, updatedAt: string) {
+  private async touchFolderAncestors(parentId: string, updatedAt: string) {
     if (this.workspaces.find(parentId)) {
       return
     }
 
     for (const ancestorId of this.paths.folderParentFolderIds(parentId)) {
-      this.folders.touch(ancestorId, updatedAt)
+      await this.folders.touch(ancestorId, updatedAt)
     }
 
-    this.folders.touch(parentId, updatedAt)
+    await this.folders.touch(parentId, updatedAt)
   }
 }

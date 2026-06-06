@@ -42,7 +42,7 @@ describe('TrashPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Trash' })).toBeInTheDocument()
     expect(screen.queryByRole('status', { name: 'Loading trash' })).not.toBeInTheDocument()
-    expect(screen.queryByText('5 items')).not.toBeInTheDocument()
+    expect(screen.queryByText('1 item')).not.toBeInTheDocument()
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(179)
@@ -115,7 +115,7 @@ describe('TrashPage', () => {
       await vi.advanceTimersByTimeAsync(0)
     })
 
-    expect(screen.getByText('5 items')).toBeInTheDocument()
+    expect(screen.getByText('1 item')).toBeInTheDocument()
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(180)
@@ -125,35 +125,39 @@ describe('TrashPage', () => {
 
   it('renders trash and supports empty, restore, and delete actions', async () => {
     const user = userEvent.setup()
-    renderRoute('/menu/trash')
+    const services = createAppServices('mock')
+    await services.notes.delete('industrial-revolution-causes')
+    await services.notes.delete('postwar-institutions')
+
+    renderRoute('/menu/trash', { services })
 
     const heading = await screen.findByRole('heading', { name: 'Trash' })
     expect(heading).toBeInTheDocument()
     expect(heading.closest('section')).toHaveClass('mb-7')
     expect(heading.closest('section')?.querySelector('[class*="min-h-[3.75rem]"]')).toBeNull()
     expect(await screen.findByRole('link', { name: 'Back' })).toHaveAttribute('href', '/menu')
-    expect(await screen.findByText('5 items')).toBeInTheDocument()
-    expect(await screen.findByText('Sampling Error Notes')).toBeInTheDocument()
+    expect(await screen.findByText('3 items')).toBeInTheDocument()
+    expect(await screen.findByText('Base Rates')).toBeInTheDocument()
 
     await user.click(
       await screen.findByRole('button', {
-        name: 'Drafting Patterns trash actions',
+        name: 'Industrial Revolution Causes trash actions',
       }),
     )
     await user.click(await screen.findByRole('menuitem', { name: 'Restore' }))
     await waitFor(() => {
-      expect(screen.queryByText('Drafting Patterns')).not.toBeInTheDocument()
+      expect(screen.queryByText('Industrial Revolution Causes')).not.toBeInTheDocument()
     })
-    expect(await screen.findByText('4 items')).toBeInTheDocument()
+    expect(await screen.findByText('2 items')).toBeInTheDocument()
 
-    await user.click(await screen.findByRole('button', { name: 'Sampling Error Notes trash actions' }))
+    await user.click(await screen.findByRole('button', { name: 'Base Rates trash actions' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Delete' }))
     const deleteDialog = await screen.findByRole('dialog')
     await user.click(within(deleteDialog).getByRole('button', { name: 'Delete permanently' }))
     await waitFor(() => {
-      expect(screen.queryByText('Sampling Error Notes')).not.toBeInTheDocument()
+      expect(screen.queryByText('Base Rates')).not.toBeInTheDocument()
     })
-    expect(await screen.findByText('3 items')).toBeInTheDocument()
+    expect(await screen.findByText('1 item')).toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: 'Empty' }))
     const emptyDialog = await screen.findByRole('dialog', { name: 'Empty trash?' })
@@ -166,6 +170,8 @@ describe('TrashPage', () => {
   it('shows a stale refresh status when delete succeeds but trash refetch fails', async () => {
     const user = userEvent.setup()
     const baseServices = createAppServices('mock')
+    await baseServices.notes.delete('industrial-revolution-causes')
+
     const refreshError = domainError.unexpected(
       'Trash storage is temporarily unavailable.',
     )
@@ -197,15 +203,16 @@ describe('TrashPage', () => {
 
     renderRoute('/menu/trash', { services })
 
-    expect(await screen.findByText('Sampling Error Notes')).toBeInTheDocument()
-    await user.click(await screen.findByRole('button', { name: 'Sampling Error Notes trash actions' }))
+    expect(await screen.findByText('Base Rates')).toBeInTheDocument()
+    expect(await screen.findByText('Industrial Revolution Causes')).toBeInTheDocument()
+    await user.click(await screen.findByRole('button', { name: 'Base Rates trash actions' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Delete' }))
     await user.click(await screen.findByRole('button', { name: 'Delete permanently' }))
 
-    expect(deleteItem).toHaveBeenCalledWith('sampling-error-notes')
+    expect(deleteItem).toHaveBeenCalledWith('base-rates')
     expect(await screen.findByText('Trash may be out of date')).toBeInTheDocument()
     expect(screen.getByText('Trash storage is temporarily unavailable.')).toBeInTheDocument()
-    expect(screen.getByText('Sampling Error Notes')).toBeInTheDocument()
+    expect(screen.getByText('Base Rates')).toBeInTheDocument()
     await waitFor(() => {
       expect(list.mock.calls.length).toBeGreaterThanOrEqual(2)
     })
@@ -215,7 +222,11 @@ describe('TrashPage', () => {
       expect(screen.queryByText('Trash may be out of date')).not.toBeInTheDocument()
     })
 
-    await user.click(await screen.findByRole('button', { name: 'Sampling Error Notes trash actions' }))
+    await user.click(
+      await screen.findByRole('button', {
+        name: 'Industrial Revolution Causes trash actions',
+      }),
+    )
     await user.click(await screen.findByRole('menuitem', { name: 'Delete' }))
     await user.click(await screen.findByRole('button', { name: 'Delete permanently' }))
 
@@ -232,7 +243,7 @@ describe('TrashPage', () => {
     const heading = await screen.findByRole('heading', { name: 'Trash' })
     expect(heading).toBeInTheDocument()
     expect(heading.closest('div.mx-auto')).toHaveClass('max-w-page-narrow')
-    expect(await screen.findByText('5 items')).toBeInTheDocument()
+    expect(await screen.findByText('1 item')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Trash' })).toHaveAttribute(
       'aria-current',
       'page',
@@ -259,15 +270,15 @@ describe('TrashPage', () => {
 
     renderRoute('/menu/trash', { services })
 
-    expect(await screen.findByText('Drafting Patterns')).toBeInTheDocument()
+    expect(await screen.findByText('Base Rates')).toBeInTheDocument()
     await user.click(
       await screen.findByRole('button', {
-        name: 'Drafting Patterns trash actions',
+        name: 'Base Rates trash actions',
       }),
     )
     await user.click(await screen.findByRole('menuitem', { name: 'Restore' }))
 
-    expect(await screen.findByText('Drafting Patterns')).toBeInTheDocument()
+    expect(await screen.findByText('Base Rates')).toBeInTheDocument()
     const status = await screen.findByRole('status')
     expect(status).toHaveTextContent('Could not restore item')
     expect(status).toHaveTextContent('Restore failed.')
@@ -299,20 +310,20 @@ describe('TrashPage', () => {
 
     await user.click(
       await screen.findByRole('button', {
-        name: 'Drafting Patterns trash actions',
+        name: 'Base Rates trash actions',
       }),
     )
     await user.click(await screen.findByRole('menuitem', { name: 'Restore' }))
 
     expect(restoreItem).toHaveBeenCalledTimes(1)
     expect(
-      screen.queryByRole('status', { name: 'Restoring Drafting Patterns' }),
+      screen.queryByRole('status', { name: 'Restoring Base Rates' }),
     ).not.toBeInTheDocument()
     expect(
-      await screen.findByRole('status', { name: 'Restoring Drafting Patterns' }),
+      await screen.findByRole('status', { name: 'Restoring Base Rates' }),
     ).toBeInTheDocument()
     expect(
-      screen.queryByRole('status', { name: 'Restoring Sampling Error Notes' }),
+      screen.queryByRole('status', { name: 'Restoring Industrial Revolution Causes' }),
     ).not.toBeInTheDocument()
   })
 })

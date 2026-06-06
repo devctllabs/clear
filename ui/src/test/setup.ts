@@ -6,7 +6,7 @@ import { afterEach, beforeEach, vi } from 'vitest'
 import { queryClient } from '@core/query/query-client'
 import { resetThemeStoreForTests } from '@core/theme'
 import { appI18n, defaultLocale } from '@core/i18n'
-import { mockAppDataStore } from '@platform/mock/mockAppDataStore'
+import { mockStateRepository } from '@platform/mock/mockApi'
 
 vi.mock('lucide-react/dynamic', async () => {
   const React = await import('react')
@@ -69,7 +69,7 @@ beforeEach(async () => {
   window.sessionStorage.clear()
   resetThemeStoreForTests()
   await appI18n.changeLanguage(defaultLocale)
-  mockAppDataStore.reset()
+  await mockStateRepository.reset()
   queryClient.clear()
 })
 

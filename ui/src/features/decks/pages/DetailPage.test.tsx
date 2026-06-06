@@ -177,12 +177,12 @@ describe('DeckDetailPage', () => {
     expect(createButton.textContent).toBe('')
     expect(createButton.closest('[class*="bottom-24"]')).toBeNull()
     expect(await screen.findByText(deckDescription)).toHaveClass('max-w-copy')
-    expect(await screen.findByText('71%')).toBeInTheDocument()
-    expect(await screen.findByText('9')).toBeInTheDocument()
-    expect(await screen.findByText('7')).toBeInTheDocument()
+    expect(await screen.findByText('66%')).toBeInTheDocument()
+    expect(await screen.findByText('1')).toBeInTheDocument()
+    expect(await screen.findByText('2')).toBeInTheDocument()
     expect(await screen.findByRole('heading', { name: 'Notes' })).toBeInTheDocument()
     expect(await screen.findByText('Industrial Revolution Causes')).toBeInTheDocument()
-    expect(await screen.findByText('Collective Memory')).toBeInTheDocument()
+    expect(await screen.findByText('Postwar Institutions')).toBeInTheDocument()
     expect(await screen.findByRole('link', { name: 'Back' })).toHaveAttribute('href', '/dashboard/independent-study')
   })
 
@@ -302,7 +302,7 @@ describe('DeckDetailPage', () => {
     expect(screen.getByRole('heading', { name: 'Notes' }).closest('[class*="max-w-section"]')).not.toBeNull()
 
     fireEvent.change(searchInput, {
-      target: { value: 'narratives' },
+      target: { value: 'institutions' },
     })
 
     expect(await screen.findByRole('heading', { name: 'Search results' })).toBeInTheDocument()
@@ -341,11 +341,11 @@ describe('DeckDetailPage', () => {
     renderRoute('/dashboard/independent-study/decks/world-history')
 
     fireEvent.change(await screen.findByPlaceholderText('Search notes…'), {
-      target: { value: 'narratives' },
+      target: { value: 'institutions' },
     })
 
     expect(await screen.findByRole('heading', { name: 'Search results' })).toBeInTheDocument()
-    expect(await screen.findByText('Collective Memory')).toBeInTheDocument()
+    expect(await screen.findByText('Postwar Institutions')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sort notes' })).not.toBeInTheDocument()
   })
 
@@ -416,8 +416,8 @@ describe('DeckDetailPage', () => {
 
     expect(
       appearsBefore(
-        await screen.findByRole('heading', { name: 'Collective Memory' }),
-        await screen.findByRole('heading', { name: 'Constitutional Crisis' }),
+        await screen.findByRole('heading', { name: 'Industrial Revolution Causes' }),
+        await screen.findByRole('heading', { name: 'Postwar Institutions' }),
       ),
     ).toBe(true)
 

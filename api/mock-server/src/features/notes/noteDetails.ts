@@ -1,5 +1,4 @@
 import type {
-  BasicNoteEditor,
   ClozeNoteCard,
   NoteDraft,
   NoteListItem,

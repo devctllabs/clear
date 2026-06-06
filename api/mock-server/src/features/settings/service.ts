@@ -1,19 +1,25 @@
 import type { SettingsRecord } from '../../generated/mock-admin/contract/index.ts'
 import { DEFAULT_SETTINGS } from './defaults.ts'
 import { SettingsRepository } from './repository.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 
 export class SettingsService {
+  private readonly settings: SettingsRepository
+  private readonly stateStore: MockStateStore
+
   constructor(
-    private readonly settings: SettingsRepository,
-    private readonly stateStore: MockStateRepository,
-  ) {}
+    settings: SettingsRepository,
+    stateStore: MockStateStore,
+  ) {
+    this.settings = settings
+    this.stateStore = stateStore
+  }
 
   getSettings() {
     return this.settings.get()
   }
 
-  updateSettings(settings: SettingsRecord) {
+  async updateSettings(settings: SettingsRecord) {
     return this.stateStore.transaction(() => this.settings.set(settings))
   }
 
@@ -21,7 +27,7 @@ export class SettingsService {
     return DEFAULT_SETTINGS
   }
 
-  resetSettings() {
+  async resetSettings() {
     return this.stateStore.transaction(() => this.settings.reset())
   }
 }

@@ -1,7 +1,7 @@
 import type { FolderDraft } from '../../generated/clear-web-api/contract/types.gen.ts'
 import type { FolderRecord } from '../../generated/mock-admin/contract/index.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
-import type { MockStateRepository } from '../../generated/mock-admin/state/repository.ts'
+import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
 import type { DeckRepository } from '../decks/repository.ts'
 import type { LocationPathResolver } from '../location-path/resolver.ts'
@@ -11,15 +11,31 @@ import type { WorkspaceRepository } from '../workspaces/repository.ts'
 import { FolderRepository } from './repository.ts'
 
 export class FolderService {
+  private readonly folders: FolderRepository
+  private readonly workspaces: WorkspaceRepository
+  private readonly decks: DeckRepository
+  private readonly notes: NotesRepository
+  private readonly trash: TrashRepository
+  private readonly paths: LocationPathResolver
+  private readonly stateStore: MockStateStore
+
   constructor(
-    private readonly folders: FolderRepository,
-    private readonly workspaces: WorkspaceRepository,
-    private readonly decks: DeckRepository,
-    private readonly notes: NotesRepository,
-    private readonly trash: TrashRepository,
-    private readonly paths: LocationPathResolver,
-    private readonly stateStore: MockStateRepository,
-  ) {}
+    folders: FolderRepository,
+    workspaces: WorkspaceRepository,
+    decks: DeckRepository,
+    notes: NotesRepository,
+    trash: TrashRepository,
+    paths: LocationPathResolver,
+    stateStore: MockStateStore,
+  ) {
+    this.folders = folders
+    this.workspaces = workspaces
+    this.decks = decks
+    this.notes = notes
+    this.trash = trash
+    this.paths = paths
+    this.stateStore = stateStore
+  }
 
   listWorkspaceFolders(workspaceId: string, query?: { sortField?: string; sortDirection?: string }) {
     this.workspaces.require(workspaceId)
@@ -31,7 +47,7 @@ export class FolderService {
     return this.folders.listByParent(folderId, this.parseSortQuery(query))
   }
 
-  createFolder(draft: FolderDraft): FolderRecord {
+  async createFolder(draft: FolderDraft): Promise<FolderRecord> {
     const parent = this.resolveParent(draft.parentId)
     const duplicate = this.folders.visible().some(
       (folder) => folder.parentId === draft.parentId && folder.name === draft.name,
@@ -41,7 +57,7 @@ export class FolderService {
       throw conflict(`Folder named ${draft.name} already exists in this location`)
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const folder: FolderRecord = {
@@ -53,11 +69,11 @@ export class FolderService {
         workspaceId: parent.workspaceId,
       }
 
-      this.folders.create(folder)
-      this.touchFolderAncestors(draft.parentId, now)
-      this.workspaces.touch(parent.workspaceId, now)
+      const created = await this.folders.create(folder)
+      await this.touchFolderAncestors(draft.parentId, now)
+      await this.workspaces.touch(parent.workspaceId, now)
 
-      return folder
+      return created
     })
   }
 
@@ -65,7 +81,7 @@ export class FolderService {
     return this.folders.require(folderId)
   }
 
-  updateFolder(folderId: string, draft: FolderDraft) {
+  async updateFolder(folderId: string, draft: FolderDraft) {
     const current = this.folders.require(folderId)
     const nextParent = this.resolveParent(draft.parentId)
     const duplicate = this.folders.visible().some(
@@ -79,9 +95,9 @@ export class FolderService {
       throw conflict(`Folder named ${draft.name} already exists in this location`)
     }
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
-      const updated = this.folders.update(folderId, (folder) => ({
+      const updated = await this.folders.update(folderId, (folder) => ({
         ...folder,
         description: draft.description,
         name: draft.name,
@@ -90,42 +106,42 @@ export class FolderService {
         workspaceId: nextParent.workspaceId,
       }))
 
-      this.touchFolderAncestors(current.parentId, now)
-      this.touchFolderAncestors(draft.parentId, now)
-      this.workspaces.touch(current.workspaceId, now)
+      await this.touchFolderAncestors(current.parentId, now)
+      await this.touchFolderAncestors(draft.parentId, now)
+      await this.workspaces.touch(current.workspaceId, now)
       if (nextParent.workspaceId !== current.workspaceId) {
-        this.workspaces.touch(nextParent.workspaceId, now)
+        await this.workspaces.touch(nextParent.workspaceId, now)
       }
 
       return updated
     })
   }
 
-  deleteFolder(folderId: string) {
+  async deleteFolder(folderId: string) {
     const folder = this.folders.require(folderId)
 
-    return this.stateStore.transaction(() => {
+    return this.stateStore.transaction(async () => {
       const deletedAt = this.stateStore.now()
       const folderPath = this.paths.folderLocationPath(folderId)
 
       for (const childFolder of this.folders.listByParent(folderId)) {
-        this.deleteFolderTree(childFolder.id ?? '', deletedAt)
+        await this.deleteFolderTree(childFolder.id ?? '', deletedAt)
       }
 
       for (const childDeck of this.decks.listByParent(folderId)) {
-        this.deleteDeckTree(childDeck.id ?? '', deletedAt)
+        await this.deleteDeckTree(childDeck.id ?? '', deletedAt)
       }
 
-      this.folders.markDeleted(folderId, deletedAt)
-      this.trash.addItem({
+      await this.folders.markDeleted(folderId, deletedAt)
+      await this.trash.addItem({
         deletedAt,
         id: folder.id ?? '',
         kind: 'folder',
         locationPath: folderPath,
         title: folder.name,
       })
-      this.touchFolderAncestors(folder.parentId, deletedAt)
-      this.workspaces.touch(folder.workspaceId, deletedAt)
+      await this.touchFolderAncestors(folder.parentId, deletedAt)
+      await this.workspaces.touch(folder.workspaceId, deletedAt)
     })
   }
 
@@ -158,48 +174,48 @@ export class FolderService {
     } as const
   }
 
-  private touchFolderAncestors(folderId: string, updatedAt: string) {
+  private async touchFolderAncestors(folderId: string, updatedAt: string) {
     if (!this.folders.find(folderId)) {
       return
     }
 
     for (const ancestorId of this.paths.folderParentFolderIds(folderId)) {
-      this.folders.touch(ancestorId, updatedAt)
+      await this.folders.touch(ancestorId, updatedAt)
     }
   }
 
-  private deleteFolderTree(folderId: string, deletedAt: string) {
+  private async deleteFolderTree(folderId: string, deletedAt: string) {
     const folder = this.folders.require(folderId)
     const folderPath = this.paths.folderLocationPath(folderId)
 
     for (const childFolder of this.folders.listByParent(folderId)) {
-      this.deleteFolderTree(childFolder.id ?? '', deletedAt)
+      await this.deleteFolderTree(childFolder.id ?? '', deletedAt)
     }
 
     for (const childDeck of this.decks.listByParent(folderId)) {
-      this.deleteDeckTree(childDeck.id ?? '', deletedAt)
+      await this.deleteDeckTree(childDeck.id ?? '', deletedAt)
     }
 
-    this.folders.markDeleted(folderId, deletedAt)
-    this.trash.addItem({
+    await this.folders.markDeleted(folderId, deletedAt)
+    await this.trash.addItem({
       deletedAt,
       id: folder.id ?? '',
       kind: 'folder',
       locationPath: folderPath,
       title: folder.name,
     })
-    this.touchFolderAncestors(folder.parentId, deletedAt)
-    this.workspaces.touch(folder.workspaceId, deletedAt)
+    await this.touchFolderAncestors(folder.parentId, deletedAt)
+    await this.workspaces.touch(folder.workspaceId, deletedAt)
   }
 
-  private deleteDeckTree(deckId: string, deletedAt: string) {
+  private async deleteDeckTree(deckId: string, deletedAt: string) {
     const deck = this.decks.require(deckId)
     const deckPath = this.paths.deckLocationPath(deckId)
 
     for (const note of this.notes.listByDeck(deckId)) {
       const notePath = this.paths.noteLocationPath(note)
-      this.notes.markDeleted(note.id ?? '', deletedAt)
-      this.trash.addItem({
+      await this.notes.markDeleted(note.id ?? '', deletedAt)
+      await this.trash.addItem({
         deletedAt,
         id: note.id ?? '',
         kind: 'note',
@@ -208,15 +224,15 @@ export class FolderService {
       })
     }
 
-    this.decks.markDeleted(deckId, deletedAt)
-    this.trash.addItem({
+    await this.decks.markDeleted(deckId, deletedAt)
+    await this.trash.addItem({
       deletedAt,
       id: deck.id ?? '',
       kind: 'deck',
       locationPath: deckPath,
       title: deck.title,
     })
-    this.touchFolderAncestors(deck.parentId, deletedAt)
-    this.workspaces.touch(deck.workspaceId, deletedAt)
+    await this.touchFolderAncestors(deck.parentId, deletedAt)
+    await this.workspaces.touch(deck.workspaceId, deletedAt)
   }
 }

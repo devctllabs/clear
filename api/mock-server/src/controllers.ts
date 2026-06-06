@@ -6,27 +6,17 @@ import {
   type GeneratedMockControllers as ClearWebApiGeneratedMockControllers,
 } from './generated/clear-web-api/mock-runtime.ts'
 import type { GeneratedMockControllers as AdminGeneratedMockControllers } from './generated/mock-admin/mock-runtime.ts'
-import { newAdminStateController } from './generated/mock-admin/state/controller.ts'
-import { MockStateRepository, type MockStateOptions } from './generated/mock-admin/state/repository.ts'
-import { AdminStateService } from './generated/mock-admin/state/service.ts'
 import { seedState } from './generated/mock-admin/state/seed.ts'
-import type { MockState } from './generated/mock-admin/contract/index.ts'
-import { WorkspaceRepository } from './features/workspaces/repository.ts'
-import { FolderRepository } from './features/folders/repository.ts'
-import { DeckRepository } from './features/decks/repository.ts'
-import { NotesRepository } from './features/notes/repository.ts'
-import { ReviewRepository } from './features/review/repository.ts'
-import { SettingsRepository } from './features/settings/repository.ts'
-import { TrashRepository } from './features/trash/repository.ts'
-import { LocationPathResolver } from './features/location-path/resolver.ts'
-import { WorkspacesService } from './features/workspaces/service.ts'
-import { FolderService } from './features/folders/service.ts'
-import { DeckService } from './features/decks/service.ts'
-import { NotesService } from './features/notes/service.ts'
-import { ReviewService } from './features/review/service.ts'
-import { SettingsService } from './features/settings/service.ts'
-import { TrashService } from './features/trash/service.ts'
-import { SearchService } from './features/search/service.ts'
+import type { MockClock, MockState } from './generated/mock-admin/contract/index.ts'
+import {
+  newMockApiDependencies,
+  type MockApiDependencies,
+} from './dependencies.ts'
+import {
+  newFileMockStateStore,
+  type MockStateOptions,
+} from './lib/nodeStateStore.ts'
+import type { MockStateStore } from './lib/stateStore.ts'
 import { newBootstrapController } from './features/bootstrap/controllers/bootstrap.ts'
 import { newListWorkspacesController } from './features/workspaces/controllers/listWorkspaces.ts'
 import { newCreateWorkspaceController } from './features/workspaces/controllers/createWorkspace.ts'
@@ -68,101 +58,13 @@ import { newSearchContentController } from './features/search/controllers/search
 
 export type ProductMockControllers = ClearWebApiGeneratedMockControllers
 export type MockApiControllers = ProductMockControllers & AdminGeneratedMockControllers
-export type MockApiDependencies = {
-  stateRepository: MockStateRepository
-  workspacesService: WorkspacesService
-  foldersService: FolderService
-  decksService: DeckService
-  notesService: NotesService
-  reviewService: ReviewService
-  settingsService: SettingsService
-  trashService: TrashService
-  searchService: SearchService
-}
+export type { MockApiDependencies }
 
-export const newMockApiControllers = (
+export const newMockApiControllers = async (
   options: MockStateOptions = {},
-): MockApiControllers => {
-  const stateRepository = new MockStateRepository(options)
-  const workspacesRepository = new WorkspaceRepository(stateRepository)
-  const foldersRepository = new FolderRepository(stateRepository)
-  const decksRepository = new DeckRepository(stateRepository)
-  const notesRepository = new NotesRepository(stateRepository)
-  const reviewRepository = new ReviewRepository(stateRepository)
-  const settingsRepository = new SettingsRepository(stateRepository)
-  const trashRepository = new TrashRepository(stateRepository)
-  const paths = new LocationPathResolver(workspacesRepository, foldersRepository, decksRepository)
-  const settingsService = new SettingsService(settingsRepository, stateRepository)
-  const notesService = new NotesService(
-    notesRepository,
-    decksRepository,
-    workspacesRepository,
-    trashRepository,
-    paths,
-    stateRepository,
-  )
-  const workspacesService = new WorkspacesService(
-    workspacesRepository,
-    foldersRepository,
-    decksRepository,
-    notesRepository,
-    trashRepository,
-    paths,
-    stateRepository,
-  )
-  const foldersService = new FolderService(
-    foldersRepository,
-    workspacesRepository,
-    decksRepository,
-    notesRepository,
-    trashRepository,
-    paths,
-    stateRepository,
-  )
-  const decksService = new DeckService(
-    decksRepository,
-    workspacesRepository,
-    foldersRepository,
-    notesRepository,
-    trashRepository,
-    paths,
-    stateRepository,
-  )
-  const reviewService = new ReviewService(
-    reviewRepository,
-    notesRepository,
-    decksRepository,
-    notesService,
-    stateRepository,
-  )
-  const trashService = new TrashService(
-    trashRepository,
-    workspacesRepository,
-    foldersRepository,
-    decksRepository,
-    notesRepository,
-    paths,
-    stateRepository,
-  )
-  const searchService = new SearchService(
-    workspacesRepository,
-    foldersRepository,
-    decksRepository,
-    notesRepository,
-    paths,
-  )
-  const deps: MockApiDependencies = {
-    stateRepository,
-    workspacesService,
-    foldersService,
-    decksService,
-    notesService,
-    reviewService,
-    settingsService,
-    trashService,
-    searchService,
-  }
-  const adminStateService = new AdminStateService(stateRepository, clearWebApiGeneratedRouteDefinitions.length)
+): Promise<MockApiControllers> => {
+  const stateStore = await newFileMockStateStore(options)
+  const deps = newMockApiDependencies(stateStore)
 
   return {
     ...newBootstrapController(deps),
@@ -203,10 +105,26 @@ export const newMockApiControllers = (
     ...newRestoreTrashItemController(deps),
     ...newDeleteTrashItemController(deps),
     ...newSearchContentController(deps),
-    ...newAdminStateController(adminStateService),
+    ...newAdminStateControllers(stateStore, clearWebApiGeneratedRouteDefinitions.length),
   } as MockApiControllers
 }
 
-export const newMemoryMockApiControllers = (
+export const newMemoryMockApiControllers = async (
   initialState: MockState = seedState(),
-): MockApiControllers => newMockApiControllers({ initialState })
+): Promise<MockApiControllers> => newMockApiControllers({ initialState })
+
+const newAdminStateControllers = (
+  stateStore: MockStateStore,
+  operationCount: number,
+): AdminGeneratedMockControllers => ({
+  mockGetSnapshot: () => stateStore.snapshot(),
+  mockGetState: () => stateStore.snapshot(),
+  mockHealth: () => ({
+    ok: true,
+    operationCount,
+  }),
+  mockPostSnapshot: ({ body }) => stateStore.replace(body as MockState),
+  mockPutClock: ({ body }) => stateStore.setClock((body as MockClock).now),
+  mockPutState: ({ body }) => stateStore.replace(body as MockState),
+  mockResetState: () => stateStore.reset(),
+})
