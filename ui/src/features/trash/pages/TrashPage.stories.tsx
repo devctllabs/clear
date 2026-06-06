@@ -14,7 +14,7 @@ import {
 } from '@/test/storybook/page-services'
 import { withStorybookApp } from '@/test/storybook/providers'
 import { dayMs, timestampAgo } from '@/test/storybook/fixtures'
-import { err, type DomainError } from '@shared/errors'
+import { domainError, err, type DomainError } from '@shared/errors'
 import type { TrashService } from '../services/trashService'
 import type { TrashState } from '../types/trash.types'
 
@@ -221,7 +221,7 @@ export const RefreshTrashError: Story = {
       services: () =>
         createStorybookServices({
           trash: createTrashServiceWithPostMutationRefreshError({
-            error: unavailableError('Trash storage is temporarily unavailable.'),
+            error: domainError.unexpected('Trash storage is temporarily unavailable.'),
           }),
           workspaces: createWorkspaceService(),
         }),

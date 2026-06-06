@@ -39,6 +39,9 @@ updates:
           - minor
         patterns:
           - "@tanstack/*"
+        exclude-patterns:
+          - "@tanstack/router-plugin"
+          - "@tanstack/router-cli"
 
       ui-runtime:
         applies-to: version-updates
@@ -64,6 +67,19 @@ updates:
           - zustand
           - lucide-react
 
+      mock-api-tooling:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
+          - "@hono/node-server"
+          - hono
+          - tsx
+          - yaml
+          - esbuild
+          - "@types/node"
+
       codegen:
         applies-to: version-updates
         update-types:
@@ -74,7 +90,7 @@ updates:
           - "@tanstack/router-plugin"
           - "@tanstack/router-cli"
 
-      tooling:
+      ui-testing:
         applies-to: version-updates
         update-types:
           - patch
@@ -88,6 +104,13 @@ updates:
           - jsdom
           - msw
           - playwright
+
+      tooling:
+        applies-to: version-updates
+        update-types:
+          - patch
+          - minor
+        patterns:
           - eslint*
           - typescript*
           - vite

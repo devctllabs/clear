@@ -166,7 +166,7 @@ describe('TrashPage', () => {
   it('shows a stale refresh status when delete succeeds but trash refetch fails', async () => {
     const user = userEvent.setup()
     const baseServices = createAppServices('mock')
-    const refreshError = domainError.unavailable(
+    const refreshError = domainError.unexpected(
       'Trash storage is temporarily unavailable.',
     )
     let failFutureList = false
@@ -204,7 +204,7 @@ describe('TrashPage', () => {
 
     expect(deleteItem).toHaveBeenCalledWith('sampling-error-notes')
     expect(await screen.findByText('Trash may be out of date')).toBeInTheDocument()
-    expect(screen.getByText('The service is temporarily unavailable.')).toBeInTheDocument()
+    expect(screen.getByText('Trash storage is temporarily unavailable.')).toBeInTheDocument()
     expect(screen.getByText('Sampling Error Notes')).toBeInTheDocument()
     await waitFor(() => {
       expect(list.mock.calls.length).toBeGreaterThanOrEqual(2)
