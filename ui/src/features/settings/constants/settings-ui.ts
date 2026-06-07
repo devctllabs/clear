@@ -1,1 +1,1 @@
-export const showSettingsLanguageControl = false
+export const showSettingsLanguageControl = true

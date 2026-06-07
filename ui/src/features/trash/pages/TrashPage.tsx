@@ -100,10 +100,7 @@ export const TrashPage = () => {
     lastEmptiedAt: new Date().toISOString(),
   }
   const itemCount = trashState.items.length
-  const summaryLabel =
-    itemCount === 1
-      ? t(($) => $.trash.labels.itemCount, { count: itemCount })
-      : t(($) => $.trash.labels.itemCountPlural, { count: itemCount })
+  const summaryLabel = t(($) => $.trash.labels.itemCount, { count: itemCount })
   const summaryAge = t(($) => $.trash.labels.lastEmptied, {
     value: formatRelativeAge(trashState.lastEmptiedAt),
   })

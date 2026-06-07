@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest'
 
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi } from 'vitest'
+import { setI18n } from 'react-i18next'
 
 import { queryClient } from '@core/query/query-client'
 import { resetThemeStoreForTests } from '@core/theme'
@@ -69,6 +70,7 @@ beforeEach(async () => {
   window.sessionStorage.clear()
   resetThemeStoreForTests()
   await appI18n.changeLanguage(defaultLocale)
+  setI18n(appI18n)
   await mockStateRepository.reset()
   queryClient.clear()
 })
