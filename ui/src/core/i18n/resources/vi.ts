@@ -158,7 +158,6 @@ export const vi = {
     },
     descriptions: {
       emptyDeck: 'Thêm ghi chú để bộ thẻ này có nội dung ôn tập.',
-      editorDefault: 'Bộ thẻ học tập tập trung.',
       editorVisual: 'Chọn một glyph bìa cho bộ thẻ này.',
       notesSearchPlaceholder: 'Tìm ghi chú…',
     },
@@ -190,8 +189,6 @@ export const vi = {
       descriptionLabel: 'Mô tả bộ thẻ',
       descriptionPlaceholder: 'Bộ thẻ này giúp bạn ôn tập điều gì?',
       namePlaceholder: 'Tên bộ thẻ',
-      untitledDeck: 'Bộ thẻ chưa đặt tên',
-      untitledDeckLower: 'bộ thẻ chưa đặt tên',
     },
     labels: {
       createDeckTitle: 'Tạo bộ thẻ',
@@ -221,19 +218,30 @@ export const vi = {
       timeout: 'Thao tác này mất quá lâu. Hãy thử lại.',
       unauthorized: 'Đăng nhập để tiếp tục.',
       unavailable: 'Dịch vụ tạm thời không khả dụng.',
+      validation: 'Kiểm tra các trường được đánh dấu rồi thử lại.',
     },
     fallback: {
       unexpected: 'Lỗi không mong muốn',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} không hợp lệ.',
+      invalidEnum: 'Chọn {{field}} hợp lệ.',
+      invalidFormat: 'Nhập {{field}} hợp lệ.',
+      maxLength: '{{field}} tối đa {{max}} ký tự.',
+      maximum: '{{field}} tối đa là {{max}}.',
+      minLength: '{{field}} tối thiểu {{min}} ký tự.',
+      minimum: '{{field}} tối thiểu là {{min}}.',
+      required: '{{field}} là bắt buộc.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Tạo thư mục',
       deleteFolder: 'Xóa thư mục',
       editFolder: 'Chỉnh sửa thư mục',
-    },
-    descriptions: {
-      editorDefault: 'Thư mục cho các bộ thẻ liên quan.',
     },
     dialogs: {
       deleteFolderDescription: 'Thao tác này chuyển "{{name}}" vào Thùng rác. Bạn có thể khôi phục sau.',
@@ -256,7 +264,6 @@ export const vi = {
       descriptionLabel: 'Mô tả thư mục',
       descriptionPlaceholder: 'Những gì thuộc về thư mục này?',
       namePlaceholder: 'Tên thư mục',
-      untitledFolder: 'Thư mục chưa đặt tên',
     },
     labels: {
       createFolderTitle: 'Tạo thư mục',
@@ -586,7 +593,6 @@ export const vi = {
       openingWorkspace: 'Đang mở {{title}}',
     },
     descriptions: {
-      editorDefault: 'Ngữ cảnh học tập.',
       editorVisual: 'Chọn điểm neo hình ảnh cho không gian làm việc này.',
       emptyList: 'Tách bộ thẻ, ghi chú và hàng đợi ôn tập theo ngữ cảnh học tập.',
     },
@@ -611,7 +617,6 @@ export const vi = {
       descriptionLabel: 'Mô tả không gian làm việc',
       descriptionPlaceholder: 'Những gì thuộc về không gian làm việc này?',
       namePlaceholder: 'Tên không gian làm việc',
-      untitledWorkspace: 'Không gian làm việc chưa đặt tên',
     },
     labels: {
       createWorkspaceTitle: 'Tạo không gian làm việc',

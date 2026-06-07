@@ -178,7 +178,6 @@ export const cs = {
     },
     descriptions: {
       emptyDeck: 'Přidejte poznámku, aby měl tento balíček materiál k opakování.',
-      editorDefault: 'Zaměřený studijní balíček.',
       editorVisual: 'Vyberte krycí symbol pro tento balíček.',
       notesSearchPlaceholder: 'Hledat poznámky…',
     },
@@ -210,8 +209,6 @@ export const cs = {
       descriptionLabel: 'Popis balíčku',
       descriptionPlaceholder: 'Co vám tento balíček pomůže opakovat?',
       namePlaceholder: 'Název balíčku',
-      untitledDeck: 'Balíček bez názvu',
-      untitledDeckLower: 'balíček bez názvu',
     },
     labels: {
       createDeckTitle: 'Vytvořit balíček',
@@ -241,19 +238,30 @@ export const cs = {
       timeout: 'Trvá to příliš dlouho. Zkuste to znovu.',
       unauthorized: 'Pro pokračování se přihlaste.',
       unavailable: 'Služba je dočasně nedostupná.',
+      validation: 'Zkontrolujte zvýrazněná pole a zkuste to znovu.',
     },
     fallback: {
       unexpected: 'Neočekávaná chyba',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} není platné.',
+      invalidEnum: 'Vyberte platnou hodnotu pro {{field}}.',
+      invalidFormat: 'Zadejte platnou hodnotu pro {{field}}.',
+      maxLength: '{{field}} může mít nejvýše {{max}} znaků.',
+      maximum: '{{field}} musí být nejvýše {{max}}.',
+      minLength: '{{field}} musí mít alespoň {{min}} znaků.',
+      minimum: '{{field}} musí být alespoň {{min}}.',
+      required: '{{field}} je povinné.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Vytvořit složku',
       deleteFolder: 'Smazat složku',
       editFolder: 'Upravit složku',
-    },
-    descriptions: {
-      editorDefault: 'Složka pro související balíčky.',
     },
     dialogs: {
       deleteFolderDescription: 'Tím se "{{name}}" přesune do Koše. Později ji můžete obnovit.',
@@ -276,7 +284,6 @@ export const cs = {
       descriptionLabel: 'Popis složky',
       descriptionPlaceholder: 'Co patří do této složky?',
       namePlaceholder: 'Název složky',
-      untitledFolder: 'Složka bez názvu',
     },
     labels: {
       createFolderTitle: 'Vytvořit složku',
@@ -612,7 +619,6 @@ export const cs = {
       openingWorkspace: 'Otevírání {{title}}',
     },
     descriptions: {
-      editorDefault: 'Studijní kontext.',
       editorVisual: 'Vyberte vizuální kotvu pro tento pracovní prostor.',
       emptyList: 'Oddělte balíčky, poznámky a fronty opakování podle studijního kontextu.',
     },
@@ -637,7 +643,6 @@ export const cs = {
       descriptionLabel: 'Popis pracovního prostoru',
       descriptionPlaceholder: 'Co patří do tohoto pracovního prostoru?',
       namePlaceholder: 'Název pracovního prostoru',
-      untitledWorkspace: 'Pracovní prostor bez názvu',
     },
     labels: {
       createWorkspaceTitle: 'Vytvořit pracovní prostor',

@@ -250,16 +250,21 @@ export const ProductList: FC<ProductListProps> = ({ products, onEdit, onDelete }
 ```
 
 **8. Create Page** (`pages/ListPage.tsx`)
+For localized apps, route-facing pages should use `useTranslation()` for
+visible copy instead of hardcoded labels.
+
 ```typescript
 import { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProducts, useDeleteProduct } from '../hooks/useProductData';
 import { ProductList } from '../components/ProductList';
-import { LoadingSpinner } from '@components/feedback/LoadingSpinner';
-import { getDomainErrorMessage } from '@shared/errors';
+import { LoadingSpinner } from '@shared/components/feedback/LoadingSpinner';
+import { LoadErrorState } from '@shared/components/feedback/LoadErrorState';
 import type { Product } from '../types/product.types';
 
 const ListPage: FC = () => {
-  const { data: products, isLoading, error } = useProducts();
+  const { t } = useTranslation();
+  const { data: products, isLoading, error, refetch } = useProducts();
   const deleteMutation = useDeleteProduct();
 
   const handleEdit = (product: Product) => {
@@ -268,17 +273,28 @@ const ListPage: FC = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure?')) {
+    if (confirm(t(($) => $.products.dialogs.confirmDelete))) {
       deleteMutation.mutate(id);
     }
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>{getDomainErrorMessage(error)}</div>;
+  if (error) {
+    return (
+      <LoadErrorState
+        error={error}
+        title={t(($) => $.products.errors.couldNotLoad)}
+        variant="page"
+        onRetry={() => void refetch()}
+      />
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        {t(($) => $.products.labels.products)}
+      </h1>
       <ProductList
         products={products || []}
         onEdit={handleEdit}

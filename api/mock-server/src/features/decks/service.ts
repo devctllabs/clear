@@ -3,6 +3,7 @@ import type { DeckRecord } from '../../generated/mock-admin/contract/index.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
 import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
+import { requireNonBlankText, trimOptionalText } from '../../lib/validation.ts'
 import type { FolderRepository } from '../folders/repository.ts'
 import type { LocationPathResolver } from '../location-path/resolver.ts'
 import type { NotesRepository } from '../notes/repository.ts'
@@ -48,33 +49,38 @@ export class DeckService {
   }
 
   async createDeck(draft: DeckDraft): Promise<DeckRecord> {
-    const parent = this.resolveParent(draft.parentId)
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      title: requireNonBlankText(draft.title, 'title'),
+    }
+    const parent = this.resolveParent(normalizedDraft.parentId)
     const duplicate = this.decks.visible().some(
-      (deck) => deck.parentId === draft.parentId && deck.title === draft.title,
+      (deck) => deck.parentId === normalizedDraft.parentId && deck.title === normalizedDraft.title,
     )
 
     if (duplicate) {
-      throw conflict(`Deck titled ${draft.title} already exists in this location`)
+      throw conflict(`Deck titled ${normalizedDraft.title} already exists in this location`)
     }
 
     return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const deck: DeckRecord = {
-        description: draft.description,
+        description: normalizedDraft.description,
         dueToday: 0,
-        icon: draft.icon,
+        icon: normalizedDraft.icon,
         id: ids.next('deck'),
-        parentId: draft.parentId,
+        parentId: normalizedDraft.parentId,
         progress: 0,
-        title: draft.title,
+        title: normalizedDraft.title,
         totalNotes: 0,
         updatedAt: now,
         workspaceId: parent.workspaceId,
       }
 
       const created = await this.decks.create(deck)
-      await this.touchFolderAncestors(draft.parentId, now)
+      await this.touchFolderAncestors(normalizedDraft.parentId, now)
       await this.workspaces.touch(parent.workspaceId, now)
 
       return created
@@ -86,30 +92,38 @@ export class DeckService {
   }
 
   async updateDeck(deckId: string, draft: DeckDraft) {
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      title: requireNonBlankText(draft.title, 'title'),
+    }
     const current = this.decks.require(deckId)
-    const nextParent = this.resolveParent(draft.parentId)
+    const nextParent = this.resolveParent(normalizedDraft.parentId)
     const duplicate = this.decks.visible().some(
-      (deck) => deck.id !== deckId && deck.parentId === draft.parentId && deck.title === draft.title,
+      (deck) =>
+        deck.id !== deckId &&
+        deck.parentId === normalizedDraft.parentId &&
+        deck.title === normalizedDraft.title,
     )
 
     if (duplicate) {
-      throw conflict(`Deck titled ${draft.title} already exists in this location`)
+      throw conflict(`Deck titled ${normalizedDraft.title} already exists in this location`)
     }
 
     return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
       const updated = await this.decks.update(deckId, (deck) => ({
         ...deck,
-        description: draft.description,
-        icon: draft.icon,
-        parentId: draft.parentId,
-        title: draft.title,
+        description: normalizedDraft.description,
+        icon: normalizedDraft.icon,
+        parentId: normalizedDraft.parentId,
+        title: normalizedDraft.title,
         updatedAt: now,
         workspaceId: nextParent.workspaceId,
       }))
 
       await this.touchFolderAncestors(current.parentId, now)
-      await this.touchFolderAncestors(draft.parentId, now)
+      await this.touchFolderAncestors(normalizedDraft.parentId, now)
       await this.workspaces.touch(current.workspaceId, now)
       if (nextParent.workspaceId !== current.workspaceId) {
         await this.workspaces.touch(nextParent.workspaceId, now)

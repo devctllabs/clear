@@ -1,7 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
+import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
 
 describe('WorkspaceCreatePage', () => {
@@ -25,5 +26,32 @@ describe('WorkspaceCreatePage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Clinical Knowledge' })).toBeInTheDocument()
     expect(await screen.findByText('Workspace for clinical study notes.')).toBeInTheDocument()
+  })
+
+  it('validates the workspace name before creating', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const create = vi.fn(baseServices.workspaces.create)
+    const services = {
+      ...baseServices,
+      workspaces: {
+        ...baseServices.workspaces,
+        create,
+      },
+    }
+
+    renderRoute('/workspaces/new', { services })
+
+    const name = await screen.findByLabelText('Workspace name')
+    fireEvent.change(name, { target: { value: '   ' } })
+    await user.click(await screen.findByRole('button', { name: 'Create workspace' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
+
+    fireEvent.change(name, { target: { value: 'Recovered Workspace' } })
+    expect(name).not.toHaveAttribute('aria-invalid')
+    expect(name).not.toHaveAccessibleDescription('Name is required.')
   })
 })

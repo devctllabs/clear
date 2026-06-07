@@ -48,46 +48,37 @@ describe('mapApiErrorToDomainError', () => {
     })
   })
 
-  it('keeps 422 API validation errors as field validation', () => {
+  it('keeps 422 API validation errors as issue validation', () => {
     expect(
       mapApiErrorToDomainError({
         response: {
           data: {
-            fieldErrors: {
-              title: ['Title is required.'],
-            },
-            message: 'Invalid workspace.',
+            issues: [{ code: 'required', path: ['title'] }],
+            retryable: false,
+            type: DomainErrorType.Validation,
           },
           status: 422,
         },
       }),
     ).toEqual({
-      fieldErrors: {
-        title: ['Title is required.'],
-      },
-      message: 'Invalid workspace.',
+      issues: [{ code: 'required', path: ['title'] }],
       retryable: false,
       type: DomainErrorType.Validation,
     })
   })
 
-  it('drops malformed 422 field errors', () => {
+  it('drops malformed 422 validation issues', () => {
     expect(
       mapApiErrorToDomainError({
         response: {
           data: {
-            fieldErrors: {
-              body: 42,
-              title: ['Title is required.'],
-            },
-            message: 'Invalid workspace.',
+            issues: [{ code: 42, path: ['title'] }],
           },
           status: 422,
         },
       }),
     ).toMatchObject({
-      fieldErrors: {},
-      message: 'Invalid workspace.',
+      issues: [],
       type: DomainErrorType.Validation,
     })
   })

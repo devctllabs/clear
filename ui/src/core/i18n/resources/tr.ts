@@ -158,7 +158,6 @@ export const tr = {
     },
     descriptions: {
       emptyDeck: 'Bu destede tekrar edilecek materyal olması için bir not ekleyin.',
-      editorDefault: 'Odaklı çalışma destesi.',
       editorVisual: 'Bu deste için bir kapak glifi seçin.',
       notesSearchPlaceholder: 'Not ara…',
     },
@@ -190,8 +189,6 @@ export const tr = {
       descriptionLabel: 'Deste açıklaması',
       descriptionPlaceholder: 'Bu deste neyi tekrar etmenize yardımcı olacak?',
       namePlaceholder: 'Deste adı',
-      untitledDeck: 'Adsız deste',
-      untitledDeckLower: 'adsız deste',
     },
     labels: {
       createDeckTitle: 'Deste oluştur',
@@ -221,19 +218,30 @@ export const tr = {
       timeout: 'Bu işlem çok uzun sürdü. Tekrar deneyin.',
       unauthorized: 'Devam etmek için oturum açın.',
       unavailable: 'Hizmet geçici olarak kullanılamıyor.',
+      validation: 'Vurgulanan alanları kontrol edin ve tekrar deneyin.',
     },
     fallback: {
       unexpected: 'Beklenmeyen hata',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} geçersiz.',
+      invalidEnum: 'Geçerli bir {{field}} seçin.',
+      invalidFormat: 'Geçerli bir {{field}} girin.',
+      maxLength: '{{field}} en fazla {{max}} karakter olmalıdır.',
+      maximum: '{{field}} en fazla {{max}} olmalıdır.',
+      minLength: '{{field}} en az {{min}} karakter olmalıdır.',
+      minimum: '{{field}} en az {{min}} olmalıdır.',
+      required: '{{field}} zorunludur.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Klasör oluştur',
       deleteFolder: 'Klasörü sil',
       editFolder: 'Klasörü düzenle',
-    },
-    descriptions: {
-      editorDefault: 'İlgili desteler için klasör.',
     },
     dialogs: {
       deleteFolderDescription: 'Bu, "{{name}}" öğesini Çöp Kutusu\'na taşır. Daha sonra geri yükleyebilirsiniz.',
@@ -256,7 +264,6 @@ export const tr = {
       descriptionLabel: 'Klasör açıklaması',
       descriptionPlaceholder: 'Bu klasöre neler ait?',
       namePlaceholder: 'Klasör adı',
-      untitledFolder: 'Adsız klasör',
     },
     labels: {
       createFolderTitle: 'Klasör oluştur',
@@ -586,7 +593,6 @@ export const tr = {
       openingWorkspace: '{{title}} açılıyor',
     },
     descriptions: {
-      editorDefault: 'Çalışma bağlamı.',
       editorVisual: 'Bu çalışma alanı için görsel bir işaret seçin.',
       emptyList: 'Desteleri, notları ve tekrar sıralarını çalışma bağlamına göre ayırın.',
     },
@@ -611,7 +617,6 @@ export const tr = {
       descriptionLabel: 'Çalışma alanı açıklaması',
       descriptionPlaceholder: 'Bu çalışma alanına neler ait?',
       namePlaceholder: 'Çalışma alanı adı',
-      untitledWorkspace: 'Adsız çalışma alanı',
     },
     labels: {
       createWorkspaceTitle: 'Çalışma alanı oluştur',

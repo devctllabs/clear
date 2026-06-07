@@ -158,7 +158,6 @@ export const nb = {
     },
     descriptions: {
       emptyDeck: 'Legg til et notat, så denne kortstokken har materiale å repetere.',
-      editorDefault: 'Fokusert studiekortstokk.',
       editorVisual: 'Velg et omslagssymbol for denne kortstokken.',
       notesSearchPlaceholder: 'Søk i notater…',
     },
@@ -190,8 +189,6 @@ export const nb = {
       descriptionLabel: 'Kortstokkbeskrivelse',
       descriptionPlaceholder: 'Hva skal denne kortstokken hjelpe deg med å repetere?',
       namePlaceholder: 'Navn på kortstokk',
-      untitledDeck: 'Kortstokk uten tittel',
-      untitledDeckLower: 'kortstokk uten tittel',
     },
     labels: {
       createDeckTitle: 'Opprett kortstokk',
@@ -221,19 +218,30 @@ export const nb = {
       timeout: 'Dette tok for lang tid. Prøv igjen.',
       unauthorized: 'Logg inn for å fortsette.',
       unavailable: 'Tjenesten er midlertidig utilgjengelig.',
+      validation: 'Kontroller de markerte feltene og prøv igjen.',
     },
     fallback: {
       unexpected: 'Uventet feil',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} er ugyldig.',
+      invalidEnum: 'Velg en gyldig verdi for {{field}}.',
+      invalidFormat: 'Skriv inn en gyldig verdi for {{field}}.',
+      maxLength: '{{field}} kan være maks {{max}} tegn.',
+      maximum: '{{field}} kan være maks {{max}}.',
+      minLength: '{{field}} må være minst {{min}} tegn.',
+      minimum: '{{field}} må være minst {{min}}.',
+      required: '{{field}} er påkrevd.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Opprett mappe',
       deleteFolder: 'Slett mappe',
       editFolder: 'Rediger mappe',
-    },
-    descriptions: {
-      editorDefault: 'Mappe for relaterte kortstokker.',
     },
     dialogs: {
       deleteFolderDescription: 'Dette flytter "{{name}}" til Papirkurv. Du kan gjenopprette den senere.',
@@ -256,7 +264,6 @@ export const nb = {
       descriptionLabel: 'Mappebeskrivelse',
       descriptionPlaceholder: 'Hva hører hjemme i denne mappen?',
       namePlaceholder: 'Mappenavn',
-      untitledFolder: 'Mappe uten tittel',
     },
     labels: {
       createFolderTitle: 'Opprett mappe',
@@ -586,7 +593,6 @@ export const nb = {
       openingWorkspace: 'Åpner {{title}}',
     },
     descriptions: {
-      editorDefault: 'Studiekontekst.',
       editorVisual: 'Velg et visuelt anker for dette arbeidsområdet.',
       emptyList: 'Skill kortstokker, notater og repetisjonskøer etter studiekontekst.',
     },
@@ -611,7 +617,6 @@ export const nb = {
       descriptionLabel: 'Arbeidsområdebeskrivelse',
       descriptionPlaceholder: 'Hva hører hjemme i dette arbeidsområdet?',
       namePlaceholder: 'Navn på arbeidsområde',
-      untitledWorkspace: 'Arbeidsområde uten tittel',
     },
     labels: {
       createWorkspaceTitle: 'Opprett arbeidsområde',

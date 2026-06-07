@@ -15,7 +15,7 @@ export type SeedContext = {
   seedNow: string
 }
 
-const seedNow = "2026-05-27T16:31:00.127Z"
+const seedNow = "2026-06-07T18:58:06.242Z"
 const dayMs = 24 * 60 * 60 * 1000
 
 const newSeedContext = (): SeedContext => ({

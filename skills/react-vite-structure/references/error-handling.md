@@ -10,7 +10,7 @@ For user-facing loading, empty, partial-data, and error rendering policy, read `
 - Result
 - Domain Errors
 - Domain Result
-- User Messages
+- User-Facing Copy
 - API Error Mapping
 - Tauri Error Mapping
 - React Query Boundary
@@ -25,7 +25,7 @@ src/shared/errors/
   result.ts                         # Generic Result<T, E>
   domain-error.ts                   # DomainErrorType, DomainError, factories
   domain-result.ts                  # DomainResult<T>
-  messages.ts                       # Generic user-facing fallback messages
+  translation.ts                    # Optional i18n summary translator for shared UI surfaces
   index.ts
 
 src/shared/services/api/
@@ -85,8 +85,13 @@ export enum DomainErrorType {
   Unexpected = 'unexpected',
 }
 
-export type FieldErrors = Record<string, string[]>;
 export type NetworkReason = 'offline' | 'timeout' | 'unavailable';
+
+export type ValidationIssue = {
+  path?: string[];
+  code: string;
+  params?: Record<string, unknown>;
+};
 
 type BaseDomainError<TType extends DomainErrorType> = {
   type: TType;
@@ -94,8 +99,10 @@ type BaseDomainError<TType extends DomainErrorType> = {
   retryable: boolean;
 };
 
-export type ValidationError = BaseDomainError<DomainErrorType.Validation> & {
-  fieldErrors: FieldErrors;
+export type ValidationError = {
+  type: DomainErrorType.Validation;
+  retryable: false;
+  issues: ValidationIssue[];
 };
 
 export type NotFoundError = BaseDomainError<DomainErrorType.NotFound> & {
@@ -122,8 +129,8 @@ export type DomainError =
   | BaseDomainError<DomainErrorType.Unexpected>;
 
 export const domainError = {
-  validation(message: string, fieldErrors: FieldErrors): ValidationError {
-    return { type: DomainErrorType.Validation, message, fieldErrors, retryable: false };
+  validation(issues: ValidationIssue[]): ValidationError {
+    return { type: DomainErrorType.Validation, issues, retryable: false };
   },
 
   unauthorized(message = 'Unauthorized'): DomainError {
@@ -161,22 +168,24 @@ export const domainError = {
   },
 } as const;
 
-export function isDomainError(value: unknown): value is DomainError {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'type' in value &&
-    'message' in value &&
-    'retryable' in value &&
-    typeof (value as { type?: unknown }).type === 'string' &&
-    typeof (value as { message?: unknown }).message === 'string' &&
-    typeof (value as { retryable?: unknown }).retryable === 'boolean'
-  );
-}
-
 export const isRetryableDomainError = (error: DomainError): boolean =>
   error.retryable;
 ```
+
+Validation errors should carry stable facts, not localized copy. Use `issues`
+for field-level or form-level validation facts, omit `path` for form-level
+issues, use `path` for nested fields or array items, `code` for the validation
+rule, and `params` for dynamic values. `path` is a data/schema path, not a
+user-facing label; the owning form/page maps it to a concrete input and
+translated field label. Do not make backend or service contracts emit
+user-facing validation sentences such as `"Title is required."`; translate
+validation issues in the owning UI surface.
+
+Provide an `isDomainError(value): value is DomainError` guard in the domain
+error module, but keep it strict: it should only return true for values that
+already satisfy the full active `DomainError` shape. Do not make it accept
+partial serialized errors just because `type` is known. Partial payload recovery
+belongs in the API/Tauri boundary mappers.
 
 Do not model domain errors with classes or inheritance. Keep them as plain data objects so they serialize cleanly across HTTP/Tauri, narrow with `switch`, and compare cleanly in tests.
 
@@ -195,40 +204,21 @@ export type DomainResult<T> = Result<T, DomainError>;
 export * from './result';
 export * from './domain-error';
 export * from './domain-result';
-export * from './messages';
 ```
 
-## User Messages
+Keep `translation.ts` separate from the domain model exports when it imports UI
+or i18n libraries. UI surfaces can import it directly from
+`@shared/errors/translation`.
 
-Keep only generic fallback messages in `shared/errors/messages.ts`. Feature-specific copy belongs near the feature UI.
+## User-Facing Copy
 
-```ts
-// shared/errors/messages.ts
-import { DomainErrorType, type DomainError } from './domain-error';
+Do not add hardcoded message helpers to the domain model. `DomainError` should
+carry typed facts; user-facing copy belongs at the UI boundary.
 
-export function getDomainErrorMessage(error: DomainError): string {
-  switch (error.type) {
-    case DomainErrorType.Validation:
-      return error.message;
-    case DomainErrorType.Unauthorized:
-      return 'Authentication required.';
-    case DomainErrorType.Forbidden:
-      return 'You do not have permission to perform this action.';
-    case DomainErrorType.NotFound:
-      return 'Requested resource was not found.';
-    case DomainErrorType.Conflict:
-      return 'The data is out of date. Refresh and try again.';
-    case DomainErrorType.RateLimited:
-      return 'Too many requests. Try again later.';
-    case DomainErrorType.Network:
-      return error.reason === 'offline'
-        ? 'No network connection.'
-        : 'Service is temporarily unavailable.';
-    case DomainErrorType.Unexpected:
-      return error.message;
-  }
-}
-```
+For localized apps, keep only generic shared summaries in
+`shared/errors/translation.ts`. Feature-specific copy and validation field
+messages stay near the owning page, form, or component. Read `i18n.md` for the
+shared error translation pattern and validation-field translation boundary.
 
 ## API Error Mapping
 
@@ -260,6 +250,18 @@ export function mapApiErrorToDomainError(
 }
 ```
 
+For validation responses, map API validation facts to `ValidationIssue[]`.
+Prefer stable API codes and params over server-provided display strings; keep
+string messages only as debug/fallback data outside the main UI contract when a
+project explicitly needs them.
+
+`mapApiErrorToDomainError()` is also the right place to handle partial
+transport-shaped errors. If a payload has a known domain error `type` but is
+missing or malformed fields, preserve the type when practical by rebuilding a
+complete `DomainError` through `domainError.*(...)` with safe defaults. Fall
+back to `domainError.unexpected(...)` only when the type is unknown or the
+payload cannot be interpreted safely.
+
 If the project uses Axios, Axios-specific checks stay in this file. Do not import Axios from `shared/errors`.
 
 ## Tauri Error Mapping
@@ -289,6 +291,11 @@ export function mapTauriErrorToDomainError(
   return domainError.unexpected(fallbackMessage);
 }
 ```
+
+Apply the same partial-payload policy here as in `mapApiErrorToDomainError()`:
+`isDomainError()` accepts only complete serialized domain errors, while
+`mapTauriErrorToDomainError()` may preserve known domain error types by
+rebuilding full errors with safe defaults.
 
 Wrap Tauri invoke calls to remove repeated `try/catch` from services:
 
@@ -389,7 +396,10 @@ Test:
 
 - `ok`/`err` shape and `DomainResult` assignability;
 - `DomainErrorType` narrowing and factories;
+- validation issue paths, codes, params, and form-level issues without paths;
+- `isDomainError()` rejecting malformed partial payloads instead of coercing them;
 - retryability rules;
 - API status/payload mapping for the current HTTP client;
-- Tauri unknown fallback and pass-through of serialized `DomainError`;
+- API/Tauri mappers preserving known domain error types from partial serialized payloads by rebuilding complete `DomainError` values;
+- Tauri unknown fallback and pass-through of complete serialized `DomainError`;
 - `unwrapDomainResult` resolving values and rejecting with `DomainError`.

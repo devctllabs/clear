@@ -158,7 +158,6 @@ export const fr = {
     },
     descriptions: {
       emptyDeck: 'Ajoutez une note pour donner du contenu à réviser à ce paquet.',
-      editorDefault: 'Paquet d’étude ciblé.',
       editorVisual: 'Choisissez un glyphe de couverture pour ce paquet.',
       notesSearchPlaceholder: 'Rechercher des notes…',
     },
@@ -190,8 +189,6 @@ export const fr = {
       descriptionLabel: 'Description du paquet',
       descriptionPlaceholder: 'Que ce paquet vous aidera-t-il à réviser ?',
       namePlaceholder: 'Nom du paquet',
-      untitledDeck: 'Paquet sans titre',
-      untitledDeckLower: 'paquet sans titre',
     },
     labels: {
       createDeckTitle: 'Créer un paquet',
@@ -221,19 +218,30 @@ export const fr = {
       timeout: 'Cela a pris trop de temps. Réessayez.',
       unauthorized: 'Connectez-vous pour continuer.',
       unavailable: 'Le service est temporairement indisponible.',
+      validation: 'Vérifiez les champs en surbrillance puis réessayez.',
     },
     fallback: {
       unexpected: 'Erreur inattendue',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} est invalide.',
+      invalidEnum: 'Choisissez une valeur valide pour {{field}}.',
+      invalidFormat: 'Saisissez une valeur valide pour {{field}}.',
+      maxLength: '{{field}} doit contenir au plus {{max}} caractères.',
+      maximum: '{{field}} doit être au maximum {{max}}.',
+      minLength: '{{field}} doit contenir au moins {{min}} caractères.',
+      minimum: '{{field}} doit être au moins {{min}}.',
+      required: '{{field}} est obligatoire.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Créer un dossier',
       deleteFolder: 'Supprimer le dossier',
       editFolder: 'Modifier le dossier',
-    },
-    descriptions: {
-      editorDefault: 'Dossier pour paquets associés.',
     },
     dialogs: {
       deleteFolderDescription: 'Cela déplace "{{name}}" vers la corbeille. Vous pourrez le restaurer plus tard.',
@@ -256,7 +264,6 @@ export const fr = {
       descriptionLabel: 'Description du dossier',
       descriptionPlaceholder: 'Qu’est-ce qui appartient à ce dossier ?',
       namePlaceholder: 'Nom du dossier',
-      untitledFolder: 'Dossier sans titre',
     },
     labels: {
       createFolderTitle: 'Créer un dossier',
@@ -586,7 +593,6 @@ export const fr = {
       openingWorkspace: 'Ouverture de {{title}}',
     },
     descriptions: {
-      editorDefault: 'Contexte d’étude.',
       editorVisual: 'Choisissez un repère visuel pour cet espace de travail.',
       emptyList: 'Séparez les paquets, les notes et les files de révision par contexte d’étude.',
     },
@@ -611,7 +617,6 @@ export const fr = {
       descriptionLabel: 'Description de l’espace de travail',
       descriptionPlaceholder: 'Qu’est-ce qui appartient à cet espace de travail ?',
       namePlaceholder: 'Nom de l’espace de travail',
-      untitledWorkspace: 'Espace de travail sans titre',
     },
     labels: {
       createWorkspaceTitle: 'Créer un espace de travail',

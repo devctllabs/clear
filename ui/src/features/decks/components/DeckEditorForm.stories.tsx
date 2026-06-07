@@ -73,6 +73,16 @@ export const WithLocation: Story = {
   },
 }
 
+export const Validation: Story = {
+  args: {
+    validationMessages: {
+      description: ['Description is invalid.'],
+      icon: ['Visual is invalid.'],
+      title: ['Name is required.'],
+    },
+  },
+}
+
 export const LongLocation: Story = {
   args: {
     description: 'Layout stress case for a deeply nested deck path.',

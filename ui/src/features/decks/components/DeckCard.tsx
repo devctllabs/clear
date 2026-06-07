@@ -46,7 +46,7 @@ export const DeckCard = ({
 }: DeckCardProps) => {
   const { t } = useTranslation()
   const { formatRelativeDate } = useDateFormatters()
-  const deckTitle = deck.title.trim() || t(($) => $.decks.fields.untitledDeckLower)
+  const deckTitle = deck.title.trim()
   const dueToday = normalizeNonNegativeInteger(deck.dueToday)
   const dueTodayLabel = formatNonNegativeInteger(deck.dueToday)
   const hasDueToday = dueToday > 0

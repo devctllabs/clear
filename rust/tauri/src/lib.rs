@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use clear_core::domain_error::DomainError;
 use clear_migrator::{
-    apply_sqlite_migrations, EmbeddedMigrationSource, MigrationError, MigrationReport,
+    EmbeddedMigrationSource, MigrationError, MigrationReport, apply_sqlite_migrations,
 };
 use serde::Serialize;
 use tauri::{AppHandle, Manager};
@@ -160,8 +160,8 @@ mod tests {
     use clear_migrator::MigrationError;
 
     use super::{
-        current_runtime_profile, map_migration_error, runtime_form_factor_for_mobile_cfg,
-        RuntimeFormFactor, RuntimeKind,
+        RuntimeFormFactor, RuntimeKind, current_runtime_profile, map_migration_error,
+        runtime_form_factor_for_mobile_cfg,
     };
 
     #[test]
@@ -174,7 +174,12 @@ mod tests {
 
         assert_eq!(error.error_type, DomainErrorType::Conflict);
         assert!(!error.retryable);
-        assert!(error.message.contains("Duplicate migration id 1"));
+        assert!(
+            error
+                .message
+                .as_deref()
+                .is_some_and(|message| message.contains("Duplicate migration id 1"))
+        );
     }
 
     #[test]

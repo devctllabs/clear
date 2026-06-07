@@ -1,15 +1,33 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { TFunction } from 'i18next'
+import { useController, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
 
 import { InlineErrorState } from '@shared/components/feedback/LoadErrorState'
+import {
+  fieldErrorMessages,
+  mergeFieldValidationMessages,
+  requiredTrimmedText,
+} from '@shared/components/forms/validation'
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
 import { EditorShell } from '@shared/components/layout/EditorShell'
 import { EditorLoadingState } from '@shared/components/layout/EditorLoadingState'
+import { translateValidationIssuesForPath } from '@shared/errors/translation'
 import { useCloseTarget } from '@shared/lib/navigation-state'
 
-import { FolderEditorForm } from '../components/FolderEditorForm'
+import { FolderEditorForm, type FolderEditorValidationMessages } from '../components/FolderEditorForm'
 import { useFolder, useFolderPath, useUpdateFolder } from '../hooks/useFolders'
+
+const createFolderEditorSchema = (t: TFunction) =>
+  z.object({
+    description: z.string(),
+    name: requiredTrimmedText(t, t(($) => $.common.labels.name)),
+  })
+
+type FolderEditorFormValues = z.infer<ReturnType<typeof createFolderEditorSchema>>
 
 export const FolderEditPage = ({
   folderId,
@@ -25,19 +43,71 @@ export const FolderEditPage = ({
   const isRootParent = currentParentFolderId === workspaceId
   const folderPathQuery = useFolderPath(isRootParent ? '' : currentParentFolderId)
   const updateFolder = useUpdateFolder(folderId)
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
+  const form = useForm<FolderEditorFormValues>({
+    defaultValues: {
+      description: '',
+      name: '',
+    },
+    resolver: zodResolver(createFolderEditorSchema(t), undefined, { mode: 'sync' }),
+  })
+  const name = useController({ control: form.control, name: 'name' })
+  const description = useController({ control: form.control, name: 'description' })
   const locationPath = isRootParent ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
   const closeTo = useCloseTarget(`/dashboard/${workspaceId}/folders/${folderId}`)
+  const serviceValidationMessages = updateFolder.isError
+    ? {
+        description: translateValidationIssuesForPath(
+          t,
+          updateFolder.error,
+          ['description'],
+          t(($) => $.common.labels.description),
+        ),
+        name: translateValidationIssuesForPath(
+          t,
+          updateFolder.error,
+          ['name'],
+          t(($) => $.common.labels.name),
+        ),
+      }
+    : undefined
+  const formValidationMessages: FolderEditorValidationMessages = {
+    description: fieldErrorMessages(form.formState.errors.description),
+    name: fieldErrorMessages(form.formState.errors.name),
+  }
+  const validationMessages = mergeFieldValidationMessages(
+    serviceValidationMessages,
+    formValidationMessages,
+  )
+
+  const resetMutationError = () => {
+    if (updateFolder.isError) {
+      updateFolder.reset()
+    }
+  }
+
+  const handleNameChange = (nextName: string) => {
+    resetMutationError()
+    if (nextName.trim().length > 0) {
+      form.clearErrors('name')
+    }
+    name.field.onChange(nextName)
+  }
+
+  const handleDescriptionChange = (nextDescription: string) => {
+    resetMutationError()
+    description.field.onChange(nextDescription)
+  }
 
   useEffect(() => {
     if (!folderQuery.data) {
       return
     }
 
-    setName(folderQuery.data.name)
-    setDescription(folderQuery.data.description)
-  }, [folderQuery.data])
+    form.reset({
+      description: folderQuery.data.description,
+      name: folderQuery.data.name,
+    })
+  }, [folderQuery.data, form])
 
   if (folderQuery.isLoading) {
     return <EditorLoadingState backTo={closeTo} formKind="folder" title={t(($) => $.folders.actions.editFolder)} />
@@ -68,11 +138,11 @@ export const FolderEditPage = ({
       backTo={closeTo}
       isSubmitting={updateFolder.isPending}
       title={t(($) => $.folders.actions.editFolder)}
-      onSubmit={() => {
+      onSubmit={form.handleSubmit((values) => {
         updateFolder.mutate(
           {
-            description,
-            name,
+            description: values.description.trim(),
+            name: values.name,
             parentId: currentParentFolderId,
           },
           {
@@ -84,7 +154,7 @@ export const FolderEditPage = ({
             },
           },
         )
-      }}
+      })}
     >
       {folderPathQuery.isError && folderPathQuery.data === undefined ? (
         <InlineErrorState
@@ -94,11 +164,12 @@ export const FolderEditPage = ({
         />
       ) : null}
       <FolderEditorForm
-        description={description}
+        description={description.field.value}
         locationPath={locationPath}
-        name={name}
-        onDescriptionChange={setDescription}
-        onNameChange={setName}
+        name={name.field.value}
+        validationMessages={validationMessages}
+        onDescriptionChange={handleDescriptionChange}
+        onNameChange={handleNameChange}
       />
     </EditorShell>
   )

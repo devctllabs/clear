@@ -158,7 +158,6 @@ export const sv = {
     },
     descriptions: {
       emptyDeck: 'Lägg till en anteckning så att kortleken har material att repetera.',
-      editorDefault: 'Fokuserad studiekortlek.',
       editorVisual: 'Välj en omslagsikon för den här kortleken.',
       notesSearchPlaceholder: 'Sök anteckningar…',
     },
@@ -190,8 +189,6 @@ export const sv = {
       descriptionLabel: 'Kortleksbeskrivning',
       descriptionPlaceholder: 'Vad hjälper den här kortleken dig att repetera?',
       namePlaceholder: 'Kortleksnamn',
-      untitledDeck: 'Namnlös kortlek',
-      untitledDeckLower: 'namnlös kortlek',
     },
     labels: {
       createDeckTitle: 'Skapa kortlek',
@@ -221,19 +218,30 @@ export const sv = {
       timeout: 'Detta tog för lång tid. Försök igen.',
       unauthorized: 'Logga in för att fortsätta.',
       unavailable: 'Tjänsten är tillfälligt otillgänglig.',
+      validation: 'Kontrollera de markerade fälten och försök igen.',
     },
     fallback: {
       unexpected: 'Oväntat fel',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} är ogiltigt.',
+      invalidEnum: 'Välj ett giltigt värde för {{field}}.',
+      invalidFormat: 'Ange ett giltigt värde för {{field}}.',
+      maxLength: '{{field}} får vara högst {{max}} tecken.',
+      maximum: '{{field}} får vara högst {{max}}.',
+      minLength: '{{field}} måste vara minst {{min}} tecken.',
+      minimum: '{{field}} måste vara minst {{min}}.',
+      required: '{{field}} krävs.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Skapa mapp',
       deleteFolder: 'Ta bort mapp',
       editFolder: 'Redigera mapp',
-    },
-    descriptions: {
-      editorDefault: 'Mapp för relaterade kortlekar.',
     },
     dialogs: {
       deleteFolderDescription: 'Detta flyttar "{{name}}" till Papperskorgen. Du kan återställa den senare.',
@@ -256,7 +264,6 @@ export const sv = {
       descriptionLabel: 'Mappbeskrivning',
       descriptionPlaceholder: 'Vad hör hemma i den här mappen?',
       namePlaceholder: 'Mappnamn',
-      untitledFolder: 'Namnlös mapp',
     },
     labels: {
       createFolderTitle: 'Skapa mapp',
@@ -586,7 +593,6 @@ export const sv = {
       openingWorkspace: 'Öppnar {{title}}',
     },
     descriptions: {
-      editorDefault: 'Studiekontext.',
       editorVisual: 'Välj ett visuellt ankare för den här arbetsytan.',
       emptyList: 'Separera kortlekar, anteckningar och repetitionsköer efter studiekontext.',
     },
@@ -611,7 +617,6 @@ export const sv = {
       descriptionLabel: 'Beskrivning av arbetsyta',
       descriptionPlaceholder: 'Vad hör hemma i den här arbetsytan?',
       namePlaceholder: 'Namn på arbetsyta',
-      untitledWorkspace: 'Namnlös arbetsyta',
     },
     labels: {
       createWorkspaceTitle: 'Skapa arbetsyta',

@@ -1,9 +1,9 @@
 import {
   domainError,
   isDomainError,
-  isFieldErrors,
+  isValidationIssues,
   type DomainError,
-  type FieldErrors,
+  type ValidationIssue,
 } from '@shared/errors'
 import { ZodError } from 'zod'
 
@@ -59,7 +59,7 @@ export const mapApiErrorToDomainError = (
     case 409:
       return domainError.conflict(message)
     case 422:
-      return domainError.validation(message, getFieldErrors(payload))
+      return domainError.validation(getValidationIssues(payload))
     case 502:
     case 503:
     case 504:
@@ -92,14 +92,14 @@ const readApiError = (error: unknown, fallbackMessage: string): ApiErrorInfo => 
   }
 }
 
-const getFieldErrors = (value: unknown): FieldErrors => {
+const getValidationIssues = (value: unknown): ValidationIssue[] => {
   if (!isObject(value)) {
-    return {}
+    return []
   }
 
-  const { fieldErrors } = value
+  const { issues } = value
 
-  return isFieldErrors(fieldErrors) ? fieldErrors : {}
+  return isValidationIssues(issues) ? issues : []
 }
 
 const isResponseValidationError = (error: unknown) =>

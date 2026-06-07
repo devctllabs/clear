@@ -67,4 +67,31 @@ describe('WorkspaceEditorForm', () => {
     expect(onDescriptionChange).toHaveBeenLastCalledWith('Reference workspace')
     expect(onIconChange).toHaveBeenLastCalledWith('archive')
   })
+
+  it('renders field validation messages beside owned workspace fields', () => {
+    render(
+      <WorkspaceEditorForm
+        description=""
+        icon={defaultWorkspaceVisualIcon}
+        title=""
+        validationMessages={{
+          description: ['Description is invalid.'],
+          icon: ['Visual is invalid.'],
+          title: ['Name is required.'],
+        }}
+        onDescriptionChange={() => undefined}
+        onIconChange={() => undefined}
+        onTitleChange={() => undefined}
+      />,
+    )
+
+    const name = screen.getByLabelText('Workspace name')
+    const description = screen.getByLabelText('Workspace description')
+
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
+    expect(description).toHaveAttribute('aria-invalid', 'true')
+    expect(description).toHaveAccessibleDescription('Description is invalid.')
+    expect(screen.getByText('Visual is invalid.')).toBeInTheDocument()
+  })
 })

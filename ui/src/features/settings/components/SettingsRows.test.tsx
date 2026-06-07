@@ -38,6 +38,22 @@ describe('SettingsRows', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  it('renders validation messages for action rows', () => {
+    render(
+      <SettingsRow
+        description="Search a city or IANA timezone"
+        label="Timezone"
+        validationMessages={['Timezone is required.']}
+        value="Automatic"
+      />,
+    )
+
+    const rowButton = screen.getByRole('button', { name: 'Timezone' })
+
+    expect(rowButton).toHaveAccessibleDescription('Timezone is required.')
+    expect(screen.getByText('Timezone is required.')).toBeInTheDocument()
+  })
+
   it('selects dropdown options', async () => {
     const user = userEvent.setup()
     const onSelect = vi.fn()
@@ -97,6 +113,23 @@ describe('SettingsRows', () => {
     fireEvent.change(input, { target: { value: '-12' } })
     expect(onChange).toHaveBeenLastCalledWith(0)
     expect(input).toHaveValue(0)
+  })
+
+  it('marks number rows invalid when validation messages exist', () => {
+    render(
+      <SettingsNumberRow
+        description="Max new cards per day"
+        label="New cards per day"
+        validationMessages={['New cards per day must be at least 0.']}
+        value={20}
+        onChange={() => undefined}
+      />,
+    )
+
+    const input = screen.getByRole('spinbutton', { name: 'New cards per day' })
+
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+    expect(input).toHaveAccessibleDescription('New cards per day must be at least 0.')
   })
 
   it('updates slider row values', async () => {

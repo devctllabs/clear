@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
@@ -60,5 +60,28 @@ describe('DeckEditPage', () => {
     await user.click(await screen.findByRole('button', { name: 'Save changes' }))
 
     expect(await screen.findByRole('heading', { name: 'History Archive' })).toBeInTheDocument()
+  })
+
+  it('validates the deck name before saving', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const update = vi.fn(baseServices.decks.update)
+    const services = {
+      ...baseServices,
+      decks: {
+        ...baseServices.decks,
+        update,
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/decks/world-history/edit', { services })
+
+    const title = await screen.findByLabelText('Deck name')
+    fireEvent.change(title, { target: { value: '   ' } })
+    await user.click(await screen.findByRole('button', { name: 'Save changes' }))
+
+    expect(update).not.toHaveBeenCalled()
+    expect(title).toHaveAttribute('aria-invalid', 'true')
+    expect(title).toHaveAccessibleDescription('Name is required.')
   })
 })

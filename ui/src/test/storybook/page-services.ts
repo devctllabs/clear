@@ -175,7 +175,7 @@ export const createWorkspaceService = ({
   const fallbackWorkspace = (workspaceId: string) =>
     createWorkspace({
       id: workspaceId,
-      title: 'Untitled Workspace',
+      title: workspaceId || 'Workspace',
     })
 
   return {

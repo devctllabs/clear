@@ -61,4 +61,27 @@ describe('FolderEditorForm', () => {
     expect(onNameChange).toHaveBeenLastCalledWith('Clinical Drafts')
     expect(onDescriptionChange).toHaveBeenLastCalledWith('Cases for review')
   })
+
+  it('renders field validation messages beside owned folder fields', () => {
+    render(
+      <FolderEditorForm
+        description=""
+        name=""
+        validationMessages={{
+          description: ['Description is invalid.'],
+          name: ['Name is required.'],
+        }}
+        onDescriptionChange={() => undefined}
+        onNameChange={() => undefined}
+      />,
+    )
+
+    const name = screen.getByLabelText('Folder name')
+    const description = screen.getByLabelText('Folder description')
+
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
+    expect(description).toHaveAttribute('aria-invalid', 'true')
+    expect(description).toHaveAccessibleDescription('Description is invalid.')
+  })
 })

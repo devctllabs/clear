@@ -8,6 +8,7 @@ import type { WorkspaceRecord } from '../../generated/mock-admin/contract/index.
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
 import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
+import { requireNonBlankText, trimOptionalText } from '../../lib/validation.ts'
 import type { DeckRepository } from '../decks/repository.ts'
 import type { FolderRepository } from '../folders/repository.ts'
 import type { LocationPathResolver } from '../location-path/resolver.ts'
@@ -52,20 +53,27 @@ export class WorkspacesService {
   }
 
   async createWorkspace(draft: WorkspaceDraft): Promise<WorkspaceRecord> {
-    const duplicate = this.workspaces.visible().some((workspace) => workspace.title === draft.title)
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      title: requireNonBlankText(draft.title, 'title'),
+    }
+    const duplicate = this.workspaces.visible().some(
+      (workspace) => workspace.title === normalizedDraft.title,
+    )
 
     if (duplicate) {
-      throw conflict(`Workspace titled ${draft.title} already exists`)
+      throw conflict(`Workspace titled ${normalizedDraft.title} already exists`)
     }
 
     return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const workspace: WorkspaceRecord = {
-        description: draft.description,
-        icon: draft.icon,
+        description: normalizedDraft.description,
+        icon: normalizedDraft.icon,
         id: ids.next('workspace'),
-        title: draft.title,
+        title: normalizedDraft.title,
         updatedAt: now,
       }
 
@@ -96,21 +104,26 @@ export class WorkspacesService {
 
   async updateWorkspace(workspaceId: string, draft: WorkspaceDraft) {
     this.workspaces.require(workspaceId)
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      title: requireNonBlankText(draft.title, 'title'),
+    }
     const duplicate = this.workspaces.visible().some(
-      (workspace) => workspace.id !== workspaceId && workspace.title === draft.title,
+      (workspace) => workspace.id !== workspaceId && workspace.title === normalizedDraft.title,
     )
 
     if (duplicate) {
-      throw conflict(`Workspace titled ${draft.title} already exists`)
+      throw conflict(`Workspace titled ${normalizedDraft.title} already exists`)
     }
 
     return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
       return this.workspaces.update(workspaceId, (workspace) => ({
         ...workspace,
-        description: draft.description,
-        icon: draft.icon,
-        title: draft.title,
+        description: normalizedDraft.description,
+        icon: normalizedDraft.icon,
+        title: normalizedDraft.title,
         updatedAt: now,
       }))
     })

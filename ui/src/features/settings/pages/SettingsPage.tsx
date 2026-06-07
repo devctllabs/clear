@@ -9,6 +9,7 @@ import { getDocumentLocale } from '@core/i18n'
 import { useThemeStore } from '@core/theme'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
+import { translateValidationIssuesForPath } from '@shared/errors/translation'
 import { useDelayedBoolean } from '@shared/hooks/useDelayedBoolean'
 import { useActiveWorkspaceId } from '@features/workspaces/hooks/useWorkspaces'
 import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
@@ -138,6 +139,58 @@ export const SettingsPage = () => {
       />
     </>
   )
+  const validationMessages = writeSettings.isError
+    ? {
+        dailyNewLimit: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['dailyNewLimit'],
+          t(($) => $.settings.labels.newCardsPerDay),
+        ),
+        dailyReviewLimit: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['dailyReviewLimit'],
+          t(($) => $.settings.labels.reviewCardsPerDay),
+        ),
+        fsrsParams: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['fsrsParams'],
+          t(($) => $.settings.labels.fsrsParameters),
+        ),
+        fsrsRetention: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['fsrsRetention'],
+          t(($) => $.settings.labels.targetRecallProbability),
+        ),
+        language: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['language'],
+          t(($) => $.settings.labels.language),
+        ),
+        masteryHorizonDays: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['masteryHorizonDays'],
+          t(($) => $.settings.labels.masteryHorizon),
+        ),
+        newCardsOrder: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['newCardsOrder'],
+          t(($) => $.settings.labels.newCardOrder),
+        ),
+        timezone: translateValidationIssuesForPath(
+          t,
+          writeSettings.error,
+          ['timezone'],
+          t(($) => $.settings.labels.timezone),
+        ),
+      }
+    : undefined
 
   return (
     <>
@@ -159,6 +212,7 @@ export const SettingsPage = () => {
           }}
           onThemePreferenceChange={setThemePreference}
           onUpdateSettings={updateSettings}
+          validationMessages={validationMessages}
         />
         {settingsDialogs}
       </SettingsPageShell>

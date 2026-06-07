@@ -158,7 +158,6 @@ export const hu = {
     },
     descriptions: {
       emptyDeck: 'Adjon hozzá jegyzetet, hogy legyen mit ismételni ebben a pakliban.',
-      editorDefault: 'Fókuszált tanulási pakli.',
       editorVisual: 'Válasszon borítójelet ehhez a paklihoz.',
       notesSearchPlaceholder: 'Jegyzetek keresése…',
     },
@@ -190,8 +189,6 @@ export const hu = {
       descriptionLabel: 'Pakli leírása',
       descriptionPlaceholder: 'Mit segít ismételni ez a pakli?',
       namePlaceholder: 'Pakli neve',
-      untitledDeck: 'Névtelen pakli',
-      untitledDeckLower: 'névtelen pakli',
     },
     labels: {
       createDeckTitle: 'Pakli létrehozása',
@@ -221,19 +218,30 @@ export const hu = {
       timeout: 'Ez túl sokáig tartott. Próbálja újra.',
       unauthorized: 'A folytatáshoz jelentkezzen be.',
       unavailable: 'A szolgáltatás átmenetileg nem érhető el.',
+      validation: 'Ellenőrizd a kiemelt mezőket, majd próbáld újra.',
     },
     fallback: {
       unexpected: 'Váratlan hiba',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} érvénytelen.',
+      invalidEnum: 'Válassz érvényes értéket ehhez: {{field}}.',
+      invalidFormat: 'Adj meg érvényes értéket ehhez: {{field}}.',
+      maxLength: '{{field}} legfeljebb {{max}} karakter lehet.',
+      maximum: '{{field}} legfeljebb {{max}} lehet.',
+      minLength: '{{field}} legalább {{min}} karakter legyen.',
+      minimum: '{{field}} legalább {{min}} legyen.',
+      required: '{{field}} kötelező.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Mappa létrehozása',
       deleteFolder: 'Mappa törlése',
       editFolder: 'Mappa szerkesztése',
-    },
-    descriptions: {
-      editorDefault: 'Mappa kapcsolódó paklikhoz.',
     },
     dialogs: {
       deleteFolderDescription: 'Ez áthelyezi a következőt a Kukába: "{{name}}". Később visszaállítható.',
@@ -256,7 +264,6 @@ export const hu = {
       descriptionLabel: 'Mappa leírása',
       descriptionPlaceholder: 'Mi tartozik ebbe a mappába?',
       namePlaceholder: 'Mappa neve',
-      untitledFolder: 'Névtelen mappa',
     },
     labels: {
       createFolderTitle: 'Mappa létrehozása',
@@ -586,7 +593,6 @@ export const hu = {
       openingWorkspace: '{{title}} megnyitása',
     },
     descriptions: {
-      editorDefault: 'Tanulási kontextus.',
       editorVisual: 'Válasszon vizuális horgonyt ehhez a munkaterülethez.',
       emptyList: 'Válassza szét a paklikat, jegyzeteket és ismétlési sorokat tanulási kontextus szerint.',
     },
@@ -611,7 +617,6 @@ export const hu = {
       descriptionLabel: 'Munkaterület leírása',
       descriptionPlaceholder: 'Mi tartozik ebbe a munkaterületbe?',
       namePlaceholder: 'Munkaterület neve',
-      untitledWorkspace: 'Névtelen munkaterület',
     },
     labels: {
       createWorkspaceTitle: 'Munkaterület létrehozása',

@@ -158,7 +158,6 @@ export const de = {
     },
     descriptions: {
       emptyDeck: 'Füge eine Notiz hinzu, damit dieser Stapel Wiederholungsstoff hat.',
-      editorDefault: 'Fokussierter Lernstapel.',
       editorVisual: 'Wähle ein Titelzeichen für diesen Stapel.',
       notesSearchPlaceholder: 'Notizen suchen…',
     },
@@ -190,8 +189,6 @@ export const de = {
       descriptionLabel: 'Stapelbeschreibung',
       descriptionPlaceholder: 'Was hilft dir dieser Stapel zu wiederholen?',
       namePlaceholder: 'Stapelname',
-      untitledDeck: 'Unbenannter Stapel',
-      untitledDeckLower: 'unbenannter Stapel',
     },
     labels: {
       createDeckTitle: 'Stapel erstellen',
@@ -221,19 +218,30 @@ export const de = {
       timeout: 'Das hat zu lange gedauert. Versuche es erneut.',
       unauthorized: 'Melde dich an, um fortzufahren.',
       unavailable: 'Der Dienst ist vorübergehend nicht verfügbar.',
+      validation: 'Prüfe die markierten Felder und versuche es erneut.',
     },
     fallback: {
       unexpected: 'Unerwarteter Fehler',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} ist ungültig.',
+      invalidEnum: 'Wähle einen gültigen Wert für {{field}}.',
+      invalidFormat: 'Gib einen gültigen Wert für {{field}} ein.',
+      maxLength: '{{field}} darf höchstens {{max}} Zeichen lang sein.',
+      maximum: '{{field}} darf höchstens {{max}} sein.',
+      minLength: '{{field}} muss mindestens {{min}} Zeichen lang sein.',
+      minimum: '{{field}} muss mindestens {{min}} sein.',
+      required: '{{field}} ist erforderlich.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Ordner erstellen',
       deleteFolder: 'Ordner löschen',
       editFolder: 'Ordner bearbeiten',
-    },
-    descriptions: {
-      editorDefault: 'Ordner für verwandte Stapel.',
     },
     dialogs: {
       deleteFolderDescription: 'Dadurch wird "{{name}}" in den Papierkorb verschoben. Du kannst ihn später wiederherstellen.',
@@ -256,7 +264,6 @@ export const de = {
       descriptionLabel: 'Ordnerbeschreibung',
       descriptionPlaceholder: 'Was gehört in diesen Ordner?',
       namePlaceholder: 'Ordnername',
-      untitledFolder: 'Unbenannter Ordner',
     },
     labels: {
       createFolderTitle: 'Ordner erstellen',
@@ -586,7 +593,6 @@ export const de = {
       openingWorkspace: '{{title}} wird geöffnet',
     },
     descriptions: {
-      editorDefault: 'Lernkontext.',
       editorVisual: 'Wähle einen visuellen Anker für diesen Arbeitsbereich.',
       emptyList: 'Trenne Stapel, Notizen und Wiederholungslisten nach Lernkontext.',
     },
@@ -611,7 +617,6 @@ export const de = {
       descriptionLabel: 'Arbeitsbereichsbeschreibung',
       descriptionPlaceholder: 'Was gehört in diesen Arbeitsbereich?',
       namePlaceholder: 'Name des Arbeitsbereichs',
-      untitledWorkspace: 'Unbenannter Arbeitsbereich',
     },
     labels: {
       createWorkspaceTitle: 'Arbeitsbereich erstellen',

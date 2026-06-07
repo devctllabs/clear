@@ -7,6 +7,7 @@ import {
 import {
   domainError,
   err,
+  isDomainError,
   ok,
   type DomainError,
   type Result,
@@ -60,30 +61,9 @@ const toMockDomainError = (error: unknown): DomainError => {
     return domainError.unexpected('Mock service failed.')
   }
 
-  switch (error.status) {
-    case 400:
-      return domainError.unexpected(error.message)
-    case 401:
-      return domainError.unauthorized(error.message)
-    case 403:
-      return domainError.forbidden(error.message)
-    case 404:
-      return toNotFoundDomainError(error)
-    case 409:
-      return domainError.conflict(error.message)
-    case 422:
-      return domainError.validation(error.message, {})
-    case 502:
-    case 503:
-    case 504:
-      return domainError.unavailable(error.message)
-    default:
-      return domainError.unexpected(error.message)
+  if (isDomainError(error.body)) {
+    return error.body
   }
-}
 
-const toNotFoundDomainError = (error: MockHttpError): DomainError => {
-  const match = /^(.+) (\S+) was not found$/.exec(error.message)
-
-  return domainError.notFound(error.message, match?.[1], match?.[2])
+  return domainError.unexpected(error.message)
 }

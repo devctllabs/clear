@@ -1,7 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
+import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
 
 describe('DeckCreatePage', () => {
@@ -45,5 +46,31 @@ describe('DeckCreatePage', () => {
     await user.click(await screen.findByRole('button', { name: 'Create deck' }))
 
     expect(await screen.findByRole('heading', { name: 'Reading Notes Flashcards' })).toBeInTheDocument()
+  })
+
+  it('validates the deck name before creating', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const create = vi.fn(baseServices.decks.create)
+    const services = {
+      ...baseServices,
+      decks: {
+        ...baseServices.decks,
+        create,
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/create/deck', { services })
+
+    const name = await screen.findByLabelText('Deck name')
+    await user.click(await screen.findByRole('button', { name: 'Create deck' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
+
+    fireEvent.change(name, { target: { value: 'Recovered Deck' } })
+    expect(name).not.toHaveAttribute('aria-invalid')
+    expect(name).not.toHaveAccessibleDescription('Name is required.')
   })
 })

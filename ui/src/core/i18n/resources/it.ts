@@ -168,7 +168,6 @@ export const it = {
     },
     descriptions: {
       emptyDeck: 'Aggiungi una nota per dare a questo mazzo materiale da ripassare.',
-      editorDefault: 'Mazzo di studio focalizzato.',
       editorVisual: 'Scegli un glifo di copertina per questo mazzo.',
       notesSearchPlaceholder: 'Cerca note…',
     },
@@ -200,8 +199,6 @@ export const it = {
       descriptionLabel: 'Descrizione del mazzo',
       descriptionPlaceholder: 'Cosa ti aiuterà a ripassare questo mazzo?',
       namePlaceholder: 'Nome del mazzo',
-      untitledDeck: 'Mazzo senza titolo',
-      untitledDeckLower: 'mazzo senza titolo',
     },
     labels: {
       createDeckTitle: 'Crea mazzo',
@@ -231,19 +228,30 @@ export const it = {
       timeout: 'Ci sta mettendo troppo tempo. Riprova.',
       unauthorized: 'Accedi per continuare.',
       unavailable: 'Il servizio è temporaneamente non disponibile.',
+      validation: 'Controlla i campi evidenziati e riprova.',
     },
     fallback: {
       unexpected: 'Errore imprevisto',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} non è valido.',
+      invalidEnum: 'Scegli un valore valido per {{field}}.',
+      invalidFormat: 'Inserisci un valore valido per {{field}}.',
+      maxLength: '{{field}} deve contenere al massimo {{max}} caratteri.',
+      maximum: '{{field}} deve essere al massimo {{max}}.',
+      minLength: '{{field}} deve contenere almeno {{min}} caratteri.',
+      minimum: '{{field}} deve essere almeno {{min}}.',
+      required: '{{field}} è obbligatorio.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Crea cartella',
       deleteFolder: 'Elimina cartella',
       editFolder: 'Modifica cartella',
-    },
-    descriptions: {
-      editorDefault: 'Cartella per mazzi correlati.',
     },
     dialogs: {
       deleteFolderDescription: 'Questo sposta "{{name}}" nel Cestino. Puoi ripristinarla più tardi.',
@@ -266,7 +274,6 @@ export const it = {
       descriptionLabel: 'Descrizione della cartella',
       descriptionPlaceholder: 'Cosa appartiene a questa cartella?',
       namePlaceholder: 'Nome della cartella',
-      untitledFolder: 'Cartella senza titolo',
     },
     labels: {
       createFolderTitle: 'Crea cartella',
@@ -599,7 +606,6 @@ export const it = {
       openingWorkspace: 'Apertura di {{title}}',
     },
     descriptions: {
-      editorDefault: 'Contesto di studio.',
       editorVisual: 'Scegli un riferimento visivo per questo spazio di lavoro.',
       emptyList: 'Separa mazzi, note e code di ripasso per contesto di studio.',
     },
@@ -624,7 +630,6 @@ export const it = {
       descriptionLabel: 'Descrizione dello spazio di lavoro',
       descriptionPlaceholder: 'Cosa appartiene a questo spazio di lavoro?',
       namePlaceholder: 'Nome dello spazio di lavoro',
-      untitledWorkspace: 'Spazio di lavoro senza titolo',
     },
     labels: {
       createWorkspaceTitle: 'Crea spazio di lavoro',

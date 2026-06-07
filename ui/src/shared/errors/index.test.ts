@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { DomainErrorType, domainError, err, getUserMessage, ok } from './index'
+import { DomainErrorType, domainError, err, isDomainError, ok } from './index'
 
 describe('domain errors', () => {
   it('creates typed results', () => {
@@ -26,33 +26,11 @@ describe('domain errors', () => {
       retryable: true,
       type: DomainErrorType.Timeout,
     })
-    expect(domainError.validation('Invalid', { title: ['Required'] })).toMatchObject({
-      fieldErrors: { title: ['Required'] },
+    expect(domainError.validation([{ code: 'required', path: ['title'] }])).toEqual({
+      issues: [{ code: 'required', path: ['title'] }],
       retryable: false,
       type: DomainErrorType.Validation,
     })
-  })
-
-  it('renders user-facing messages by error type', () => {
-    expect(getUserMessage(domainError.conflict())).toBe(
-      'The data changed. Refresh and try again.',
-    )
-    expect(getUserMessage(domainError.forbidden())).toBe(
-      'You do not have permission to do this.',
-    )
-    expect(getUserMessage(domainError.notFound())).toBe('We could not find this item.')
-    expect(getUserMessage(domainError.offline())).toBe('Cannot reach the service.')
-    expect(getUserMessage(domainError.timeout())).toBe('This took too long. Try again.')
-    expect(getUserMessage(domainError.unauthorized())).toBe('Sign in to continue.')
-    expect(getUserMessage(domainError.unavailable())).toBe(
-      'The service is temporarily unavailable.',
-    )
-    expect(getUserMessage(domainError.unexpected('Server exploded.'))).toBe(
-      'Server exploded.',
-    )
-    expect(getUserMessage(domainError.validation('Title is required.', {}))).toBe(
-      'Title is required.',
-    )
   })
 
   it('creates all non-retryable factory variants', () => {
@@ -80,5 +58,17 @@ describe('domain errors', () => {
       retryable: false,
       type: DomainErrorType.NotFound,
     })
+  })
+
+  it('strictly detects validation domain error payloads', () => {
+    expect(isDomainError(domainError.validation([{ code: 'required' }]))).toBe(true)
+    expect(
+      isDomainError({
+        fieldErrors: { title: ['Required'] },
+        message: 'Invalid',
+        retryable: false,
+        type: DomainErrorType.Validation,
+      }),
+    ).toBe(false)
   })
 })

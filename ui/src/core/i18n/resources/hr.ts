@@ -168,7 +168,6 @@ export const hr = {
     },
     descriptions: {
       emptyDeck: 'Dodajte bilješku kako bi ovaj špil imao materijal za ponavljanje.',
-      editorDefault: 'Fokusirani špil za učenje.',
       editorVisual: 'Odaberite simbol naslovnice za ovaj špil.',
       notesSearchPlaceholder: 'Pretraži bilješke…',
     },
@@ -200,8 +199,6 @@ export const hr = {
       descriptionLabel: 'Opis špila',
       descriptionPlaceholder: 'Što će vam ovaj špil pomoći ponavljati?',
       namePlaceholder: 'Naziv špila',
-      untitledDeck: 'Špil bez naslova',
-      untitledDeckLower: 'špil bez naslova',
     },
     labels: {
       createDeckTitle: 'Stvori špil',
@@ -231,19 +228,30 @@ export const hr = {
       timeout: 'Ovo je trajalo predugo. Pokušajte ponovno.',
       unauthorized: 'Prijavite se za nastavak.',
       unavailable: 'Usluga je privremeno nedostupna.',
+      validation: 'Provjerite označena polja i pokušajte ponovno.',
     },
     fallback: {
       unexpected: 'Neočekivana pogreška',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} nije valjano.',
+      invalidEnum: 'Odaberite valjanu vrijednost za {{field}}.',
+      invalidFormat: 'Unesite valjanu vrijednost za {{field}}.',
+      maxLength: '{{field}} smije imati najviše {{max}} znakova.',
+      maximum: '{{field}} mora biti najviše {{max}}.',
+      minLength: '{{field}} mora imati najmanje {{min}} znakova.',
+      minimum: '{{field}} mora biti najmanje {{min}}.',
+      required: '{{field}} je obavezno.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Stvori mapu',
       deleteFolder: 'Izbriši mapu',
       editFolder: 'Uredi mapu',
-    },
-    descriptions: {
-      editorDefault: 'Mapa za povezane špilove.',
     },
     dialogs: {
       deleteFolderDescription: 'Ovo premješta "{{name}}" u Smeće. Možete je vratiti kasnije.',
@@ -266,7 +274,6 @@ export const hr = {
       descriptionLabel: 'Opis mape',
       descriptionPlaceholder: 'Što pripada u ovu mapu?',
       namePlaceholder: 'Naziv mape',
-      untitledFolder: 'Mapa bez naslova',
     },
     labels: {
       createFolderTitle: 'Stvori mapu',
@@ -599,7 +606,6 @@ export const hr = {
       openingWorkspace: 'Otvaranje {{title}}',
     },
     descriptions: {
-      editorDefault: 'Kontekst učenja.',
       editorVisual: 'Odaberite vizualno sidro za ovaj radni prostor.',
       emptyList: 'Odvojite špilove, bilješke i redove za ponavljanje prema kontekstu učenja.',
     },
@@ -624,7 +630,6 @@ export const hr = {
       descriptionLabel: 'Opis radnog prostora',
       descriptionPlaceholder: 'Što pripada u ovaj radni prostor?',
       namePlaceholder: 'Naziv radnog prostora',
-      untitledWorkspace: 'Radni prostor bez naslova',
     },
     labels: {
       createWorkspaceTitle: 'Stvori radni prostor',

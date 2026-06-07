@@ -163,6 +163,18 @@ export const SaveError: Story = {
   },
 }
 
+export const SaveRequiredValidation: Story = {
+  decorators: [withDeckEditPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = await canvas.findByLabelText('Deck name')
+
+    await userEvent.clear(input)
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save changes' }))
+    await canvas.findByText('Name is required.')
+  },
+}
+
 export const SavePending: Story = {
   decorators: [withDeckEditPage({ mutationLoading: true })],
   play: async ({ canvasElement }) => {

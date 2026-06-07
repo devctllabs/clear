@@ -2,6 +2,7 @@ import { Folder } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
+import { FieldValidationMessages } from '@shared/components/forms/FieldValidationMessages'
 import { VisualPicker } from '@shared/components/forms/VisualPicker'
 import { SectionHeading } from '@shared/components/layout/Screen'
 import { Card } from '@shared/components/ui/card'
@@ -14,6 +15,12 @@ import { cn } from '@shared/lib/utils'
 
 import { deckPresetVisualOptions } from '../constants/visuals'
 
+export type DeckEditorValidationMessages = {
+  description?: string[]
+  icon?: string[]
+  title?: string[]
+}
+
 export const DeckEditorForm = ({
   description,
   icon,
@@ -22,6 +29,7 @@ export const DeckEditorForm = ({
   onIconChange,
   onTitleChange,
   title,
+  validationMessages,
 }: {
   description: string
   icon: VisualIconName
@@ -30,11 +38,21 @@ export const DeckEditorForm = ({
   onIconChange: (value: VisualIconName) => void
   onTitleChange: (value: string) => void
   title: string
+  validationMessages?: DeckEditorValidationMessages
 }) => {
   const { t } = useTranslation()
   const locationLabel = locationPath ? formatLocationPathLabel(locationPath) : undefined
   const compactLocationLabel = locationPath
     ? formatCompactLocationPath(locationPath)
+    : undefined
+  const titleErrorId = validationMessages?.title?.length
+    ? 'deck-name-error'
+    : undefined
+  const descriptionErrorId = validationMessages?.description?.length
+    ? 'deck-description-error'
+    : undefined
+  const iconErrorId = validationMessages?.icon?.length
+    ? 'deck-visual-error'
     : undefined
 
   return (
@@ -60,6 +78,8 @@ export const DeckEditorForm = ({
         </label>
         <textarea
           autoComplete="off"
+          aria-describedby={titleErrorId}
+          aria-invalid={validationMessages?.title?.length ? true : undefined}
           className={cn(
             'text-wrap-anywhere type-page-title mt-4 block min-h-20 w-full resize-none overflow-hidden border-0 bg-transparent p-0 text-foreground placeholder:text-muted-foreground/45',
             editorFieldFocusClassName,
@@ -71,6 +91,7 @@ export const DeckEditorForm = ({
           value={title}
           onChange={(event) => onTitleChange(event.target.value)}
         />
+        <FieldValidationMessages id={titleErrorId} messages={validationMessages?.title} />
       </div>
       <hr className="mx-8 border-t border-border" />
       <div className="px-8 py-8">
@@ -80,6 +101,8 @@ export const DeckEditorForm = ({
         </label>
         <textarea
           autoComplete="off"
+          aria-describedby={descriptionErrorId}
+          aria-invalid={validationMessages?.description?.length ? true : undefined}
           className={cn(
             'mt-4 block min-h-36 w-full resize-none border-0 bg-transparent p-0 text-lg leading-relaxed text-foreground placeholder:text-muted-foreground/45',
             editorFieldFocusClassName,
@@ -91,6 +114,7 @@ export const DeckEditorForm = ({
           value={description}
           onChange={(event) => onDescriptionChange(event.target.value)}
         />
+        <FieldValidationMessages id={descriptionErrorId} messages={validationMessages?.description} />
       </div>
       <hr className="mx-8 border-t border-border" />
       <div className="px-8 py-8">
@@ -101,6 +125,7 @@ export const DeckEditorForm = ({
           value={icon}
           onValueChange={onIconChange}
         />
+        <FieldValidationMessages id={iconErrorId} messages={validationMessages?.icon} />
       </div>
     </Card>
   )

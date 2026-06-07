@@ -158,7 +158,6 @@ export const ko = {
     },
     descriptions: {
       emptyDeck: '이 덱에 복습할 자료가 생기도록 노트를 추가하세요.',
-      editorDefault: '집중 학습 덱.',
       editorVisual: '이 덱의 표지 글리프를 선택하세요.',
       notesSearchPlaceholder: '노트 검색…',
     },
@@ -190,8 +189,6 @@ export const ko = {
       descriptionLabel: '덱 설명',
       descriptionPlaceholder: '이 덱은 무엇을 복습하는 데 도움이 되나요?',
       namePlaceholder: '덱 이름',
-      untitledDeck: '제목 없는 덱',
-      untitledDeckLower: '제목 없는 덱',
     },
     labels: {
       createDeckTitle: '덱 만들기',
@@ -221,19 +218,30 @@ export const ko = {
       timeout: '너무 오래 걸렸습니다. 다시 시도하세요.',
       unauthorized: '계속하려면 로그인하세요.',
       unavailable: '서비스를 일시적으로 사용할 수 없습니다.',
+      validation: '강조 표시된 필드를 확인한 후 다시 시도하세요.',
     },
     fallback: {
       unexpected: '예상치 못한 오류',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}}이(가) 올바르지 않습니다.',
+      invalidEnum: '유효한 {{field}}을(를) 선택하세요.',
+      invalidFormat: '유효한 {{field}}을(를) 입력하세요.',
+      maxLength: '{{field}}은(는) 최대 {{max}}자여야 합니다.',
+      maximum: '{{field}}은(는) {{max}} 이하여야 합니다.',
+      minLength: '{{field}}은(는) 최소 {{min}}자여야 합니다.',
+      minimum: '{{field}}은(는) {{min}} 이상이어야 합니다.',
+      required: '{{field}}은(는) 필수입니다.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: '폴더 만들기',
       deleteFolder: '폴더 삭제',
       editFolder: '폴더 편집',
-    },
-    descriptions: {
-      editorDefault: '관련 덱을 위한 폴더.',
     },
     dialogs: {
       deleteFolderDescription: '"{{name}}"을 휴지통으로 이동합니다. 나중에 복원할 수 있습니다.',
@@ -256,7 +264,6 @@ export const ko = {
       descriptionLabel: '폴더 설명',
       descriptionPlaceholder: '이 폴더에는 무엇이 들어가나요?',
       namePlaceholder: '폴더 이름',
-      untitledFolder: '제목 없는 폴더',
     },
     labels: {
       createFolderTitle: '폴더 만들기',
@@ -586,7 +593,6 @@ export const ko = {
       openingWorkspace: '{{title}} 여는 중',
     },
     descriptions: {
-      editorDefault: '학습 컨텍스트.',
       editorVisual: '이 워크스페이스의 시각적 기준을 선택하세요.',
       emptyList: '덱, 노트, 복습 대기열을 학습 컨텍스트별로 나누세요.',
     },
@@ -611,7 +617,6 @@ export const ko = {
       descriptionLabel: '워크스페이스 설명',
       descriptionPlaceholder: '이 워크스페이스에는 무엇이 들어가나요?',
       namePlaceholder: '워크스페이스 이름',
-      untitledWorkspace: '제목 없는 워크스페이스',
     },
     labels: {
       createWorkspaceTitle: '워크스페이스 만들기',

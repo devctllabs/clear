@@ -198,7 +198,6 @@ export const ar = {
     },
     descriptions: {
       emptyDeck: 'أضف ملاحظة حتى تحتوي هذه المجموعة على مادة للمراجعة.',
-      editorDefault: 'مجموعة دراسة مركزة.',
       editorVisual: 'اختر رمزا لغلاف هذه المجموعة.',
       notesSearchPlaceholder: 'ابحث في الملاحظات…',
     },
@@ -230,8 +229,6 @@ export const ar = {
       descriptionLabel: 'وصف المجموعة',
       descriptionPlaceholder: 'ما الذي ستساعدك هذه المجموعة على مراجعته؟',
       namePlaceholder: 'اسم المجموعة',
-      untitledDeck: 'مجموعة بلا عنوان',
-      untitledDeckLower: 'مجموعة بلا عنوان',
     },
     labels: {
       createDeckTitle: 'إنشاء مجموعة',
@@ -261,19 +258,30 @@ export const ar = {
       timeout: 'استغرق ذلك وقتا طويلا. حاول مرة أخرى.',
       unauthorized: 'سجل الدخول للمتابعة.',
       unavailable: 'الخدمة غير متاحة مؤقتا.',
+      validation: 'تحقق من الحقول المميزة ثم حاول مرة أخرى.',
     },
     fallback: {
       unexpected: 'خطأ غير متوقع',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} غير صالح.',
+      invalidEnum: 'اختر قيمة صالحة لـ {{field}}.',
+      invalidFormat: 'أدخل قيمة صالحة لـ {{field}}.',
+      maxLength: 'يجب ألا يتجاوز {{field}} {{max}} أحرف.',
+      maximum: 'يجب ألا يزيد {{field}} عن {{max}}.',
+      minLength: 'يجب أن يحتوي {{field}} على {{min}} أحرف على الأقل.',
+      minimum: 'يجب ألا يقل {{field}} عن {{min}}.',
+      required: '{{field}} مطلوب.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'إنشاء مجلد',
       deleteFolder: 'حذف المجلد',
       editFolder: 'تعديل المجلد',
-    },
-    descriptions: {
-      editorDefault: 'مجلد للمجموعات ذات الصلة.',
     },
     dialogs: {
       deleteFolderDescription: 'سيتم نقل "{{name}}" إلى المهملات. يمكنك استعادته لاحقا.',
@@ -296,7 +304,6 @@ export const ar = {
       descriptionLabel: 'وصف المجلد',
       descriptionPlaceholder: 'ما الذي ينتمي إلى هذا المجلد؟',
       namePlaceholder: 'اسم المجلد',
-      untitledFolder: 'مجلد بلا عنوان',
     },
     labels: {
       createFolderTitle: 'إنشاء مجلد',
@@ -638,7 +645,6 @@ export const ar = {
       openingWorkspace: 'جار فتح {{title}}',
     },
     descriptions: {
-      editorDefault: 'سياق دراسة.',
       editorVisual: 'اختر مرجعا بصريا لمساحة العمل هذه.',
       emptyList: 'افصل المجموعات والملاحظات وقوائم المراجعة حسب سياق الدراسة.',
     },
@@ -663,7 +669,6 @@ export const ar = {
       descriptionLabel: 'وصف مساحة العمل',
       descriptionPlaceholder: 'ما الذي ينتمي إلى مساحة العمل هذه؟',
       namePlaceholder: 'اسم مساحة العمل',
-      untitledWorkspace: 'مساحة عمل بلا عنوان',
     },
     labels: {
       createWorkspaceTitle: 'إنشاء مساحة عمل',

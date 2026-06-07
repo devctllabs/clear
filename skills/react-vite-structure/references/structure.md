@@ -104,6 +104,7 @@ project-root/
 |   |   |   |-- feedback/           # User feedback
 |   |   |   |   |-- Toast.tsx
 |   |   |   |   |-- LoadingSpinner.tsx
+|   |   |   |   |-- LoadErrorState.tsx
 |   |   |   |   |-- ErrorBoundary.tsx
 |   |   |   |   |-- Skeleton.tsx
 |   |   |   |   `-- index.ts
@@ -141,12 +142,12 @@ project-root/
 |   |   |   |-- constants.ts        # Global constants
 |   |   |   `-- index.ts
 |   |   |
-|   |   |-- errors/                 # Typed Result and DomainError model
+|   |   |-- errors/                 # Typed Result, DomainError, and translated summaries
 |   |   |   |-- result.ts
 |   |   |   |-- domain-error.ts
 |   |   |   |-- domain-error.test.ts
 |   |   |   |-- domain-result.ts
-|   |   |   |-- messages.ts
+|   |   |   |-- translation.ts
 |   |   |   `-- index.ts
 |   |   |
 |   |   |-- services/               # Core services
@@ -210,10 +211,14 @@ project-root/
 |   |   |   `-- index.ts
 |   |   |
 |   |   `-- i18n/                   # Internationalization (optional)
-|   |       |-- locales/
-|   |       |   |-- en.json
-|   |       |   `-- id.json
-|   |       |-- i18n.config.ts
+|   |       |-- I18nProvider.tsx      # App i18n provider + document metadata
+|   |       |-- i18n.ts               # i18next init and app instance
+|   |       |-- i18next.d.ts          # Typed selector resource augmentation
+|   |       |-- locales.ts            # Public locales, fallback, direction metadata
+|   |       |-- resources/
+|   |       |   |-- en-US.ts           # Canonical default-locale key tree
+|   |       |   |-- [locale].ts
+|   |       |   `-- index.ts
 |   |       `-- index.ts
 |   |
 |   |-- platform/                    # Runtime/backend-specific implementations
@@ -502,7 +507,7 @@ shared/errors/
 |-- result.ts
 |-- domain-error.ts
 |-- domain-result.ts
-|-- messages.ts
+|-- translation.ts
 `-- index.ts
 
 shared/services/api/

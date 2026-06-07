@@ -178,7 +178,6 @@ export const pl = {
     },
     descriptions: {
       emptyDeck: 'Dodaj notatkę, aby ten zestaw miał materiał do powtórek.',
-      editorDefault: 'Skupiony zestaw do nauki.',
       editorVisual: 'Wybierz glif okładki dla tego zestawu.',
       notesSearchPlaceholder: 'Szukaj notatek…',
     },
@@ -210,8 +209,6 @@ export const pl = {
       descriptionLabel: 'Opis zestawu',
       descriptionPlaceholder: 'Co ten zestaw pomoże Ci powtórzyć?',
       namePlaceholder: 'Nazwa zestawu',
-      untitledDeck: 'Zestaw bez tytułu',
-      untitledDeckLower: 'zestaw bez tytułu',
     },
     labels: {
       createDeckTitle: 'Utwórz zestaw',
@@ -241,19 +238,30 @@ export const pl = {
       timeout: 'To trwa zbyt długo. Spróbuj ponownie.',
       unauthorized: 'Zaloguj się, aby kontynuować.',
       unavailable: 'Usługa jest tymczasowo niedostępna.',
+      validation: 'Sprawdź wyróżnione pola i spróbuj ponownie.',
     },
     fallback: {
       unexpected: 'Nieoczekiwany błąd',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} jest nieprawidłowe.',
+      invalidEnum: 'Wybierz prawidłową wartość dla {{field}}.',
+      invalidFormat: 'Wpisz prawidłową wartość dla {{field}}.',
+      maxLength: '{{field}} może mieć najwyżej {{max}} znaków.',
+      maximum: '{{field}} musi wynosić najwyżej {{max}}.',
+      minLength: '{{field}} musi mieć co najmniej {{min}} znaków.',
+      minimum: '{{field}} musi wynosić co najmniej {{min}}.',
+      required: '{{field}} jest wymagane.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Utwórz folder',
       deleteFolder: 'Usuń folder',
       editFolder: 'Edytuj folder',
-    },
-    descriptions: {
-      editorDefault: 'Folder na powiązane zestawy.',
     },
     dialogs: {
       deleteFolderDescription: 'To przeniesie "{{name}}" do Kosza. Możesz przywrócić go później.',
@@ -276,7 +284,6 @@ export const pl = {
       descriptionLabel: 'Opis folderu',
       descriptionPlaceholder: 'Co należy do tego folderu?',
       namePlaceholder: 'Nazwa folderu',
-      untitledFolder: 'Folder bez tytułu',
     },
     labels: {
       createFolderTitle: 'Utwórz folder',
@@ -612,7 +619,6 @@ export const pl = {
       openingWorkspace: 'Otwieranie {{title}}',
     },
     descriptions: {
-      editorDefault: 'Kontekst nauki.',
       editorVisual: 'Wybierz wizualny punkt odniesienia dla tego obszaru roboczego.',
       emptyList: 'Oddziel zestawy, notatki i kolejki powtórek według kontekstu nauki.',
     },
@@ -637,7 +643,6 @@ export const pl = {
       descriptionLabel: 'Opis obszaru roboczego',
       descriptionPlaceholder: 'Co należy do tego obszaru roboczego?',
       namePlaceholder: 'Nazwa obszaru roboczego',
-      untitledWorkspace: 'Obszar roboczy bez tytułu',
     },
     labels: {
       createWorkspaceTitle: 'Utwórz obszar roboczy',

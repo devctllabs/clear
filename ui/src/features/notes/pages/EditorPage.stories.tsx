@@ -128,6 +128,17 @@ export const BasicCreate: Story = {
   decorators: [withNoteEditorPage()],
 }
 
+export const BasicCreateRequiredValidation: Story = {
+  decorators: [withNoteEditorPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
+    await canvas.findByText('Front is required.')
+    await canvas.findByText('Back is required.')
+  },
+}
+
 export const MobileBasicCreateRegression: Story = {
   decorators: [withNoteEditorPage()],
   globals: {
@@ -167,6 +178,14 @@ export const SaveError: Story = {
     const canvas = within(canvasElement)
 
     await userEvent.type(await canvas.findByPlaceholderText('Add a note title'), 'Memory Consolidation')
+    await userEvent.type(
+      await canvas.findByPlaceholderText('Enter front side'),
+      'Which structure is central to memory consolidation?',
+    )
+    await userEvent.type(
+      await canvas.findByPlaceholderText('Enter back side'),
+      'The hippocampus consolidates short-term memories into long-term memory.',
+    )
     await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
     await canvas.findByText('Could not create note')
   },
@@ -178,6 +197,14 @@ export const Submitting: Story = {
     const canvas = within(canvasElement)
 
     await userEvent.type(await canvas.findByPlaceholderText('Add a note title'), 'Memory Consolidation')
+    await userEvent.type(
+      await canvas.findByPlaceholderText('Enter front side'),
+      'Which structure is central to memory consolidation?',
+    )
+    await userEvent.type(
+      await canvas.findByPlaceholderText('Enter back side'),
+      'The hippocampus consolidates short-term memories into long-term memory.',
+    )
     await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
     await expectButtonPendingSpinner(canvasElement, 'Save note')
   },
@@ -277,6 +304,22 @@ export const ClozeCreate: Story = {
   decorators: [withNoteEditorPage()],
 }
 
+export const ClozeCreateRequiredValidation: Story = {
+  args: {
+    deckId,
+    kind: 'cloze',
+    mode: 'create',
+    workspaceId,
+  },
+  decorators: [withNoteEditorPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
+    await canvas.findByText('Note body is required.')
+  },
+}
+
 export const BasicEdit: Story = {
   args: {
     deckId,
@@ -288,6 +331,25 @@ export const BasicEdit: Story = {
   decorators: [withNoteEditorPage()],
 }
 
+export const BasicEditRequiredValidation: Story = {
+  args: {
+    deckId,
+    kind: 'basic',
+    mode: 'edit',
+    noteId: basicNote.id,
+    workspaceId,
+  },
+  decorators: [withNoteEditorPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const front = await canvas.findByLabelText('Front')
+
+    await userEvent.clear(front)
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
+    await canvas.findByText('Front is required.')
+  },
+}
+
 export const ClozeEdit: Story = {
   args: {
     deckId,
@@ -297,4 +359,23 @@ export const ClozeEdit: Story = {
     workspaceId,
   },
   decorators: [withNoteEditorPage({ noteDetail: clozeNote })],
+}
+
+export const ClozeEditRequiredValidation: Story = {
+  args: {
+    deckId,
+    kind: 'cloze',
+    mode: 'edit',
+    noteId: clozeNote.id,
+    workspaceId,
+  },
+  decorators: [withNoteEditorPage({ noteDetail: clozeNote })],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const body = await canvas.findByLabelText('Note body')
+
+    await userEvent.clear(body)
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save note' }))
+    await canvas.findByText('Note body is required.')
+  },
 }

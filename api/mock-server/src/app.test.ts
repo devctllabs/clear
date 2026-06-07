@@ -49,6 +49,135 @@ describe('mock api app', () => {
     })
   })
 
+  it('returns validation issue facts for invalid request bodies', async () => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(
+      new Request('http://localhost/api/v1/workspaces', {
+        body: JSON.stringify({
+          description: 'Temporary research workspace.',
+          icon: 'bookmark',
+          title: '',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      }),
+    )
+
+    expect(response.status).toBe(422)
+    await expect(json(response)).resolves.toMatchObject({
+      issues: [
+        {
+          code: 'min_length',
+          params: {
+            min: 1,
+            valueType: 'string',
+          },
+          path: ['title'],
+        },
+      ],
+      retryable: false,
+      type: 'validation',
+    })
+  })
+
+  it.each([
+    {
+      body: {
+        description: 'Temporary research workspace.',
+        icon: 'bookmark',
+        title: '   ',
+      },
+      label: 'workspace create title',
+      method: 'POST',
+      path: '/api/v1/workspaces',
+      validationPath: ['title'],
+    },
+    {
+      body: {
+        description: 'Updated research workspace.',
+        icon: 'bookmark',
+        title: '   ',
+      },
+      label: 'workspace update title',
+      method: 'PUT',
+      path: '/api/v1/workspaces/independent-study',
+      validationPath: ['title'],
+    },
+    {
+      body: {
+        description: 'Temporary folder.',
+        name: '   ',
+        parentId: 'independent-study',
+      },
+      label: 'folder create name',
+      method: 'POST',
+      path: '/api/v1/folders',
+      validationPath: ['name'],
+    },
+    {
+      body: {
+        description: 'Updated folder.',
+        name: '   ',
+        parentId: 'reading-notes',
+      },
+      label: 'folder update name',
+      method: 'PUT',
+      path: '/api/v1/folders/history',
+      validationPath: ['name'],
+    },
+    {
+      body: {
+        description: 'Temporary deck.',
+        icon: 'brain',
+        parentId: 'independent-study',
+        title: '   ',
+      },
+      label: 'deck create title',
+      method: 'POST',
+      path: '/api/v1/decks',
+      validationPath: ['title'],
+    },
+    {
+      body: {
+        description: 'Updated deck.',
+        icon: 'brain',
+        parentId: 'independent-study',
+        title: '   ',
+      },
+      label: 'deck update title',
+      method: 'PUT',
+      path: '/api/v1/decks/world-history',
+      validationPath: ['title'],
+    },
+  ])('rejects blank $label', async ({ body, method, path, validationPath }) => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(
+      new Request(`http://localhost${path}`, {
+        body: JSON.stringify(body),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method,
+      }),
+    )
+
+    expect(response.status).toBe(422)
+    await expect(json(response)).resolves.toMatchObject({
+      issues: [
+        {
+          code: 'required',
+          path: validationPath,
+        },
+      ],
+      retryable: false,
+      type: 'validation',
+    })
+  })
+
   it('keeps seeded deck stats aligned with seeded notes', async () => {
     const app = await newMockApiApp()
 

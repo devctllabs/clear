@@ -65,6 +65,15 @@ export const WithParentLocation: Story = {
   },
 }
 
+export const Validation: Story = {
+  args: {
+    validationMessages: {
+      description: ['Description is invalid.'],
+      name: ['Name is required.'],
+    },
+  },
+}
+
 export const LongLocation: Story = {
   args: {
     description: 'Layout stress case for a deeply nested folder path.',

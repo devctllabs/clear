@@ -158,7 +158,6 @@ export const fi = {
     },
     descriptions: {
       emptyDeck: 'Lisää muistiinpano, jotta tässä pakassa on kerrattavaa.',
-      editorDefault: 'Keskittynyt opiskelupakka.',
       editorVisual: 'Valitse tälle pakalle kansikuvake.',
       notesSearchPlaceholder: 'Hae muistiinpanoja…',
     },
@@ -190,8 +189,6 @@ export const fi = {
       descriptionLabel: 'Pakan kuvaus',
       descriptionPlaceholder: 'Mitä tämä pakka auttaa sinua kertaamaan?',
       namePlaceholder: 'Pakan nimi',
-      untitledDeck: 'Nimetön pakka',
-      untitledDeckLower: 'nimetön pakka',
     },
     labels: {
       createDeckTitle: 'Luo pakka',
@@ -221,19 +218,30 @@ export const fi = {
       timeout: 'Tässä kesti liian kauan. Yritä uudelleen.',
       unauthorized: 'Kirjaudu sisään jatkaaksesi.',
       unavailable: 'Palvelu ei ole tilapäisesti saatavilla.',
+      validation: 'Tarkista korostetut kentät ja yritä uudelleen.',
     },
     fallback: {
       unexpected: 'Odottamaton virhe',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} ei ole kelvollinen.',
+      invalidEnum: 'Valitse kelvollinen arvo kentälle {{field}}.',
+      invalidFormat: 'Syötä kelvollinen arvo kentälle {{field}}.',
+      maxLength: '{{field}} saa olla enintään {{max}} merkkiä.',
+      maximum: '{{field}} saa olla enintään {{max}}.',
+      minLength: '{{field}} on oltava vähintään {{min}} merkkiä.',
+      minimum: '{{field}} on oltava vähintään {{min}}.',
+      required: '{{field}} on pakollinen.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Luo kansio',
       deleteFolder: 'Poista kansio',
       editFolder: 'Muokkaa kansiota',
-    },
-    descriptions: {
-      editorDefault: 'Kansio toisiinsa liittyville pakoille.',
     },
     dialogs: {
       deleteFolderDescription: 'Tämä siirtää kohteen "{{name}}" roskakoriin. Voit palauttaa sen myöhemmin.',
@@ -256,7 +264,6 @@ export const fi = {
       descriptionLabel: 'Kansion kuvaus',
       descriptionPlaceholder: 'Mitä tähän kansioon kuuluu?',
       namePlaceholder: 'Kansion nimi',
-      untitledFolder: 'Nimetön kansio',
     },
     labels: {
       createFolderTitle: 'Luo kansio',
@@ -586,7 +593,6 @@ export const fi = {
       openingWorkspace: 'Avataan {{title}}',
     },
     descriptions: {
-      editorDefault: 'Opiskelukonteksti.',
       editorVisual: 'Valitse tälle työtilalle visuaalinen ankkuri.',
       emptyList: 'Erota pakat, muistiinpanot ja kertausjonot opiskelukontekstin mukaan.',
     },
@@ -611,7 +617,6 @@ export const fi = {
       descriptionLabel: 'Työtilan kuvaus',
       descriptionPlaceholder: 'Mitä tähän työtilaan kuuluu?',
       namePlaceholder: 'Työtilan nimi',
-      untitledWorkspace: 'Nimetön työtila',
     },
     labels: {
       createWorkspaceTitle: 'Luo työtila',
