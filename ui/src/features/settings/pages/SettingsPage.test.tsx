@@ -119,7 +119,7 @@ describe('SettingsPage', () => {
     })
 
     expect(screen.getByRole('button', { name: 'Timezone' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Language' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Language' })).toBeInTheDocument()
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(180)
@@ -138,7 +138,7 @@ describe('SettingsPage', () => {
     expect(screen.getByText('Appearance')).toBeInTheDocument()
     expect(screen.getByText('Study')).toBeInTheDocument()
     expect(screen.getByText('FSRS Parameters')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Language' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Language' })).toHaveTextContent('English')
 
     await user.click(await screen.findByRole('button', { name: 'Timezone' }))
     const timezoneDialog = await screen.findByRole('dialog', { name: 'Choose Timezone' })
@@ -163,6 +163,37 @@ describe('SettingsPage', () => {
     )
   })
 
+  it('switches the interface language when a language option is selected', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const write = vi.fn(baseServices.settings.write)
+    const services = {
+      ...baseServices,
+      settings: {
+        ...baseServices.settings,
+        write,
+      },
+    }
+
+    renderRoute('/menu/settings', { services })
+
+    const languageButton = await screen.findByRole('button', { name: 'Language' })
+
+    expect(languageButton).toHaveTextContent('English')
+    expect(document.documentElement).toHaveAttribute('lang', 'en-US')
+    expect(document.documentElement).toHaveAttribute('dir', 'ltr')
+
+    await user.click(languageButton)
+    await user.click(await screen.findByRole('menuitem', { name: 'Arabic' }))
+
+    expect(await screen.findByRole('heading', { name: 'الإعدادات' })).toBeInTheDocument()
+    expect(document.documentElement).toHaveAttribute('lang', 'ar')
+    expect(document.documentElement).toHaveAttribute('dir', 'rtl')
+    await waitFor(() => {
+      expect(write).toHaveBeenCalledWith(expect.objectContaining({ language: 'ar' }))
+    })
+  })
+
   it('renders in the desktop sidebar layout', async () => {
     const user = userEvent.setup()
     mockMatchMedia(true)
@@ -171,7 +202,7 @@ describe('SettingsPage', () => {
     const heading = await screen.findByRole('heading', { name: 'Settings' })
     expect(heading).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'Timezone' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Language' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Language' })).toHaveTextContent('English')
     expect(heading.closest('div.mx-auto')).toHaveClass('max-w-page-narrow')
     expect(screen.getByText('General')).toBeInTheDocument()
     expect(screen.getByText('Appearance')).toBeInTheDocument()
@@ -189,7 +220,9 @@ describe('SettingsPage', () => {
     await user.click(resetButton)
     const dialog = await screen.findByRole('dialog', { name: 'Reset all settings?' })
     expect(dialog).toBeInTheDocument()
-    expect(dialog).toHaveTextContent('This restores timezone, study limits, and FSRS settings.')
+    expect(dialog).toHaveTextContent(
+      'This restores language, timezone, study limits, and FSRS settings.',
+    )
     expect(screen.getByRole('link', { name: 'Settings', hidden: true })).toHaveAttribute(
       'aria-current',
       'page',

@@ -5,6 +5,7 @@ import {
   BottomActionErrorStatus,
   desktopBottomStatusStackClassName,
 } from '@shared/components/feedback/BottomActionErrorStatus'
+import { getDocumentLocale } from '@core/i18n'
 import { useThemeStore } from '@core/theme'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
@@ -26,7 +27,7 @@ import {
 import type { Settings } from '../types/settings.types'
 
 export const SettingsPage = () => {
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
   const activeWorkspaceIdQuery = useActiveWorkspaceId()
   const homeTarget = activeWorkspaceIdQuery.data
     ? { to: `/dashboard/${activeWorkspaceIdQuery.data}` }
@@ -53,8 +54,9 @@ export const SettingsPage = () => {
   useEffect(() => {
     if (settingsQuery.data) {
       setSettings(settingsQuery.data)
+      void i18n.changeLanguage(getDocumentLocale(settingsQuery.data.language))
     }
-  }, [settingsQuery.data])
+  }, [i18n, settingsQuery.data])
 
   const isInitialLoading = settingsQuery.isLoading || (!settings && !settingsQuery.isError)
   const showInitialLoading = useDelayedBoolean(isInitialLoading, 180)
@@ -104,6 +106,9 @@ export const SettingsPage = () => {
     const nextSettings = { ...settings, ...patch }
 
     setSettings(nextSettings)
+    if (typeof patch.language === 'string') {
+      void i18n.changeLanguage(getDocumentLocale(patch.language))
+    }
     writeSettings.mutate(nextSettings)
   }
 
@@ -170,6 +175,7 @@ export const SettingsPage = () => {
           resetSettings.mutate(undefined, {
             onSuccess: (nextSettings) => {
               setSettings(nextSettings)
+              void i18n.changeLanguage(getDocumentLocale(nextSettings.language))
               setIsResetSettingsDialogOpen(false)
             },
           })

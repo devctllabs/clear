@@ -1,4 +1,5 @@
 import type { ThemePreference } from '@core/theme'
+import { getDocumentLocale } from '@core/i18n'
 import { Button } from '@shared/components/ui/button'
 import { useTranslation } from 'react-i18next'
 
@@ -86,7 +87,7 @@ const SettingsPageContentInner = ({
             description={t(($) => $.settings.rows.languageDescription)}
             label={t(($) => $.settings.labels.language)}
             options={settingsLanguageOptions}
-            value={settings.language}
+            value={getDocumentLocale(settings.language)}
             onSelect={(language) => {
               onUpdateSettings({ language })
             }}

@@ -43,8 +43,8 @@ const formatRelativeDayCount = (
   }
 
   return tense === 'past'
-    ? t(($) => $.dates.relative.daysAgo, { count })
-    : t(($) => $.dates.relative.inDays, { count })
+    ? t(($) => $.dates.relative.dayAgo, { count })
+    : t(($) => $.dates.relative.inDay, { count })
 }
 
 const formatRelativeWeekCount = (
@@ -53,8 +53,8 @@ const formatRelativeWeekCount = (
   tense: 'past' | 'future',
 ) => {
   return tense === 'past'
-    ? t(($) => $.dates.relative.weeksAgo, { count })
-    : t(($) => $.dates.relative.inWeeks, { count })
+    ? t(($) => $.dates.relative.weekAgo, { count })
+    : t(($) => $.dates.relative.inWeek, { count })
 }
 
 const formatRelativeMonthCount = (
@@ -62,15 +62,9 @@ const formatRelativeMonthCount = (
   count: number,
   tense: 'past' | 'future',
 ) => {
-  if (count === 1) {
-    return tense === 'past'
-      ? t(($) => $.dates.relative.monthAgo, { count })
-      : t(($) => $.dates.relative.inMonth, { count })
-  }
-
   return tense === 'past'
-    ? t(($) => $.dates.relative.monthsAgo, { count })
-    : t(($) => $.dates.relative.inMonths, { count })
+    ? t(($) => $.dates.relative.monthAgo, { count })
+    : t(($) => $.dates.relative.inMonth, { count })
 }
 
 const formatRelativeAgeValue = (t: TFunction, isoDate: string) => {
@@ -88,17 +82,13 @@ const formatRelativeAgeValue = (t: TFunction, isoDate: string) => {
   }
 
   if (diffMinutes < 60) {
-    return diffMinutes === 1
-      ? t(($) => $.dates.age.minuteAgo, { count: diffMinutes })
-      : t(($) => $.dates.age.minutesAgo, { count: diffMinutes })
+    return t(($) => $.dates.age.minuteAgo, { count: diffMinutes })
   }
 
   const diffHours = Math.max(1, Math.round(diffMinutes / 60))
 
   if (diffHours < 24) {
-    return diffHours === 1
-      ? t(($) => $.dates.age.hourAgo, { count: diffHours })
-      : t(($) => $.dates.age.hoursAgo, { count: diffHours })
+    return t(($) => $.dates.age.hourAgo, { count: diffHours })
   }
 
   const diffDays = Math.max(1, Math.round(diffMs / dayMs))
@@ -106,14 +96,10 @@ const formatRelativeAgeValue = (t: TFunction, isoDate: string) => {
   if (diffDays >= 7 && diffDays % 7 === 0) {
     const weeks = diffDays / 7
 
-    return weeks === 1
-      ? t(($) => $.dates.age.weekAgo, { count: weeks })
-      : t(($) => $.dates.age.weeksAgo, { count: weeks })
+    return t(($) => $.dates.age.weekAgo, { count: weeks })
   }
 
-  return diffDays === 1
-    ? t(($) => $.dates.age.dayAgo, { count: diffDays })
-    : t(($) => $.dates.age.daysAgo, { count: diffDays })
+  return t(($) => $.dates.age.dayAgo, { count: diffDays })
 }
 
 const formatUpdatedAgeValue = (t: TFunction, value: string) => {
@@ -146,9 +132,7 @@ const formatUpdatedAgeValue = (t: TFunction, value: string) => {
   if (diffMs < weekMs) {
     const days = Math.max(1, Math.round(diffMs / dayMs))
 
-    return days === 1
-      ? t(($) => $.dates.relative.dayAgo, { count: days })
-      : t(($) => $.dates.relative.daysAgo, { count: days })
+    return t(($) => $.dates.relative.dayAgo, { count: days })
   }
 
   return formatAbsoluteDate(value)
