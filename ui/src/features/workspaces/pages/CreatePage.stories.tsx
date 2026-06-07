@@ -47,6 +47,16 @@ export const Empty: Story = {
   decorators: [withWorkspaceCreatePage()],
 }
 
+export const RequiredValidation: Story = {
+  decorators: [withWorkspaceCreatePage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Create workspace' }))
+    await canvas.findByText('Name is required.')
+  },
+}
+
 export const MobileEmptyRegression: Story = {
   decorators: [withWorkspaceCreatePage()],
   globals: {

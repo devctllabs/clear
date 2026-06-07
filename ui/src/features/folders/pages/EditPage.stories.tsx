@@ -157,6 +157,18 @@ export const SaveError: Story = {
   },
 }
 
+export const SaveRequiredValidation: Story = {
+  decorators: [withFolderEditPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = await canvas.findByLabelText('Folder name')
+
+    await userEvent.clear(input)
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save changes' }))
+    await canvas.findByText('Name is required.')
+  },
+}
+
 export const SavePending: Story = {
   decorators: [withFolderEditPage({ mutationLoading: true })],
   play: async ({ canvasElement }) => {

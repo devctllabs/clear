@@ -158,7 +158,6 @@ export const et = {
     },
     descriptions: {
       emptyDeck: 'Lisa märge, et sellel pakil oleks kordamiseks materjali.',
-      editorDefault: 'Fookustatud õppepakk.',
       editorVisual: 'Vali selle paki kaanesümbol.',
       notesSearchPlaceholder: 'Otsi märkmeid…',
     },
@@ -190,8 +189,6 @@ export const et = {
       descriptionLabel: 'Paki kirjeldus',
       descriptionPlaceholder: 'Mida see pakk aitab sul korrata?',
       namePlaceholder: 'Paki nimi',
-      untitledDeck: 'Pealkirjata pakk',
-      untitledDeckLower: 'pealkirjata pakk',
     },
     labels: {
       createDeckTitle: 'Loo pakk',
@@ -221,19 +218,30 @@ export const et = {
       timeout: 'See võttis liiga kaua aega. Proovi uuesti.',
       unauthorized: 'Jätkamiseks logi sisse.',
       unavailable: 'Teenus pole ajutiselt saadaval.',
+      validation: 'Kontrolli esiletõstetud välju ja proovi uuesti.',
     },
     fallback: {
       unexpected: 'Ootamatu tõrge',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} on vigane.',
+      invalidEnum: 'Vali kehtiv väärtus väljale {{field}}.',
+      invalidFormat: 'Sisesta kehtiv väärtus väljale {{field}}.',
+      maxLength: '{{field}} võib olla kuni {{max}} märki.',
+      maximum: '{{field}} võib olla kuni {{max}}.',
+      minLength: '{{field}} peab olema vähemalt {{min}} märki.',
+      minimum: '{{field}} peab olema vähemalt {{min}}.',
+      required: '{{field}} on kohustuslik.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Loo kaust',
       deleteFolder: 'Kustuta kaust',
       editFolder: 'Muuda kausta',
-    },
-    descriptions: {
-      editorDefault: 'Kaust seotud pakkide jaoks.',
     },
     dialogs: {
       deleteFolderDescription: 'See teisaldab "{{name}}" prügikasti. Saad selle hiljem taastada.',
@@ -256,7 +264,6 @@ export const et = {
       descriptionLabel: 'Kausta kirjeldus',
       descriptionPlaceholder: 'Mis sellesse kausta kuulub?',
       namePlaceholder: 'Kausta nimi',
-      untitledFolder: 'Pealkirjata kaust',
     },
     labels: {
       createFolderTitle: 'Loo kaust',
@@ -586,7 +593,6 @@ export const et = {
       openingWorkspace: '{{title}} avamine',
     },
     descriptions: {
-      editorDefault: 'Õppekontekst.',
       editorVisual: 'Vali selle tööruumi visuaalne ankur.',
       emptyList: 'Eralda pakid, märkmed ja kordamisjärjekorrad õppekonteksti järgi.',
     },
@@ -611,7 +617,6 @@ export const et = {
       descriptionLabel: 'Tööruumi kirjeldus',
       descriptionPlaceholder: 'Mis sellesse tööruumi kuulub?',
       namePlaceholder: 'Tööruumi nimi',
-      untitledWorkspace: 'Pealkirjata tööruum',
     },
     labels: {
       createWorkspaceTitle: 'Loo tööruum',

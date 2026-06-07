@@ -158,7 +158,6 @@ export const nl = {
     },
     descriptions: {
       emptyDeck: 'Voeg een notitie toe zodat deze kaartenset materiaal heeft om te herhalen.',
-      editorDefault: 'Gerichte studiekaartenset.',
       editorVisual: 'Kies een omslagicoon voor deze kaartenset.',
       notesSearchPlaceholder: 'Notities zoeken…',
     },
@@ -190,8 +189,6 @@ export const nl = {
       descriptionLabel: 'Beschrijving van kaartenset',
       descriptionPlaceholder: 'Wat helpt deze kaartenset je te herhalen?',
       namePlaceholder: 'Naam van kaartenset',
-      untitledDeck: 'Naamloze kaartenset',
-      untitledDeckLower: 'naamloze kaartenset',
     },
     labels: {
       createDeckTitle: 'Kaartenset maken',
@@ -221,19 +218,30 @@ export const nl = {
       timeout: 'Dit duurt te lang. Probeer opnieuw.',
       unauthorized: 'Log in om door te gaan.',
       unavailable: 'De service is tijdelijk niet beschikbaar.',
+      validation: 'Controleer de gemarkeerde velden en probeer het opnieuw.',
     },
     fallback: {
       unexpected: 'Onverwachte fout',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} is ongeldig.',
+      invalidEnum: 'Kies een geldige waarde voor {{field}}.',
+      invalidFormat: 'Voer een geldige waarde in voor {{field}}.',
+      maxLength: '{{field}} mag maximaal {{max}} tekens bevatten.',
+      maximum: '{{field}} mag maximaal {{max}} zijn.',
+      minLength: '{{field}} moet minimaal {{min}} tekens bevatten.',
+      minimum: '{{field}} moet minimaal {{min}} zijn.',
+      required: '{{field}} is verplicht.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Map maken',
       deleteFolder: 'Map verwijderen',
       editFolder: 'Map bewerken',
-    },
-    descriptions: {
-      editorDefault: 'Map voor verwante kaartensets.',
     },
     dialogs: {
       deleteFolderDescription: 'Dit verplaatst "{{name}}" naar de Prullenbak. Je kunt hem later herstellen.',
@@ -256,7 +264,6 @@ export const nl = {
       descriptionLabel: 'Mapbeschrijving',
       descriptionPlaceholder: 'Wat hoort in deze map?',
       namePlaceholder: 'Mapnaam',
-      untitledFolder: 'Naamloze map',
     },
     labels: {
       createFolderTitle: 'Map maken',
@@ -586,7 +593,6 @@ export const nl = {
       openingWorkspace: '{{title}} openen',
     },
     descriptions: {
-      editorDefault: 'Studiecontext.',
       editorVisual: 'Kies een visueel anker voor deze werkruimte.',
       emptyList: 'Scheid kaartensets, notities en herhaalwachtrijen per studiecontext.',
     },
@@ -611,7 +617,6 @@ export const nl = {
       descriptionLabel: 'Beschrijving van werkruimte',
       descriptionPlaceholder: 'Wat hoort in deze werkruimte?',
       namePlaceholder: 'Naam van werkruimte',
-      untitledWorkspace: 'Naamloze werkruimte',
     },
     labels: {
       createWorkspaceTitle: 'Werkruimte maken',

@@ -95,70 +95,77 @@ export const EditorShell = ({
       isSubmitting={isSubmitting}
       showSubmitSpinner={showSubmitSpinner}
       variant={isDesktop ? 'desktop' : 'mobile'}
-      onSubmit={onSubmit}
     />
   )
 
   return (
     <main id="main-content" className="min-h-screen bg-background text-foreground">
-      <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-md">
+      <form
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault()
+          onSubmit()
+        }}
+      >
+        <header className="fixed top-0 z-50 w-full bg-background/95 backdrop-blur-md">
+          <div
+            className={cn(
+              laneClassName,
+              isDesktop
+                ? 'grid h-auto grid-cols-[minmax(0,1fr)_auto] items-center gap-6 px-8 py-6'
+                : 'grid h-16 grid-cols-[44px_1fr_44px] items-center px-6',
+            )}
+          >
+            <div
+              className={cn(
+                isDesktop ? 'flex min-w-0 items-center gap-4' : 'contents',
+              )}
+            >
+              <BackControl
+                ariaLabel={t(($) => $.navigation.actions.closeEditor)}
+                fallbackTo={backTo}
+                icon={<X className="size-5" />}
+              />
+              <h1
+                className={cn(
+                  'line-clamp-2 text-wrap-anywhere type-study-title text-foreground',
+                  isDesktop
+                    ? 'min-w-0 text-left'
+                    : 'text-center',
+                )}
+              >
+                {title}
+              </h1>
+            </div>
+            {isDesktop ? submitButton : <div aria-hidden="true" />}
+          </div>
+        </header>
         <div
           className={cn(
             laneClassName,
             isDesktop
-              ? 'grid h-auto grid-cols-[minmax(0,1fr)_auto] items-center gap-6 px-8 py-6'
-              : 'grid h-16 grid-cols-[44px_1fr_44px] items-center px-6',
+              ? 'px-8 pb-16 pt-32'
+              : cn('px-6 pt-24', contentBottomPadding),
           )}
         >
-          <div
-            className={cn(
-              isDesktop ? 'flex min-w-0 items-center gap-4' : 'contents',
-            )}
-          >
-            <BackControl
-              ariaLabel={t(($) => $.navigation.actions.closeEditor)}
-              fallbackTo={backTo}
-              icon={<X className="size-5" />}
+          {children}
+          {isDesktop ? (
+            <EditorActionErrorMessage
+              actionError={actionError}
+              className="mt-6"
+              id={actionErrorId}
             />
-            <h1
-              className={cn(
-                'line-clamp-2 text-wrap-anywhere type-study-title text-foreground',
-                isDesktop
-                  ? 'min-w-0 text-left'
-                  : 'text-center',
-              )}
-            >
-              {title}
-            </h1>
-          </div>
-          {isDesktop ? submitButton : <div aria-hidden="true" />}
+          ) : null}
         </div>
-      </header>
-      <div
-        className={cn(
-          laneClassName,
-          isDesktop
-            ? 'px-8 pb-16 pt-32'
-            : cn('px-6 pt-24', contentBottomPadding),
-        )}
-      >
-        {children}
-        {isDesktop ? (
-          <EditorActionErrorMessage
-            actionError={actionError}
-            className="mt-6"
-            id={actionErrorId}
-          />
+        {!isDesktop ? (
+          <footer className="fixed bottom-[var(--visual-viewport-bottom-offset,0px)] left-0 right-0 z-40 bg-gradient-to-t from-background via-background/90 to-transparent pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4">
+            <div className={cn(mobileLaneClassName, 'px-6')}>
+              {submitButton}
+              <EditorActionErrorMessage actionError={actionError} id={actionErrorId} />
+            </div>
+          </footer>
         ) : null}
-      </div>
-      {!isDesktop ? (
-        <footer className="fixed bottom-[var(--visual-viewport-bottom-offset,0px)] left-0 right-0 z-40 bg-gradient-to-t from-background via-background/90 to-transparent pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4">
-          <div className={cn(mobileLaneClassName, 'px-6')}>
-            {submitButton}
-            <EditorActionErrorMessage actionError={actionError} id={actionErrorId} />
-          </div>
-        </footer>
-      ) : null}
+      </form>
     </main>
   )
 }
@@ -170,7 +177,6 @@ const EditorSubmitButton = ({
   isSubmitting,
   showSubmitSpinner,
   variant,
-  onSubmit,
 }: {
   actionError?: EditorActionError | null
   actionErrorId?: string
@@ -178,7 +184,6 @@ const EditorSubmitButton = ({
   isSubmitting: boolean
   showSubmitSpinner: boolean
   variant: 'desktop' | 'mobile'
-  onSubmit: () => void
 }) => (
   <Button
     aria-busy={isSubmitting || undefined}
@@ -190,9 +195,8 @@ const EditorSubmitButton = ({
         : 'h-auto w-full whitespace-normal rounded-full py-5 active:scale-[0.98]',
     )}
     disabled={isSubmitting}
-    type="button"
+    type="submit"
     variant="default"
-    onClick={onSubmit}
   >
     {showSubmitSpinner ? (
       <PendingSpinner decorative className="size-4" />

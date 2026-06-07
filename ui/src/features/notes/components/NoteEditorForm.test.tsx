@@ -4,9 +4,16 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
 import type { BasicNoteEditor, ClozeNoteEditor, NoteKind } from '../types/note.types'
-import { NoteEditorForm } from './NoteEditorForm'
+import {
+  NoteEditorForm,
+  type NoteEditorValidationMessages,
+} from './NoteEditorForm'
 
-const NoteEditorFormHarness = () => {
+const NoteEditorFormHarness = ({
+  validationMessages,
+}: {
+  validationMessages?: NoteEditorValidationMessages
+}) => {
   const [activeKind, setActiveKind] = useState<NoteKind>('basic')
   const [title, setTitle] = useState('')
   const [basicDraft, setBasicDraft] = useState<BasicNoteEditor>({
@@ -23,6 +30,7 @@ const NoteEditorFormHarness = () => {
       basicDraft={basicDraft}
       clozeDraft={clozeDraft}
       title={title}
+      validationMessages={validationMessages}
       onBackChange={(back) => setBasicDraft((draft) => ({ ...draft, back }))}
       onBodyChange={(body) => setClozeDraft({ body })}
       onFrontChange={(front) => setBasicDraft((draft) => ({ ...draft, front }))}
@@ -106,6 +114,29 @@ describe('NoteEditorForm', () => {
     await user.click(screen.getByRole('button', { name: 'Bold' }))
 
     expect(back).toHaveValue('Study **memory**')
+  })
+
+  it('renders field validation messages beside owned note fields', () => {
+    render(
+      <NoteEditorFormHarness
+        validationMessages={{
+          basicBack: ['Back is required.'],
+          basicFront: ['Front is required.'],
+          title: ['Title is required.'],
+        }}
+      />,
+    )
+
+    const title = screen.getByLabelText('Title')
+    const front = screen.getByLabelText('Front')
+    const back = screen.getByLabelText('Back')
+
+    expect(title).toHaveAttribute('aria-invalid', 'true')
+    expect(title).toHaveAccessibleDescription('Title is required.')
+    expect(front).toHaveAttribute('aria-invalid', 'true')
+    expect(front).toHaveAccessibleDescription('Front is required.')
+    expect(back).toHaveAttribute('aria-invalid', 'true')
+    expect(back).toHaveAccessibleDescription('Back is required.')
   })
 
   it('applies toolbar actions to the selected basic front text when front is active', async () => {

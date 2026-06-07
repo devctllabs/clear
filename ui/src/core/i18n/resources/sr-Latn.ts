@@ -168,7 +168,6 @@ export const srLatn = {
     },
     descriptions: {
       emptyDeck: 'Dodajte belešku da bi ovaj špil imao materijal za ponavljanje.',
-      editorDefault: 'Fokusiran špil za učenje.',
       editorVisual: 'Izaberite simbol naslovnice za ovaj špil.',
       notesSearchPlaceholder: 'Pretraži beleške…',
     },
@@ -200,8 +199,6 @@ export const srLatn = {
       descriptionLabel: 'Opis špila',
       descriptionPlaceholder: 'Šta će vam ovaj špil pomoći da ponavljate?',
       namePlaceholder: 'Naziv špila',
-      untitledDeck: 'Špil bez naslova',
-      untitledDeckLower: 'špil bez naslova',
     },
     labels: {
       createDeckTitle: 'Napravi špil',
@@ -231,19 +228,30 @@ export const srLatn = {
       timeout: 'Ovo je trajalo predugo. Pokušajte ponovo.',
       unauthorized: 'Prijavite se da nastavite.',
       unavailable: 'Usluga je privremeno nedostupna.',
+      validation: 'Proverite označena polja i pokušajte ponovo.',
     },
     fallback: {
       unexpected: 'Neočekivana greška',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} nije važeće.',
+      invalidEnum: 'Izaberite važeću vrednost za {{field}}.',
+      invalidFormat: 'Unesite važeću vrednost za {{field}}.',
+      maxLength: '{{field}} može imati najviše {{max}} znakova.',
+      maximum: '{{field}} mora biti najviše {{max}}.',
+      minLength: '{{field}} mora imati najmanje {{min}} znakova.',
+      minimum: '{{field}} mora biti najmanje {{min}}.',
+      required: '{{field}} je obavezno.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Napravi fasciklu',
       deleteFolder: 'Obriši fasciklu',
       editFolder: 'Uredi fasciklu',
-    },
-    descriptions: {
-      editorDefault: 'Fascikla za povezane špilove.',
     },
     dialogs: {
       deleteFolderDescription: 'Ovo premešta "{{name}}" u Smeće. Možete je vratiti kasnije.',
@@ -266,7 +274,6 @@ export const srLatn = {
       descriptionLabel: 'Opis fascikle',
       descriptionPlaceholder: 'Šta pripada ovoj fascikli?',
       namePlaceholder: 'Naziv fascikle',
-      untitledFolder: 'Fascikla bez naslova',
     },
     labels: {
       createFolderTitle: 'Napravi fasciklu',
@@ -599,7 +606,6 @@ export const srLatn = {
       openingWorkspace: 'Otvaranje {{title}}',
     },
     descriptions: {
-      editorDefault: 'Kontekst učenja.',
       editorVisual: 'Izaberite vizuelno sidro za ovaj radni prostor.',
       emptyList: 'Odvojite špilove, beleške i redove za ponavljanje po kontekstu učenja.',
     },
@@ -624,7 +630,6 @@ export const srLatn = {
       descriptionLabel: 'Opis radnog prostora',
       descriptionPlaceholder: 'Šta pripada ovom radnom prostoru?',
       namePlaceholder: 'Naziv radnog prostora',
-      untitledWorkspace: 'Radni prostor bez naslova',
     },
     labels: {
       createWorkspaceTitle: 'Napravi radni prostor',

@@ -71,7 +71,7 @@ export const ReviewSummaryPage = ({
           <LoadErrorState
             backLabel={backLabel}
             backTo={backTo}
-            error={domainError.validation(t(($) => $.review.errors.summaryNotComplete), {})}
+            error={domainError.unexpected(t(($) => $.review.errors.summaryNotComplete))}
             title={t(($) => $.review.errors.summaryNotAvailable)}
           />
         </div>

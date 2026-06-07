@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Result } from '@shared/errors'
+import { DomainErrorType, type Result } from '@shared/errors'
 
 import { createBasicNoteDetail, createBasicReviewCard, createDeck, createFolder } from './fixtures'
 import {
@@ -15,7 +15,11 @@ const expectOkValue = <T>(result: Result<T>): T => {
   expect(result.ok).toBe(true)
 
   if (!result.ok) {
-    throw new Error(result.error.message)
+    throw new Error(
+      result.error.type === DomainErrorType.Validation
+        ? 'Validation failed'
+        : result.error.message,
+    )
   }
 
   return result.value

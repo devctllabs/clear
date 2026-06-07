@@ -3,6 +3,7 @@ import type { FolderRecord } from '../../generated/mock-admin/contract/index.ts'
 import { conflict } from '../../generated/clear-web-api/mock-runtime.ts'
 import type { MockStateStore } from '../../lib/stateStore.ts'
 import { newIdAllocator } from '../../lib/ids.ts'
+import { requireNonBlankText, trimOptionalText } from '../../lib/validation.ts'
 import type { DeckRepository } from '../decks/repository.ts'
 import type { LocationPathResolver } from '../location-path/resolver.ts'
 import type { NotesRepository } from '../notes/repository.ts'
@@ -48,29 +49,34 @@ export class FolderService {
   }
 
   async createFolder(draft: FolderDraft): Promise<FolderRecord> {
-    const parent = this.resolveParent(draft.parentId)
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      name: requireNonBlankText(draft.name, 'name'),
+    }
+    const parent = this.resolveParent(normalizedDraft.parentId)
     const duplicate = this.folders.visible().some(
-      (folder) => folder.parentId === draft.parentId && folder.name === draft.name,
+      (folder) => folder.parentId === normalizedDraft.parentId && folder.name === normalizedDraft.name,
     )
 
     if (duplicate) {
-      throw conflict(`Folder named ${draft.name} already exists in this location`)
+      throw conflict(`Folder named ${normalizedDraft.name} already exists in this location`)
     }
 
     return this.stateStore.transaction(async () => {
       const ids = newIdAllocator(this.stateStore.getSlice('idCounters'))
       const now = this.stateStore.now()
       const folder: FolderRecord = {
-        description: draft.description,
+        description: normalizedDraft.description,
         id: ids.next('folder'),
-        name: draft.name,
-        parentId: draft.parentId,
+        name: normalizedDraft.name,
+        parentId: normalizedDraft.parentId,
         updatedAt: now,
         workspaceId: parent.workspaceId,
       }
 
       const created = await this.folders.create(folder)
-      await this.touchFolderAncestors(draft.parentId, now)
+      await this.touchFolderAncestors(normalizedDraft.parentId, now)
       await this.workspaces.touch(parent.workspaceId, now)
 
       return created
@@ -82,32 +88,37 @@ export class FolderService {
   }
 
   async updateFolder(folderId: string, draft: FolderDraft) {
+    const normalizedDraft = {
+      ...draft,
+      description: trimOptionalText(draft.description),
+      name: requireNonBlankText(draft.name, 'name'),
+    }
     const current = this.folders.require(folderId)
-    const nextParent = this.resolveParent(draft.parentId)
+    const nextParent = this.resolveParent(normalizedDraft.parentId)
     const duplicate = this.folders.visible().some(
       (folder) =>
         folder.id !== folderId &&
-        folder.parentId === draft.parentId &&
-        folder.name === draft.name,
+        folder.parentId === normalizedDraft.parentId &&
+        folder.name === normalizedDraft.name,
     )
 
     if (duplicate) {
-      throw conflict(`Folder named ${draft.name} already exists in this location`)
+      throw conflict(`Folder named ${normalizedDraft.name} already exists in this location`)
     }
 
     return this.stateStore.transaction(async () => {
       const now = this.stateStore.now()
       const updated = await this.folders.update(folderId, (folder) => ({
         ...folder,
-        description: draft.description,
-        name: draft.name,
-        parentId: draft.parentId,
+        description: normalizedDraft.description,
+        name: normalizedDraft.name,
+        parentId: normalizedDraft.parentId,
         updatedAt: now,
         workspaceId: nextParent.workspaceId,
       }))
 
       await this.touchFolderAncestors(current.parentId, now)
-      await this.touchFolderAncestors(draft.parentId, now)
+      await this.touchFolderAncestors(normalizedDraft.parentId, now)
       await this.workspaces.touch(current.workspaceId, now)
       if (nextParent.workspaceId !== current.workspaceId) {
         await this.workspaces.touch(nextParent.workspaceId, now)

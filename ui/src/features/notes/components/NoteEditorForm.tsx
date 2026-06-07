@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
 import { Card } from '@shared/components/ui/card'
+import { FieldValidationMessages } from '@shared/components/forms/FieldValidationMessages'
 import { editorFieldFocusClassName } from '@shared/components/ui/focus'
 import { IconButton } from '@shared/components/ui/icon-button'
 import { SectionHeading } from '@shared/components/layout/Screen'
@@ -38,6 +39,13 @@ type MarkdownToolbarTarget = {
   value: string
 }
 
+export type NoteEditorValidationMessages = {
+  basicBack?: string[]
+  basicFront?: string[]
+  clozeBody?: string[]
+  title?: string[]
+}
+
 export const NoteEditorForm = ({
   activeKind,
   basicDraft,
@@ -48,6 +56,7 @@ export const NoteEditorForm = ({
   onKindChange,
   onTitleChange,
   title,
+  validationMessages,
 }: {
   activeKind: NoteKind
   basicDraft: BasicNoteEditor
@@ -58,6 +67,7 @@ export const NoteEditorForm = ({
   onKindChange: (kind: NoteKind) => void
   onTitleChange: (value: string) => void
   title: string
+  validationMessages?: NoteEditorValidationMessages
 }) => (
   <>
     <ModeSwitcher activeKind={activeKind} onKindChange={onKindChange} />
@@ -65,6 +75,7 @@ export const NoteEditorForm = ({
       <BasicNoteForm
         draft={basicDraft}
         title={title}
+        validationMessages={validationMessages}
         onBackChange={onBackChange}
         onFrontChange={onFrontChange}
         onTitleChange={onTitleChange}
@@ -73,6 +84,7 @@ export const NoteEditorForm = ({
       <ClozeNoteForm
         draft={clozeDraft}
         title={title}
+        validationMessages={validationMessages}
         onBodyChange={onBodyChange}
         onTitleChange={onTitleChange}
       />
@@ -127,12 +139,14 @@ const BasicNoteForm = ({
   onFrontChange,
   onTitleChange,
   title,
+  validationMessages,
 }: {
   draft: BasicNoteEditor
   onBackChange: (value: string) => void
   onFrontChange: (value: string) => void
   onTitleChange: (value: string) => void
   title: string
+  validationMessages?: NoteEditorValidationMessages
 }) => {
   const { t } = useTranslation()
   const frontTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -165,6 +179,7 @@ const BasicNoteForm = ({
           label={t(($) => $.notes.fields.title)}
           name="note-title"
           placeholder={t(($) => $.notes.fields.titlePlaceholder)}
+          validationMessages={validationMessages?.title}
           value={title}
           onChange={onTitleChange}
         />
@@ -177,6 +192,7 @@ const BasicNoteForm = ({
           name="note-front"
           placeholder={t(($) => $.notes.fields.frontPlaceholder)}
           textareaRef={frontTextareaRef}
+          validationMessages={validationMessages?.basicFront}
           value={draft.front}
           onChange={(value) => {
             clearUndoEntries('front')
@@ -195,6 +211,7 @@ const BasicNoteForm = ({
           name="note-back"
           placeholder={t(($) => $.notes.fields.backPlaceholder)}
           textareaRef={backTextareaRef}
+          validationMessages={validationMessages?.basicBack}
           value={draft.back}
           onChange={(value) => {
             clearUndoEntries('back')
@@ -218,11 +235,13 @@ const ClozeNoteForm = ({
   onBodyChange,
   onTitleChange,
   title,
+  validationMessages,
 }: {
   draft: ClozeNoteEditor
   onBodyChange: (value: string) => void
   onTitleChange: (value: string) => void
   title: string
+  validationMessages?: NoteEditorValidationMessages
 }) => {
   const { t } = useTranslation()
   const bodyTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -243,6 +262,7 @@ const ClozeNoteForm = ({
             label={t(($) => $.notes.fields.title)}
             name="note-title"
             placeholder={t(($) => $.notes.fields.titlePlaceholder)}
+            validationMessages={validationMessages?.title}
             value={title}
             onChange={onTitleChange}
           />
@@ -256,6 +276,7 @@ const ClozeNoteForm = ({
             name="note-body"
             placeholder={t(($) => $.notes.fields.bodyPlaceholder)}
             textareaRef={bodyTextareaRef}
+            validationMessages={validationMessages?.clozeBody}
             value={draft.body}
             onChange={(value) => {
               clearUndoEntries('body')
@@ -298,6 +319,7 @@ const TextField = ({
   name,
   onChange,
   placeholder,
+  validationMessages,
   value,
 }: {
   id: string
@@ -305,27 +327,35 @@ const TextField = ({
   name: string
   onChange: (value: string) => void
   placeholder: string
+  validationMessages?: string[]
   value: string
-}) => (
-  <>
-    <SectionHeading>{label}</SectionHeading>
-    <label className="sr-only" htmlFor={id}>
-      {label}
-    </label>
-    <input
-      autoComplete="off"
-      className={cn(
-        'type-study-title mt-4 block w-full border-0 bg-transparent px-1 py-0 text-foreground placeholder:text-muted-foreground/45',
-        editorFieldFocusClassName,
-      )}
-      id={id}
-      name={name}
-      placeholder={placeholder}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-    />
-  </>
-)
+}) => {
+  const errorId = validationMessages?.length ? `${id}-error` : undefined
+
+  return (
+    <>
+      <SectionHeading>{label}</SectionHeading>
+      <label className="sr-only" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        autoComplete="off"
+        aria-describedby={errorId}
+        aria-invalid={validationMessages?.length ? true : undefined}
+        className={cn(
+          'type-study-title mt-4 block w-full border-0 bg-transparent px-1 py-0 text-foreground placeholder:text-muted-foreground/45',
+          editorFieldFocusClassName,
+        )}
+        id={id}
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <FieldValidationMessages id={errorId} messages={validationMessages} />
+    </>
+  )
+}
 
 const TextAreaField = ({
   id,
@@ -338,6 +368,7 @@ const TextAreaField = ({
   onSelect,
   placeholder,
   textareaRef,
+  validationMessages,
   value,
 }: {
   id: string
@@ -350,33 +381,41 @@ const TextAreaField = ({
   onSelect?: () => void
   placeholder: string
   textareaRef?: RefObject<HTMLTextAreaElement | null>
+  validationMessages?: string[]
   value: string
-}) => (
-  <>
-    <SectionHeading>{label}</SectionHeading>
-    <label className="sr-only" htmlFor={id}>
-      {label}
-    </label>
-    <textarea
-      autoComplete="off"
-      className={cn(
-        'type-editor-body mt-4 block w-full resize-none border-0 bg-transparent px-1 py-0 text-foreground placeholder:text-muted-foreground/45',
-        editorFieldFocusClassName,
-        minRows >= 9 ? 'min-h-48' : 'min-h-36',
-      )}
-      id={id}
-      name={name}
-      placeholder={placeholder}
-      ref={textareaRef}
-      rows={minRows}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      onFocus={onFocus}
-      onKeyDown={onKeyDown}
-      onSelect={onSelect}
-    />
-  </>
-)
+}) => {
+  const errorId = validationMessages?.length ? `${id}-error` : undefined
+
+  return (
+    <>
+      <SectionHeading>{label}</SectionHeading>
+      <label className="sr-only" htmlFor={id}>
+        {label}
+      </label>
+      <textarea
+        autoComplete="off"
+        aria-describedby={errorId}
+        aria-invalid={validationMessages?.length ? true : undefined}
+        className={cn(
+          'type-editor-body mt-4 block w-full resize-none border-0 bg-transparent px-1 py-0 text-foreground placeholder:text-muted-foreground/45',
+          editorFieldFocusClassName,
+          minRows >= 9 ? 'min-h-48' : 'min-h-36',
+        )}
+        id={id}
+        name={name}
+        placeholder={placeholder}
+        ref={textareaRef}
+        rows={minRows}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onFocus={onFocus}
+        onKeyDown={onKeyDown}
+        onSelect={onSelect}
+      />
+      <FieldValidationMessages id={errorId} messages={validationMessages} />
+    </>
+  )
+}
 
 const EditorToolbar = ({
   getTarget,

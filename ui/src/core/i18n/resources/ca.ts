@@ -168,7 +168,6 @@ export const ca = {
     },
     descriptions: {
       emptyDeck: 'Afegeix una nota perquè aquesta baralla tingui material per repassar.',
-      editorDefault: 'Baralla d\'estudi enfocada.',
       editorVisual: 'Tria un símbol de portada per a aquesta baralla.',
       notesSearchPlaceholder: 'Cerca notes…',
     },
@@ -200,8 +199,6 @@ export const ca = {
       descriptionLabel: 'Descripció de la baralla',
       descriptionPlaceholder: 'Què t\'ajudarà a repassar aquesta baralla?',
       namePlaceholder: 'Nom de la baralla',
-      untitledDeck: 'Baralla sense títol',
-      untitledDeckLower: 'baralla sense títol',
     },
     labels: {
       createDeckTitle: 'Crea una baralla',
@@ -231,19 +228,30 @@ export const ca = {
       timeout: 'Això ha trigat massa. Torna-ho a provar.',
       unauthorized: 'Inicia la sessió per continuar.',
       unavailable: 'El servei no està disponible temporalment.',
+      validation: 'Revisa els camps ressaltats i torna-ho a provar.',
     },
     fallback: {
       unexpected: 'Error inesperat',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} no és vàlid.',
+      invalidEnum: 'Tria un valor vàlid per a {{field}}.',
+      invalidFormat: 'Introdueix un valor vàlid per a {{field}}.',
+      maxLength: '{{field}} ha de tenir com a màxim {{max}} caràcters.',
+      maximum: '{{field}} ha de ser com a màxim {{max}}.',
+      minLength: '{{field}} ha de tenir com a mínim {{min}} caràcters.',
+      minimum: '{{field}} ha de ser com a mínim {{min}}.',
+      required: '{{field}} és obligatori.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Crea una carpeta',
       deleteFolder: 'Suprimeix la carpeta',
       editFolder: 'Edita la carpeta',
-    },
-    descriptions: {
-      editorDefault: 'Carpeta per a baralles relacionades.',
     },
     dialogs: {
       deleteFolderDescription: 'Això mou "{{name}}" a la Paperera. Pots restaurar-la més tard.',
@@ -266,7 +274,6 @@ export const ca = {
       descriptionLabel: 'Descripció de la carpeta',
       descriptionPlaceholder: 'Què pertany a aquesta carpeta?',
       namePlaceholder: 'Nom de la carpeta',
-      untitledFolder: 'Carpeta sense títol',
     },
     labels: {
       createFolderTitle: 'Crea una carpeta',
@@ -599,7 +606,6 @@ export const ca = {
       openingWorkspace: 'S\'està obrint {{title}}',
     },
     descriptions: {
-      editorDefault: 'Context d\'estudi.',
       editorVisual: 'Tria un ancoratge visual per a aquest espai de treball.',
       emptyList: 'Separa baralles, notes i cues de repàs per context d\'estudi.',
     },
@@ -624,7 +630,6 @@ export const ca = {
       descriptionLabel: 'Descripció de l\'espai de treball',
       descriptionPlaceholder: 'Què pertany a aquest espai de treball?',
       namePlaceholder: 'Nom de l\'espai de treball',
-      untitledWorkspace: 'Espai de treball sense títol',
     },
     labels: {
       createWorkspaceTitle: 'Crea un espai de treball',

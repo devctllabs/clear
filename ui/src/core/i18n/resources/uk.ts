@@ -178,7 +178,6 @@ export const uk = {
     },
     descriptions: {
       emptyDeck: 'Додайте нотатку, щоб у цій колоді був матеріал для повторення.',
-      editorDefault: 'Сфокусована навчальна колода.',
       editorVisual: 'Виберіть символ обкладинки для цієї колоди.',
       notesSearchPlaceholder: 'Шукати нотатки…',
     },
@@ -210,8 +209,6 @@ export const uk = {
       descriptionLabel: 'Опис колоди',
       descriptionPlaceholder: 'Що ця колода допоможе вам повторювати?',
       namePlaceholder: 'Назва колоди',
-      untitledDeck: 'Колода без назви',
-      untitledDeckLower: 'колода без назви',
     },
     labels: {
       createDeckTitle: 'Створити колоду',
@@ -241,19 +238,30 @@ export const uk = {
       timeout: 'Це зайняло забагато часу. Спробуйте ще раз.',
       unauthorized: 'Увійдіть, щоб продовжити.',
       unavailable: 'Сервіс тимчасово недоступний.',
+      validation: 'Перевірте виділені поля й спробуйте знову.',
     },
     fallback: {
       unexpected: 'Неочікувана помилка',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} заповнено неправильно.',
+      invalidEnum: 'Виберіть припустиме значення для {{field}}.',
+      invalidFormat: 'Введіть припустиме значення для {{field}}.',
+      maxLength: '{{field}} має містити щонайбільше {{max}} символів.',
+      maximum: '{{field}} має бути не більше {{max}}.',
+      minLength: '{{field}} має містити щонайменше {{min}} символів.',
+      minimum: '{{field}} має бути не менше {{min}}.',
+      required: '{{field}} обов’язкове.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Створити папку',
       deleteFolder: 'Видалити папку',
       editFolder: 'Редагувати папку',
-    },
-    descriptions: {
-      editorDefault: 'Папка для пов’язаних колод.',
     },
     dialogs: {
       deleteFolderDescription: 'Це перемістить "{{name}}" до Кошика. Ви зможете відновити її пізніше.',
@@ -276,7 +284,6 @@ export const uk = {
       descriptionLabel: 'Опис папки',
       descriptionPlaceholder: 'Що належить до цієї папки?',
       namePlaceholder: 'Назва папки',
-      untitledFolder: 'Папка без назви',
     },
     labels: {
       createFolderTitle: 'Створити папку',
@@ -612,7 +619,6 @@ export const uk = {
       openingWorkspace: 'Відкриття {{title}}',
     },
     descriptions: {
-      editorDefault: 'Навчальний контекст.',
       editorVisual: 'Виберіть візуальний орієнтир для цього робочого простору.',
       emptyList: 'Розділяйте колоди, нотатки й черги повторення за навчальним контекстом.',
     },
@@ -637,7 +643,6 @@ export const uk = {
       descriptionLabel: 'Опис робочого простору',
       descriptionPlaceholder: 'Що належить до цього робочого простору?',
       namePlaceholder: 'Назва робочого простору',
-      untitledWorkspace: 'Робочий простір без назви',
     },
     labels: {
       createWorkspaceTitle: 'Створити робочий простір',

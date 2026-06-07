@@ -178,7 +178,6 @@ export const lt = {
     },
     descriptions: {
       emptyDeck: 'Pridėkite pastabą, kad ši kaladė turėtų medžiagos kartojimui.',
-      editorDefault: 'Sutelktam mokymuisi skirta kaladė.',
       editorVisual: 'Pasirinkite šios kaladės viršelio simbolį.',
       notesSearchPlaceholder: 'Ieškoti pastabų…',
     },
@@ -210,8 +209,6 @@ export const lt = {
       descriptionLabel: 'Kaladės aprašas',
       descriptionPlaceholder: 'Ką ši kaladė padės jums kartoti?',
       namePlaceholder: 'Kaladės pavadinimas',
-      untitledDeck: 'Kaladė be pavadinimo',
-      untitledDeckLower: 'kaladė be pavadinimo',
     },
     labels: {
       createDeckTitle: 'Sukurti kaladę',
@@ -241,19 +238,30 @@ export const lt = {
       timeout: 'Tai užtruko per ilgai. Bandykite dar kartą.',
       unauthorized: 'Prisijunkite, kad tęstumėte.',
       unavailable: 'Paslauga laikinai nepasiekiama.',
+      validation: 'Patikrinkite pažymėtus laukus ir bandykite dar kartą.',
     },
     fallback: {
       unexpected: 'Netikėta klaida',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} yra netinkamas.',
+      invalidEnum: 'Pasirinkite tinkamą reikšmę laukui {{field}}.',
+      invalidFormat: 'Įveskite tinkamą reikšmę laukui {{field}}.',
+      maxLength: '{{field}} gali būti ne ilgesnis kaip {{max}} simbolių.',
+      maximum: '{{field}} turi būti ne daugiau kaip {{max}}.',
+      minLength: '{{field}} turi būti bent {{min}} simbolių.',
+      minimum: '{{field}} turi būti bent {{min}}.',
+      required: '{{field}} yra privalomas.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Sukurti aplanką',
       deleteFolder: 'Ištrinti aplanką',
       editFolder: 'Redaguoti aplanką',
-    },
-    descriptions: {
-      editorDefault: 'Aplankas susijusioms kaladėms.',
     },
     dialogs: {
       deleteFolderDescription: 'Tai perkels "{{name}}" į Šiukšlinę. Galėsite atkurti vėliau.',
@@ -276,7 +284,6 @@ export const lt = {
       descriptionLabel: 'Aplanko aprašas',
       descriptionPlaceholder: 'Kas priklauso šiam aplankui?',
       namePlaceholder: 'Aplanko pavadinimas',
-      untitledFolder: 'Aplankas be pavadinimo',
     },
     labels: {
       createFolderTitle: 'Sukurti aplanką',
@@ -612,7 +619,6 @@ export const lt = {
       openingWorkspace: 'Atidaroma {{title}}',
     },
     descriptions: {
-      editorDefault: 'Mokymosi kontekstas.',
       editorVisual: 'Pasirinkite šios darbo srities vizualinį orientyrą.',
       emptyList: 'Atskirkite kalades, pastabas ir kartojimo eiles pagal mokymosi kontekstą.',
     },
@@ -637,7 +643,6 @@ export const lt = {
       descriptionLabel: 'Darbo srities aprašas',
       descriptionPlaceholder: 'Kas priklauso šiai darbo sričiai?',
       namePlaceholder: 'Darbo srities pavadinimas',
-      untitledWorkspace: 'Darbo sritis be pavadinimo',
     },
     labels: {
       createWorkspaceTitle: 'Sukurti darbo sritį',

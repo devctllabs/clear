@@ -158,7 +158,6 @@ export const ptBR = {
     },
     descriptions: {
       emptyDeck: 'Adicione uma nota para que este baralho tenha material para revisão.',
-      editorDefault: 'Baralho de estudo focado.',
       editorVisual: 'Escolha um glifo de capa para este baralho.',
       notesSearchPlaceholder: 'Pesquisar notas…',
     },
@@ -190,8 +189,6 @@ export const ptBR = {
       descriptionLabel: 'Descrição do baralho',
       descriptionPlaceholder: 'O que este baralho vai ajudar você a revisar?',
       namePlaceholder: 'Nome do baralho',
-      untitledDeck: 'Baralho sem título',
-      untitledDeckLower: 'baralho sem título',
     },
     labels: {
       createDeckTitle: 'Criar baralho',
@@ -221,19 +218,30 @@ export const ptBR = {
       timeout: 'Isso demorou demais. Tente novamente.',
       unauthorized: 'Entre para continuar.',
       unavailable: 'O serviço está temporariamente indisponível.',
+      validation: 'Verifique os campos destacados e tente novamente.',
     },
     fallback: {
       unexpected: 'Erro inesperado',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} é inválido.',
+      invalidEnum: 'Escolha um {{field}} válido.',
+      invalidFormat: 'Digite um {{field}} válido.',
+      maxLength: '{{field}} deve ter no máximo {{max}} caracteres.',
+      maximum: '{{field}} deve ser no máximo {{max}}.',
+      minLength: '{{field}} deve ter pelo menos {{min}} caracteres.',
+      minimum: '{{field}} deve ser pelo menos {{min}}.',
+      required: '{{field}} é obrigatório.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Criar pasta',
       deleteFolder: 'Excluir pasta',
       editFolder: 'Editar pasta',
-    },
-    descriptions: {
-      editorDefault: 'Pasta para baralhos relacionados.',
     },
     dialogs: {
       deleteFolderDescription: 'Isso move "{{name}}" para a Lixeira. Você pode restaurá-la depois.',
@@ -256,7 +264,6 @@ export const ptBR = {
       descriptionLabel: 'Descrição da pasta',
       descriptionPlaceholder: 'O que pertence a esta pasta?',
       namePlaceholder: 'Nome da pasta',
-      untitledFolder: 'Pasta sem título',
     },
     labels: {
       createFolderTitle: 'Criar pasta',
@@ -586,7 +593,6 @@ export const ptBR = {
       openingWorkspace: 'Abrindo {{title}}',
     },
     descriptions: {
-      editorDefault: 'Contexto de estudo.',
       editorVisual: 'Escolha uma âncora visual para este espaço de trabalho.',
       emptyList: 'Separe baralhos, notas e filas de revisão por contexto de estudo.',
     },
@@ -611,7 +617,6 @@ export const ptBR = {
       descriptionLabel: 'Descrição do espaço de trabalho',
       descriptionPlaceholder: 'O que pertence a este espaço de trabalho?',
       namePlaceholder: 'Nome do espaço de trabalho',
-      untitledWorkspace: 'Espaço de trabalho sem título',
     },
     labels: {
       createWorkspaceTitle: 'Criar espaço de trabalho',

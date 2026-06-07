@@ -158,7 +158,6 @@ export const zhHans = {
     },
     descriptions: {
       emptyDeck: '添加一条笔记，让这个牌组有可复习的内容。',
-      editorDefault: '专注学习牌组。',
       editorVisual: '为这个牌组选择封面符号。',
       notesSearchPlaceholder: '搜索笔记…',
     },
@@ -190,8 +189,6 @@ export const zhHans = {
       descriptionLabel: '牌组描述',
       descriptionPlaceholder: '这个牌组会帮助你复习什么？',
       namePlaceholder: '牌组名称',
-      untitledDeck: '未命名牌组',
-      untitledDeckLower: '未命名牌组',
     },
     labels: {
       createDeckTitle: '创建牌组',
@@ -221,19 +218,30 @@ export const zhHans = {
       timeout: '耗时过长。请重试。',
       unauthorized: '请登录以继续。',
       unavailable: '服务暂时不可用。',
+      validation: '请检查高亮字段，然后重试。',
     },
     fallback: {
       unexpected: '意外错误',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}}无效。',
+      invalidEnum: '请选择有效的{{field}}。',
+      invalidFormat: '请输入有效的{{field}}。',
+      maxLength: '{{field}}最多 {{max}} 个字符。',
+      maximum: '{{field}}必须小于或等于 {{max}}。',
+      minLength: '{{field}}至少 {{min}} 个字符。',
+      minimum: '{{field}}必须大于或等于 {{min}}。',
+      required: '{{field}}为必填项。',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: '创建文件夹',
       deleteFolder: '删除文件夹',
       editFolder: '编辑文件夹',
-    },
-    descriptions: {
-      editorDefault: '用于相关牌组的文件夹。',
     },
     dialogs: {
       deleteFolderDescription: '这会将 "{{name}}" 移至回收站。你稍后可以恢复它。',
@@ -256,7 +264,6 @@ export const zhHans = {
       descriptionLabel: '文件夹描述',
       descriptionPlaceholder: '这个文件夹里放什么？',
       namePlaceholder: '文件夹名称',
-      untitledFolder: '未命名文件夹',
     },
     labels: {
       createFolderTitle: '创建文件夹',
@@ -586,7 +593,6 @@ export const zhHans = {
       openingWorkspace: '正在打开 {{title}}',
     },
     descriptions: {
-      editorDefault: '学习上下文。',
       editorVisual: '为此工作区选择视觉锚点。',
       emptyList: '按学习上下文分隔牌组、笔记和复习队列。',
     },
@@ -611,7 +617,6 @@ export const zhHans = {
       descriptionLabel: '工作区描述',
       descriptionPlaceholder: '这个工作区里放什么？',
       namePlaceholder: '工作区名称',
-      untitledWorkspace: '未命名工作区',
     },
     labels: {
       createWorkspaceTitle: '创建工作区',

@@ -1,7 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
+import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
 
 describe('FolderCreatePage', () => {
@@ -45,5 +46,31 @@ describe('FolderCreatePage', () => {
     await user.click(await screen.findByRole('button', { name: 'Create folder' }))
 
     expect(await screen.findByRole('heading', { name: 'Reading Queue' })).toBeInTheDocument()
+  })
+
+  it('validates the folder name before creating', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const create = vi.fn(baseServices.folders.create)
+    const services = {
+      ...baseServices,
+      folders: {
+        ...baseServices.folders,
+        create,
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/create/folder', { services })
+
+    const name = await screen.findByLabelText('Folder name')
+    await user.click(await screen.findByRole('button', { name: 'Create folder' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
+
+    fireEvent.change(name, { target: { value: 'Recovered Folder' } })
+    expect(name).not.toHaveAttribute('aria-invalid')
+    expect(name).not.toHaveAccessibleDescription('Name is required.')
   })
 })

@@ -449,28 +449,41 @@ export type DateTime = string;
 
 export type DeckSortField = 'dueToday' | 'title' | 'updated';
 
-export type ComponentsDomainError = {
-    type: DomainErrorType;
-    message: string;
-    retryable: boolean;
-    fieldErrors?: FieldErrors;
-    entity?: string;
-    entityId?: string;
-};
-
-export type DomainErrorType = 'conflict' | 'forbidden' | 'not_found' | 'offline' | 'timeout' | 'unauthorized' | 'unexpected' | 'unavailable' | 'validation';
-
-export type FieldErrors = {
-    [key: string]: Array<string>;
-};
+export type ComponentsDomainError = ({
+    type: 'validation';
+} & ValidationDomainError) | ({
+    type: 'conflict' | 'forbidden' | 'not_found' | 'offline' | 'timeout' | 'unauthorized' | 'unexpected' | 'unavailable';
+} & MessageDomainError);
 
 export type FolderSortField = 'title' | 'updated';
 
 export type Id = string;
 
+export type MessageDomainError = {
+    type: 'conflict' | 'forbidden' | 'not_found' | 'offline' | 'timeout' | 'unauthorized' | 'unexpected' | 'unavailable';
+    message: string;
+    retryable: boolean;
+    entity?: string;
+    entityId?: string;
+};
+
 export type NoteSortField = 'title' | 'updated';
 
 export type SortDirection = 'asc' | 'desc';
+
+export type ValidationDomainError = {
+    type: 'validation';
+    issues: Array<ValidationIssue>;
+    retryable: false;
+};
+
+export type ValidationIssue = {
+    path?: Array<string>;
+    code: string;
+    params?: {
+        [key: string]: unknown;
+    };
+};
 
 /**
  * Lucide icon name used by the UI visual picker.

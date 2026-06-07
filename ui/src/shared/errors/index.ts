@@ -13,13 +13,16 @@ export const DomainErrorType = {
 export type DomainErrorType =
   (typeof DomainErrorType)[keyof typeof DomainErrorType]
 
-export type FieldErrors = Record<string, string[]>
+export type ValidationIssue = {
+  path?: string[]
+  code: string
+  params?: Record<string, unknown>
+}
 
 export type DomainError =
   | {
       type: typeof DomainErrorType.Validation
-      message: string
-      fieldErrors: FieldErrors
+      issues: ValidationIssue[]
       retryable: false
     }
   | {
@@ -84,11 +87,10 @@ export const domainError = {
   unauthorized(message = 'Unauthorized'): DomainError {
     return { type: DomainErrorType.Unauthorized, message, retryable: false }
   },
-  validation(message: string, fieldErrors: FieldErrors): DomainError {
+  validation(issues: ValidationIssue[]): DomainError {
     return {
       type: DomainErrorType.Validation,
-      message,
-      fieldErrors,
+      issues,
       retryable: false,
     }
   },
@@ -100,50 +102,71 @@ export const isDomainError = (value: unknown): value is DomainError => {
   }
 
   const candidate = value as {
-    fieldErrors?: unknown
+    entity?: unknown
+    entityId?: unknown
+    issues?: unknown
     message?: unknown
     retryable?: unknown
     type?: unknown
   }
 
-  return (
-    typeof candidate.type === 'string' &&
-    Object.values(DomainErrorType).includes(candidate.type as DomainErrorType) &&
-    typeof candidate.message === 'string' &&
-    typeof candidate.retryable === 'boolean' &&
-    (candidate.type !== DomainErrorType.Validation ||
-      isFieldErrors(candidate.fieldErrors))
-  )
+  if (
+    typeof candidate.type !== 'string' ||
+    !Object.values(DomainErrorType).includes(candidate.type as DomainErrorType)
+  ) {
+    return false
+  }
+
+  if (candidate.type === DomainErrorType.Validation) {
+    return candidate.retryable === false && isValidationIssues(candidate.issues)
+  }
+
+  if (typeof candidate.message !== 'string') {
+    return false
+  }
+
+  switch (candidate.type) {
+    case DomainErrorType.Conflict:
+    case DomainErrorType.Forbidden:
+    case DomainErrorType.NotFound:
+    case DomainErrorType.Unauthorized:
+    case DomainErrorType.Unexpected:
+      return (
+        candidate.retryable === false &&
+        (candidate.entity === undefined || typeof candidate.entity === 'string') &&
+        (candidate.entityId === undefined || typeof candidate.entityId === 'string')
+      )
+    case DomainErrorType.Offline:
+    case DomainErrorType.Timeout:
+    case DomainErrorType.Unavailable:
+      return candidate.retryable === true
+  }
+
+  return false
 }
 
-export const isFieldErrors = (value: unknown): value is FieldErrors => {
+export const isValidationIssues = (value: unknown): value is ValidationIssue[] =>
+  Array.isArray(value) && value.every(isValidationIssue)
+
+export const isValidationIssue = (value: unknown): value is ValidationIssue => {
   if (typeof value !== 'object' || value === null) {
     return false
   }
 
-  return Object.values(value).every(
-    (entry) => Array.isArray(entry) && entry.every((message) => typeof message === 'string'),
-  )
-}
-
-export const getUserMessage = (error: DomainError) => {
-  switch (error.type) {
-    case DomainErrorType.Conflict:
-      return 'The data changed. Refresh and try again.'
-    case DomainErrorType.Forbidden:
-      return 'You do not have permission to do this.'
-    case DomainErrorType.NotFound:
-      return 'We could not find this item.'
-    case DomainErrorType.Offline:
-      return 'Cannot reach the service.'
-    case DomainErrorType.Timeout:
-      return 'This took too long. Try again.'
-    case DomainErrorType.Unauthorized:
-      return 'Sign in to continue.'
-    case DomainErrorType.Unavailable:
-      return 'The service is temporarily unavailable.'
-    case DomainErrorType.Unexpected:
-    case DomainErrorType.Validation:
-      return error.message
+  const candidate = value as {
+    code?: unknown
+    params?: unknown
+    path?: unknown
   }
+
+  return (
+    typeof candidate.code === 'string' &&
+    (candidate.path === undefined ||
+      (Array.isArray(candidate.path) &&
+        candidate.path.every((segment) => typeof segment === 'string'))) &&
+    (candidate.params === undefined ||
+      (typeof candidate.params === 'object' &&
+        candidate.params !== null &&
+        !Array.isArray(candidate.params)))
+  )
 }

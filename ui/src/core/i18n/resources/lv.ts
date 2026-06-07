@@ -168,7 +168,6 @@ export const lv = {
     },
     descriptions: {
       emptyDeck: 'Pievienojiet piezīmi, lai šai kavai būtu materiāls atkārtošanai.',
-      editorDefault: 'Mērķēta mācību kava.',
       editorVisual: 'Izvēlieties vāka simbolu šai kavai.',
       notesSearchPlaceholder: 'Meklēt piezīmes…',
     },
@@ -200,8 +199,6 @@ export const lv = {
       descriptionLabel: 'Kavas apraksts',
       descriptionPlaceholder: 'Ko šī kava palīdzēs atkārtot?',
       namePlaceholder: 'Kavas nosaukums',
-      untitledDeck: 'Kava bez nosaukuma',
-      untitledDeckLower: 'kava bez nosaukuma',
     },
     labels: {
       createDeckTitle: 'Izveidot kavu',
@@ -231,19 +228,30 @@ export const lv = {
       timeout: 'Tas aizņēma pārāk ilgu laiku. Mēģiniet vēlreiz.',
       unauthorized: 'Pierakstieties, lai turpinātu.',
       unavailable: 'Pakalpojums īslaicīgi nav pieejams.',
+      validation: 'Pārbaudiet iezīmētos laukus un mēģiniet vēlreiz.',
     },
     fallback: {
       unexpected: 'Negaidīta kļūda',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} nav derīgs.',
+      invalidEnum: 'Izvēlieties derīgu vērtību laukam {{field}}.',
+      invalidFormat: 'Ievadiet derīgu vērtību laukam {{field}}.',
+      maxLength: '{{field}} drīkst būt ne vairāk kā {{max}} rakstzīmes.',
+      maximum: '{{field}} jābūt ne vairāk kā {{max}}.',
+      minLength: '{{field}} jābūt vismaz {{min}} rakstzīmēm.',
+      minimum: '{{field}} jābūt vismaz {{min}}.',
+      required: '{{field}} ir obligāts.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Izveidot mapi',
       deleteFolder: 'Dzēst mapi',
       editFolder: 'Rediģēt mapi',
-    },
-    descriptions: {
-      editorDefault: 'Mape saistītām kavām.',
     },
     dialogs: {
       deleteFolderDescription: 'Tas pārvieto "{{name}}" uz Atkritni. Vēlāk to varēsiet atjaunot.',
@@ -266,7 +274,6 @@ export const lv = {
       descriptionLabel: 'Mapes apraksts',
       descriptionPlaceholder: 'Kas pieder šai mapei?',
       namePlaceholder: 'Mapes nosaukums',
-      untitledFolder: 'Mape bez nosaukuma',
     },
     labels: {
       createFolderTitle: 'Izveidot mapi',
@@ -599,7 +606,6 @@ export const lv = {
       openingWorkspace: 'Atver {{title}}',
     },
     descriptions: {
-      editorDefault: 'Mācību konteksts.',
       editorVisual: 'Izvēlieties vizuālo enkuru šai darbvietai.',
       emptyList: 'Atdaliet kavas, piezīmes un atkārtošanas rindas pēc mācību konteksta.',
     },
@@ -624,7 +630,6 @@ export const lv = {
       descriptionLabel: 'Darbvietas apraksts',
       descriptionPlaceholder: 'Kas pieder šai darbvietai?',
       namePlaceholder: 'Darbvietas nosaukums',
-      untitledWorkspace: 'Darbvieta bez nosaukuma',
     },
     labels: {
       createWorkspaceTitle: 'Izveidot darbvietu',

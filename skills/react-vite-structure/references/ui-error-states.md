@@ -108,7 +108,7 @@ Rules:
 - Do not leave `mutation.isError` without a visible, accessible error surface on the owning page, form, dialog, or action area.
 - Do not navigate away, close a dialog, clear a draft, or remove the target item on mutation failure.
 - Keep form values, selection, active tab, scroll context, and dialog state intact.
-- Use field-level errors for validation when `DomainError.fieldErrors` identifies fields the user can correct.
+- Use field-level errors for validation only when the owning form can map `ValidationIssue.path` to a concrete input the user can correct.
 - Use a form-level or action-level error for non-field failures such as conflict, permission, offline, timeout, or unavailable service.
 - Make failed user actions visibly distinct from non-blocking background warnings, using the app's existing severity/tone system.
 - On success, invalidate or update relevant React Query cache, then close/navigate only after the mutation has actually succeeded.
@@ -140,4 +140,4 @@ Use:
 
 For visual Storybook coverage of these states, read `references/storybook.md`.
 
-Keep unit/integration tests focused on branching behavior that can regress: no-data query errors replace the owning surface, stale-data query errors keep content visible, mutation errors preserve drafts, field errors attach to the correct inputs, and retry callbacks are wired only when expected.
+Keep unit/integration tests focused on branching behavior that can regress: no-data query errors replace the owning surface, stale-data query errors keep content visible, mutation errors preserve drafts, validation issues attach to the correct inputs, and retry callbacks are wired only when expected.

@@ -178,7 +178,6 @@ export const sl = {
     },
     descriptions: {
       emptyDeck: 'Dodajte zapisek, da bo imel ta komplet gradivo za ponavljanje.',
-      editorDefault: 'Osredotočen učni komplet.',
       editorVisual: 'Izberite simbol naslovnice za ta komplet.',
       notesSearchPlaceholder: 'Išči zapiske…',
     },
@@ -210,8 +209,6 @@ export const sl = {
       descriptionLabel: 'Opis kompleta',
       descriptionPlaceholder: 'Kaj vam bo ta komplet pomagal ponavljati?',
       namePlaceholder: 'Ime kompleta',
-      untitledDeck: 'Komplet brez naslova',
-      untitledDeckLower: 'komplet brez naslova',
     },
     labels: {
       createDeckTitle: 'Ustvari komplet',
@@ -241,19 +238,30 @@ export const sl = {
       timeout: 'To je trajalo predolgo. Poskusite znova.',
       unauthorized: 'Za nadaljevanje se prijavite.',
       unavailable: 'Storitev začasno ni na voljo.',
+      validation: 'Preverite označena polja in poskusite znova.',
     },
     fallback: {
       unexpected: 'Nepričakovana napaka',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} ni veljavno.',
+      invalidEnum: 'Izberite veljavno vrednost za {{field}}.',
+      invalidFormat: 'Vnesite veljavno vrednost za {{field}}.',
+      maxLength: '{{field}} ima lahko največ {{max}} znakov.',
+      maximum: '{{field}} mora biti največ {{max}}.',
+      minLength: '{{field}} mora imeti vsaj {{min}} znakov.',
+      minimum: '{{field}} mora biti vsaj {{min}}.',
+      required: '{{field}} je obvezno.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Ustvari mapo',
       deleteFolder: 'Izbriši mapo',
       editFolder: 'Uredi mapo',
-    },
-    descriptions: {
-      editorDefault: 'Mapa za povezane komplete.',
     },
     dialogs: {
       deleteFolderDescription: 'To premakne "{{name}}" v Koš. Pozneje jo lahko obnovite.',
@@ -276,7 +284,6 @@ export const sl = {
       descriptionLabel: 'Opis mape',
       descriptionPlaceholder: 'Kaj spada v to mapo?',
       namePlaceholder: 'Ime mape',
-      untitledFolder: 'Mapa brez naslova',
     },
     labels: {
       createFolderTitle: 'Ustvari mapo',
@@ -612,7 +619,6 @@ export const sl = {
       openingWorkspace: 'Odpiranje {{title}}',
     },
     descriptions: {
-      editorDefault: 'Učni kontekst.',
       editorVisual: 'Izberite vizualno sidro za ta delovni prostor.',
       emptyList: 'Ločite komplete, zapiske in čakalne vrste za ponavljanje po učnem kontekstu.',
     },
@@ -637,7 +643,6 @@ export const sl = {
       descriptionLabel: 'Opis delovnega prostora',
       descriptionPlaceholder: 'Kaj spada v ta delovni prostor?',
       namePlaceholder: 'Ime delovnega prostora',
-      untitledWorkspace: 'Delovni prostor brez naslova',
     },
     labels: {
       createWorkspaceTitle: 'Ustvari delovni prostor',

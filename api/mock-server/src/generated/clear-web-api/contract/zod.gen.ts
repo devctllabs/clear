@@ -142,31 +142,6 @@ export const zDeckSortField = z.enum([
     'updated'
 ]);
 
-export const zDomainErrorType = z.enum([
-    'conflict',
-    'forbidden',
-    'not_found',
-    'offline',
-    'timeout',
-    'unauthorized',
-    'unexpected',
-    'unavailable',
-    'validation'
-]);
-
-export const zFieldErrors = z.record(z.string(), z.array(z.string()));
-
-export const zComponentsDomainError = z.object({
-    type: zDomainErrorType,
-    message: z.string().min(1),
-    retryable: z.boolean(),
-    fieldErrors: zFieldErrors.optional(),
-    entity: z.string().optional(),
-    entityId: z.string().optional()
-});
-
-export const zDomainError = zComponentsDomainError;
-
 export const zFolderSortField = z.enum(['title', 'updated']);
 
 export const zId = z.string().min(1);
@@ -413,9 +388,58 @@ export const zSetActiveWorkspaceRequest = z.object({
     workspaceId: zId
 });
 
+export const zMessageDomainError = z.object({
+    type: z.enum([
+        'conflict',
+        'forbidden',
+        'not_found',
+        'offline',
+        'timeout',
+        'unauthorized',
+        'unexpected',
+        'unavailable'
+    ]),
+    message: z.string().min(1),
+    retryable: z.boolean(),
+    entity: z.string().optional(),
+    entityId: z.string().optional()
+});
+
 export const zNoteSortField = z.enum(['title', 'updated']);
 
 export const zSortDirection = z.enum(['asc', 'desc']);
+
+export const zValidationIssue = z.object({
+    path: z.array(z.string()).optional(),
+    code: z.string().min(1),
+    params: z.record(z.string(), z.unknown()).optional()
+});
+
+export const zValidationDomainError = z.object({
+    type: z.enum(['validation']),
+    issues: z.array(zValidationIssue),
+    retryable: z.literal(false)
+});
+
+export const zComponentsDomainError = z.union([
+    z.object({
+        type: z.literal('validation')
+    }).and(zValidationDomainError),
+    z.object({
+        type: z.union([
+            z.literal('conflict'),
+            z.literal('forbidden'),
+            z.literal('not_found'),
+            z.literal('offline'),
+            z.literal('timeout'),
+            z.literal('unauthorized'),
+            z.literal('unexpected'),
+            z.literal('unavailable')
+        ])
+    }).and(zMessageDomainError)
+]);
+
+export const zDomainError = zComponentsDomainError;
 
 /**
  * Lucide icon name used by the UI visual picker.

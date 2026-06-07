@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
@@ -79,6 +79,62 @@ describe('NoteEditorPage', () => {
     expect(await screen.findByPlaceholderText('Enter front side')).toHaveValue('Front draft')
   })
 
+  it('validates empty basic note content before creating', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const create = vi.fn(baseServices.notes.create)
+    const services = {
+      ...baseServices,
+      notes: {
+        ...baseServices.notes,
+        create,
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/decks/world-history/notes/new/basic', {
+      services,
+    })
+
+    const front = await screen.findByLabelText('Front')
+    const back = await screen.findByLabelText('Back')
+    await user.click(await screen.findByRole('button', { name: 'Save note' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(front).toHaveAttribute('aria-invalid', 'true')
+    expect(front).toHaveAccessibleDescription('Front is required.')
+    expect(back).toHaveAttribute('aria-invalid', 'true')
+    expect(back).toHaveAccessibleDescription('Back is required.')
+
+    fireEvent.change(front, { target: { value: 'Recovered front' } })
+    expect(front).not.toHaveAttribute('aria-invalid')
+    expect(front).not.toHaveAccessibleDescription('Front is required.')
+    expect(back).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('validates empty cloze note content before creating', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const create = vi.fn(baseServices.notes.create)
+    const services = {
+      ...baseServices,
+      notes: {
+        ...baseServices.notes,
+        create,
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/decks/world-history/notes/new/cloze', {
+      services,
+    })
+
+    const body = await screen.findByLabelText('Note body')
+    await user.click(await screen.findByRole('button', { name: 'Save note' }))
+
+    expect(create).not.toHaveBeenCalled()
+    expect(body).toHaveAttribute('aria-invalid', 'true')
+    expect(body).toHaveAccessibleDescription('Note body is required.')
+  })
+
   it('renders the note editor action in the desktop header', async () => {
     mockMatchMedia(true)
     renderRoute('/dashboard/independent-study/decks/world-history/notes/new/basic')
@@ -130,6 +186,58 @@ describe('NoteEditorPage', () => {
     expect(screen.queryByText('Operative Recall')).not.toBeInTheDocument()
   })
 
+  it('validates empty basic note content before saving', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const update = vi.fn(baseServices.notes.update)
+    const services = {
+      ...baseServices,
+      notes: {
+        ...baseServices.notes,
+        update,
+      },
+    }
+
+    renderRoute(
+      '/dashboard/independent-study/decks/world-history/notes/industrial-revolution-causes/edit',
+      { services },
+    )
+
+    const front = await screen.findByLabelText('Front')
+    fireEvent.change(front, { target: { value: '   ' } })
+    await user.click(await screen.findByRole('button', { name: 'Save note' }))
+
+    expect(update).not.toHaveBeenCalled()
+    expect(front).toHaveAttribute('aria-invalid', 'true')
+    expect(front).toHaveAccessibleDescription('Front is required.')
+  })
+
+  it('validates empty cloze note content before saving', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const update = vi.fn(baseServices.notes.update)
+    const services = {
+      ...baseServices,
+      notes: {
+        ...baseServices.notes,
+        update,
+      },
+    }
+
+    renderRoute(
+      '/dashboard/independent-study/decks/cognitive-biases/notes/availability-heuristic/edit',
+      { services },
+    )
+
+    const body = await screen.findByLabelText('Note body')
+    fireEvent.change(body, { target: { value: '   ' } })
+    await user.click(await screen.findByRole('button', { name: 'Save note' }))
+
+    expect(update).not.toHaveBeenCalled()
+    expect(body).toHaveAttribute('aria-invalid', 'true')
+    expect(body).toHaveAccessibleDescription('Note body is required.')
+  })
+
   it('keeps the draft and shows a footer action error when saving fails', async () => {
     const user = userEvent.setup()
     const baseServices = createAppServices('mock')
@@ -151,6 +259,9 @@ describe('NoteEditorPage', () => {
     fireEvent.change(await screen.findByPlaceholderText('Enter front side'), {
       target: { value: 'Front draft' },
     })
+    fireEvent.change(await screen.findByPlaceholderText('Enter back side'), {
+      target: { value: 'Back draft' },
+    })
     await user.click(await screen.findByRole('button', { name: 'Save note' }))
 
     const saveButton = await screen.findByRole('button', { name: 'Save note' })
@@ -164,6 +275,7 @@ describe('NoteEditorPage', () => {
     expect(alert).toHaveTextContent('The service is temporarily unavailable.')
     expect(await screen.findByDisplayValue('Draft Note')).toBeInTheDocument()
     expect(await screen.findByDisplayValue('Front draft')).toBeInTheDocument()
+    expect(await screen.findByDisplayValue('Back draft')).toBeInTheDocument()
   })
 
   it('shows a delayed footer spinner while saving a note', async () => {
@@ -188,6 +300,9 @@ describe('NoteEditorPage', () => {
     })
     fireEvent.change(await screen.findByPlaceholderText('Enter front side'), {
       target: { value: 'Front draft' },
+    })
+    fireEvent.change(await screen.findByPlaceholderText('Enter back side'), {
+      target: { value: 'Back draft' },
     })
     fireEvent.click(await screen.findByRole('button', { name: 'Save note' }))
 

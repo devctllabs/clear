@@ -178,7 +178,6 @@ export const sk = {
     },
     descriptions: {
       emptyDeck: 'Pridajte poznámku, aby mal tento balíček materiál na opakovanie.',
-      editorDefault: 'Sústredený študijný balíček.',
       editorVisual: 'Vyberte symbol obalu pre tento balíček.',
       notesSearchPlaceholder: 'Hľadať poznámky…',
     },
@@ -210,8 +209,6 @@ export const sk = {
       descriptionLabel: 'Popis balíčka',
       descriptionPlaceholder: 'Čo vám tento balíček pomôže opakovať?',
       namePlaceholder: 'Názov balíčka',
-      untitledDeck: 'Balíček bez názvu',
-      untitledDeckLower: 'balíček bez názvu',
     },
     labels: {
       createDeckTitle: 'Vytvoriť balíček',
@@ -241,19 +238,30 @@ export const sk = {
       timeout: 'Trvalo to príliš dlho. Skúste to znova.',
       unauthorized: 'Ak chcete pokračovať, prihláste sa.',
       unavailable: 'Služba je dočasne nedostupná.',
+      validation: 'Skontrolujte zvýraznené polia a skúste to znova.',
     },
     fallback: {
       unexpected: 'Neočakávaná chyba',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} nie je platné.',
+      invalidEnum: 'Vyberte platnú hodnotu pre {{field}}.',
+      invalidFormat: 'Zadajte platnú hodnotu pre {{field}}.',
+      maxLength: '{{field}} môže mať najviac {{max}} znakov.',
+      maximum: '{{field}} musí byť najviac {{max}}.',
+      minLength: '{{field}} musí mať aspoň {{min}} znakov.',
+      minimum: '{{field}} musí byť aspoň {{min}}.',
+      required: '{{field}} je povinné.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Vytvoriť priečinok',
       deleteFolder: 'Odstrániť priečinok',
       editFolder: 'Upraviť priečinok',
-    },
-    descriptions: {
-      editorDefault: 'Priečinok pre súvisiace balíčky.',
     },
     dialogs: {
       deleteFolderDescription: 'Toto presunie "{{name}}" do Koša. Neskôr ho môžete obnoviť.',
@@ -276,7 +284,6 @@ export const sk = {
       descriptionLabel: 'Popis priečinka',
       descriptionPlaceholder: 'Čo patrí do tohto priečinka?',
       namePlaceholder: 'Názov priečinka',
-      untitledFolder: 'Priečinok bez názvu',
     },
     labels: {
       createFolderTitle: 'Vytvoriť priečinok',
@@ -612,7 +619,6 @@ export const sk = {
       openingWorkspace: 'Otvára sa {{title}}',
     },
     descriptions: {
-      editorDefault: 'Študijný kontext.',
       editorVisual: 'Vyberte vizuálnu kotvu pre tento pracovný priestor.',
       emptyList: 'Oddeľte balíčky, poznámky a fronty opakovania podľa študijného kontextu.',
     },
@@ -637,7 +643,6 @@ export const sk = {
       descriptionLabel: 'Popis pracovného priestoru',
       descriptionPlaceholder: 'Čo patrí do tohto pracovného priestoru?',
       namePlaceholder: 'Názov pracovného priestoru',
-      untitledWorkspace: 'Pracovný priestor bez názvu',
     },
     labels: {
       createWorkspaceTitle: 'Vytvoriť pracovný priestor',

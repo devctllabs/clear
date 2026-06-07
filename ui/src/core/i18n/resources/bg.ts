@@ -158,7 +158,6 @@ export const bg = {
     },
     descriptions: {
       emptyDeck: 'Добавете бележка, за да има тази колода материал за преговор.',
-      editorDefault: 'Фокусирана колода за учене.',
       editorVisual: 'Изберете символ за корицата на тази колода.',
       notesSearchPlaceholder: 'Търсене на бележки…',
     },
@@ -190,8 +189,6 @@ export const bg = {
       descriptionLabel: 'Описание на колодата',
       descriptionPlaceholder: 'Какво ще ви помогне да преговаряте тази колода?',
       namePlaceholder: 'Име на колодата',
-      untitledDeck: 'Колода без заглавие',
-      untitledDeckLower: 'колода без заглавие',
     },
     labels: {
       createDeckTitle: 'Създай колода',
@@ -221,19 +218,30 @@ export const bg = {
       timeout: 'Това отне твърде дълго. Опитайте отново.',
       unauthorized: 'Влезте, за да продължите.',
       unavailable: 'Услугата временно не е налична.',
+      validation: 'Проверете маркираните полета и опитайте отново.',
     },
     fallback: {
       unexpected: 'Неочаквана грешка',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} е невалидно.',
+      invalidEnum: 'Изберете валидна стойност за {{field}}.',
+      invalidFormat: 'Въведете валидна стойност за {{field}}.',
+      maxLength: '{{field}} трябва да е най-много {{max}} знака.',
+      maximum: '{{field}} трябва да е най-много {{max}}.',
+      minLength: '{{field}} трябва да е поне {{min}} знака.',
+      minimum: '{{field}} трябва да е поне {{min}}.',
+      required: '{{field}} е задължително.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Създай папка',
       deleteFolder: 'Изтрий папка',
       editFolder: 'Редактирай папка',
-    },
-    descriptions: {
-      editorDefault: 'Папка за свързани колоди.',
     },
     dialogs: {
       deleteFolderDescription: 'Това премества "{{name}}" в Кошчето. Можете да я възстановите по-късно.',
@@ -256,7 +264,6 @@ export const bg = {
       descriptionLabel: 'Описание на папката',
       descriptionPlaceholder: 'Какво принадлежи в тази папка?',
       namePlaceholder: 'Име на папката',
-      untitledFolder: 'Папка без заглавие',
     },
     labels: {
       createFolderTitle: 'Създай папка',
@@ -586,7 +593,6 @@ export const bg = {
       openingWorkspace: 'Отваряне на {{title}}',
     },
     descriptions: {
-      editorDefault: 'Контекст за учене.',
       editorVisual: 'Изберете визуална опора за това работно пространство.',
       emptyList: 'Разделете колоди, бележки и опашки за преговор по контекст на учене.',
     },
@@ -611,7 +617,6 @@ export const bg = {
       descriptionLabel: 'Описание на работното пространство',
       descriptionPlaceholder: 'Какво принадлежи в това работно пространство?',
       namePlaceholder: 'Име на работното пространство',
-      untitledWorkspace: 'Работно пространство без заглавие',
     },
     labels: {
       createWorkspaceTitle: 'Създай работно пространство',

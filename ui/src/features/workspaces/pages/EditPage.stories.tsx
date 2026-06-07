@@ -92,6 +92,18 @@ export const Loaded: Story = {
   decorators: [withWorkspaceEditPage()],
 }
 
+export const RequiredValidation: Story = {
+  decorators: [withWorkspaceEditPage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const input = await canvas.findByLabelText('Workspace name')
+
+    await userEvent.clear(input)
+    await userEvent.click(await canvas.findByRole('button', { name: 'Save changes' }))
+    await canvas.findByText('Name is required.')
+  },
+}
+
 export const MobileLoadedRegression: Story = {
   decorators: [withWorkspaceEditPage()],
   globals: {

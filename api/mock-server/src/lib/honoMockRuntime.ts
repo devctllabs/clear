@@ -1,7 +1,13 @@
 import type { Hono } from 'hono'
-import type { z } from 'zod'
+import { ZodError, type ZodIssue, type z } from 'zod'
 
-import { badRequest, MockHttpError, unexpected } from './errors.ts'
+import {
+  badRequest,
+  MockHttpError,
+  unexpected,
+  validationError,
+  type ValidationIssue,
+} from './errors.ts'
 import { newMockRequestContext, type MockRequestContext } from './requestContext.ts'
 
 type RuntimeRoute = {
@@ -52,7 +58,81 @@ const parseBody = async (
     throw badRequest('Request body must be valid JSON.')
   })
 
-  return schema ? schema.parse(rawBody) : rawBody
+  if (!schema) {
+    return rawBody
+  }
+
+  try {
+    return schema.parse(rawBody)
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw validationError(error.issues.map(toValidationIssue))
+    }
+
+    throw error
+  }
+}
+
+const toValidationIssue = (issue: ZodIssue): ValidationIssue => {
+  const rawIssue = issue as unknown as Record<string, unknown>
+  const path = issue.path.map(String)
+  const params = readValidationParams(rawIssue)
+  const validationIssue: ValidationIssue = {
+    code: toValidationIssueCode(issue, rawIssue),
+  }
+
+  if (path.length > 0) {
+    validationIssue.path = path
+  }
+  if (Object.keys(params).length > 0) {
+    validationIssue.params = params
+  }
+
+  return validationIssue
+}
+
+const toValidationIssueCode = (
+  issue: ZodIssue,
+  rawIssue: Record<string, unknown>,
+): string => {
+  switch (issue.code) {
+    case 'invalid_type':
+      return typeof issue.message === 'string' && issue.message.includes('received undefined')
+        ? 'required'
+        : 'invalid'
+    case 'too_small':
+      return rawIssue.origin === 'string' ? 'min_length' : 'minimum'
+    case 'too_big':
+      return rawIssue.origin === 'string' ? 'max_length' : 'maximum'
+    case 'invalid_value':
+      return 'invalid_value'
+    case 'invalid_format':
+      return 'invalid_format'
+    default:
+      return issue.code
+  }
+}
+
+const readValidationParams = (issue: Record<string, unknown>) => {
+  const params: Record<string, unknown> = {}
+
+  if (typeof issue.origin === 'string') {
+    params.valueType = issue.origin
+  }
+  if (issue.minimum !== undefined) {
+    params.min = issue.minimum
+  }
+  if (issue.maximum !== undefined) {
+    params.max = issue.maximum
+  }
+  if (issue.format !== undefined) {
+    params.format = issue.format
+  }
+  if (issue.values !== undefined) {
+    params.values = issue.values
+  }
+
+  return params
 }
 
 export const registerGeneratedMockRoutes = (

@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
@@ -58,5 +58,28 @@ describe('WorkspaceEditPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Workspaces' })).toBeInTheDocument()
     expect(await screen.findByText('Editorial Archive')).toBeInTheDocument()
+  })
+
+  it('validates the workspace name before saving', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const update = vi.fn(baseServices.workspaces.update)
+    const services = {
+      ...baseServices,
+      workspaces: {
+        ...baseServices.workspaces,
+        update,
+      },
+    }
+
+    renderRoute('/workspaces/independent-study/edit', { services })
+
+    const name = await screen.findByLabelText('Workspace name')
+    fireEvent.change(name, { target: { value: '   ' } })
+    await user.click(await screen.findByRole('button', { name: 'Save changes' }))
+
+    expect(update).not.toHaveBeenCalled()
+    expect(name).toHaveAttribute('aria-invalid', 'true')
+    expect(name).toHaveAccessibleDescription('Name is required.')
   })
 })

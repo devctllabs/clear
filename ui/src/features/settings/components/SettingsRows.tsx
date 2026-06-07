@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
+import { FieldValidationMessages } from '@shared/components/forms/FieldValidationMessages'
 import { cardInputFocusRingClassName } from '@shared/components/ui/focus'
 import {
   DropdownMenu,
@@ -33,6 +34,11 @@ const percentageStep = 1
 const clampPercentage = (value: number) =>
   normalizePercentage(value)
 
+const settingsValidationId = (label: string, messages?: string[]) =>
+  messages?.length
+    ? `${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-validation`
+    : undefined
+
 const SettingsRowValue = ({ value }: { value: string }) => (
   <span className={settingsRowValueClassName}>
     <span className="line-clamp-2 text-wrap-anywhere type-row-title min-w-0">
@@ -46,54 +52,65 @@ export const SettingsRow = ({
   description,
   onClick,
   label,
+  validationMessages,
   value,
 }: {
   chevron?: boolean
   description: string
   onClick?: () => void
   label: string
+  validationMessages?: string[]
   value: string
-}) => (
-  <Button
-    aria-label={label}
-    className={cn(settingsRowButtonClassName)}
-    focusSurface="card"
-    type="button"
-    onClick={onClick}
-  >
-    <div className="min-w-0 flex-1">
-      <p className="type-row-title text-foreground">
-        {label}
-      </p>
-      <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
-        {description}
-      </p>
-    </div>
+}) => {
+  const validationId = settingsValidationId(label, validationMessages)
 
-    <div className={settingsRowValueClusterClassName}>
-      <SettingsRowValue value={value} />
-      {chevron ? <ChevronRight className="size-4.5 text-muted-foreground/70" /> : null}
-    </div>
-  </Button>
-)
+  return (
+    <Button
+      aria-describedby={validationId}
+      aria-label={label}
+      className={cn(settingsRowButtonClassName)}
+      focusSurface="card"
+      type="button"
+      onClick={onClick}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="type-row-title text-foreground">
+          {label}
+        </p>
+        <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
+          {description}
+        </p>
+        <FieldValidationMessages id={validationId} messages={validationMessages} />
+      </div>
+
+      <div className={settingsRowValueClusterClassName}>
+        <SettingsRowValue value={value} />
+        {chevron ? <ChevronRight className="size-4.5 text-muted-foreground/70" /> : null}
+      </div>
+    </Button>
+  )
+}
 
 export const SettingsDropdownRow = <T extends string>({
   description,
   label,
   onSelect,
   options,
+  validationMessages,
   value,
 }: {
   description: string
   label: string
   onSelect: (value: T) => void
   options: readonly { label: string; value: T }[]
+  validationMessages?: string[]
   value: T
 }) => (
   <SettingsDropdownRowContent
     description={description}
     label={label}
     options={options}
+    validationMessages={validationMessages}
     value={value}
     onSelect={onSelect}
   />
@@ -104,20 +121,24 @@ const SettingsDropdownRowContent = <T extends string>({
   label,
   onSelect,
   options,
+  validationMessages,
   value,
 }: {
   description: string
   label: string
   onSelect: (value: T) => void
   options: readonly { label: string; value: T }[]
+  validationMessages?: string[]
   value: T
 }) => {
   const { t } = useTranslation()
+  const validationId = settingsValidationId(label, validationMessages)
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
+          aria-describedby={validationId}
           aria-label={label}
           className={cn(settingsRowButtonClassName)}
           focusSurface="card"
@@ -130,6 +151,7 @@ const SettingsDropdownRowContent = <T extends string>({
             <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
               {description}
             </p>
+            <FieldValidationMessages id={validationId} messages={validationMessages} />
           </div>
 
           <div className={settingsRowValueClusterClassName}>
@@ -175,59 +197,71 @@ export const SettingsNumberRow = ({
   description,
   label,
   onChange,
+  validationMessages,
   value,
 }: {
   description: string
   label: string
   onChange: (value: number) => void
+  validationMessages?: string[]
   value: number
-}) => (
-  <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-6 py-5 transition-colors hover:bg-accent focus-within:bg-accent">
-    <div className="min-w-0 flex-1">
-      <p className="type-row-title text-foreground">
-        {label}
-      </p>
-      <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
-        {description}
-      </p>
+}) => {
+  const validationId = settingsValidationId(label, validationMessages)
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-6 py-5 transition-colors hover:bg-accent focus-within:bg-accent">
+      <div className="min-w-0 flex-1">
+        <p className="type-row-title text-foreground">
+          {label}
+        </p>
+        <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
+          {description}
+        </p>
+        <FieldValidationMessages id={validationId} messages={validationMessages} />
+      </div>
+
+      <input
+        aria-describedby={validationId}
+        aria-invalid={validationMessages?.length ? true : undefined}
+        aria-label={label}
+        className={cn(
+          settingsNumberInputClassName,
+          cardInputFocusRingClassName,
+        )}
+        min={0}
+        name={label.toLowerCase().replace(/\s+/g, '-')}
+        step={1}
+        type="number"
+        value={normalizeNonNegativeInteger(value)}
+        onChange={(event) => {
+          const nextValue = normalizeNonNegativeInteger(Number(event.target.value))
+
+          if (Number.isFinite(Number(event.target.value))) {
+            onChange(nextValue)
+          }
+        }}
+      />
     </div>
-
-    <input
-      aria-label={label}
-      className={cn(
-        settingsNumberInputClassName,
-        cardInputFocusRingClassName,
-      )}
-      min={0}
-      name={label.toLowerCase().replace(/\s+/g, '-')}
-      step={1}
-      type="number"
-      value={normalizeNonNegativeInteger(value)}
-      onChange={(event) => {
-        const nextValue = normalizeNonNegativeInteger(Number(event.target.value))
-
-        if (Number.isFinite(Number(event.target.value))) {
-          onChange(nextValue)
-        }
-      }}
-    />
-  </div>
-)
+  )
+}
 
 export const SettingsSliderRow = ({
   description,
   label,
   onChange,
+  validationMessages,
   value,
 }: {
   description: string
   label: string
   onChange: (value: number) => void
+  validationMessages?: string[]
   value: number
 }) => (
   <SettingsSliderRowContent
     description={description}
     label={label}
+    validationMessages={validationMessages}
     value={value}
     onChange={onChange}
   />
@@ -237,14 +271,17 @@ const SettingsSliderRowContent = ({
   description,
   label,
   onChange,
+  validationMessages,
   value,
 }: {
   description: string
   label: string
   onChange: (value: number) => void
+  validationMessages?: string[]
   value: number
 }) => {
   const { t } = useTranslation()
+  const validationId = settingsValidationId(label, validationMessages)
 
   return (
     <div className="px-6 py-5">
@@ -253,14 +290,17 @@ const SettingsSliderRowContent = ({
           <p className="type-row-title text-foreground">
             {label}
           </p>
-          <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
-            {description}
-          </p>
-        </div>
-        <span className="relative isolate shrink-0">
-          <input
-            aria-label={t(($) => $.common.labels.percentageInput, { label })}
-            aria-valuetext={`${clampPercentage(value)}%`}
+            <p className="text-wrap-anywhere mt-0.5 text-[13px] leading-5 text-muted-foreground">
+              {description}
+            </p>
+            <FieldValidationMessages id={validationId} messages={validationMessages} />
+          </div>
+          <span className="relative isolate shrink-0">
+            <input
+              aria-describedby={validationId}
+              aria-invalid={validationMessages?.length ? true : undefined}
+              aria-label={t(($) => $.common.labels.percentageInput, { label })}
+              aria-valuetext={`${clampPercentage(value)}%`}
             className={cn(
               settingsNumberInputClassName,
               'pr-7 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
@@ -294,7 +334,7 @@ const SettingsSliderRowContent = ({
         max={percentageMax}
         min={percentageMin}
         step={percentageStep}
-        thumbProps={{ 'aria-label': label }}
+        thumbProps={{ 'aria-describedby': validationId, 'aria-label': label }}
         value={[clampPercentage(value)]}
         onValueChange={(nextValue) => {
           const next = nextValue[0]

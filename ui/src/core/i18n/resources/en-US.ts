@@ -158,7 +158,6 @@ export const enUS = {
     },
     descriptions: {
       emptyDeck: 'Add a note so this deck has material to review.',
-      editorDefault: 'Focused study deck.',
       editorVisual: 'Choose a cover glyph for this deck.',
       notesSearchPlaceholder: 'Search notes…',
     },
@@ -190,8 +189,6 @@ export const enUS = {
       descriptionLabel: 'Deck description',
       descriptionPlaceholder: 'What will this deck help you review?',
       namePlaceholder: 'Deck name',
-      untitledDeck: 'Untitled Deck',
-      untitledDeckLower: 'Untitled deck',
     },
     labels: {
       createDeckTitle: 'Create Deck',
@@ -221,19 +218,30 @@ export const enUS = {
       timeout: 'This took too long. Try again.',
       unauthorized: 'Sign in to continue.',
       unavailable: 'The service is temporarily unavailable.',
+      validation: 'Check the highlighted fields and try again.',
     },
     fallback: {
       unexpected: 'Unexpected error',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} is invalid.',
+      invalidEnum: 'Choose a valid {{field}}.',
+      invalidFormat: 'Enter a valid {{field}}.',
+      maxLength: '{{field}} must be at most {{max}} characters.',
+      maximum: '{{field}} must be at most {{max}}.',
+      minLength: '{{field}} must be at least {{min}} characters.',
+      minimum: '{{field}} must be at least {{min}}.',
+      required: '{{field}} is required.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Create folder',
       deleteFolder: 'Delete folder',
       editFolder: 'Edit Folder',
-    },
-    descriptions: {
-      editorDefault: 'Folder for related decks.',
     },
     dialogs: {
       deleteFolderDescription: 'This moves "{{name}}" to Trash. You can restore it later.',
@@ -256,7 +264,6 @@ export const enUS = {
       descriptionLabel: 'Folder description',
       descriptionPlaceholder: 'What belongs in this folder?',
       namePlaceholder: 'Folder name',
-      untitledFolder: 'Untitled Folder',
     },
     labels: {
       createFolderTitle: 'Create Folder',
@@ -586,7 +593,6 @@ export const enUS = {
       openingWorkspace: 'Opening {{title}}',
     },
     descriptions: {
-      editorDefault: 'Study context.',
       editorVisual: 'Choose a visual anchor for this workspace.',
       emptyList: 'Separate decks, notes, and review queues by study context.',
     },
@@ -611,7 +617,6 @@ export const enUS = {
       descriptionLabel: 'Workspace description',
       descriptionPlaceholder: 'What belongs in this workspace?',
       namePlaceholder: 'Workspace name',
-      untitledWorkspace: 'Untitled Workspace',
     },
     labels: {
       createWorkspaceTitle: 'Create Workspace',

@@ -109,6 +109,16 @@ export const FilledForm: Story = {
   },
 }
 
+export const CreateRequiredValidation: Story = {
+  decorators: [withFolderCreatePage()],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Create folder' }))
+    await canvas.findByText('Name is required.')
+  },
+}
+
 export const CreatePending: Story = {
   decorators: [withFolderCreatePage({ mutationLoading: true })],
   play: async ({ canvasElement }) => {

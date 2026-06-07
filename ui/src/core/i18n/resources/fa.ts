@@ -158,7 +158,6 @@ export const fa = {
     },
     descriptions: {
       emptyDeck: 'یک یادداشت اضافه کنید تا این دسته محتوایی برای مرور داشته باشد.',
-      editorDefault: 'دسته مطالعه متمرکز.',
       editorVisual: 'یک نماد جلد برای این دسته انتخاب کنید.',
       notesSearchPlaceholder: 'جستجو در یادداشت‌ها…',
     },
@@ -190,8 +189,6 @@ export const fa = {
       descriptionLabel: 'توضیحات دسته',
       descriptionPlaceholder: 'این دسته به مرور چه چیزی کمک می‌کند؟',
       namePlaceholder: 'نام دسته',
-      untitledDeck: 'دسته بدون عنوان',
-      untitledDeckLower: 'دسته بدون عنوان',
     },
     labels: {
       createDeckTitle: 'ایجاد دسته',
@@ -221,19 +218,30 @@ export const fa = {
       timeout: 'این کار بیش از حد طول کشید. دوباره تلاش کنید.',
       unauthorized: 'برای ادامه وارد شوید.',
       unavailable: 'سرویس موقتا در دسترس نیست.',
+      validation: 'فیلدهای برجسته‌شده را بررسی کنید و دوباره تلاش کنید.',
     },
     fallback: {
       unexpected: 'خطای غیرمنتظره',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} نامعتبر است.',
+      invalidEnum: 'یک مقدار معتبر برای {{field}} انتخاب کنید.',
+      invalidFormat: 'یک مقدار معتبر برای {{field}} وارد کنید.',
+      maxLength: '{{field}} باید حداکثر {{max}} نویسه باشد.',
+      maximum: '{{field}} باید حداکثر {{max}} باشد.',
+      minLength: '{{field}} باید حداقل {{min}} نویسه باشد.',
+      minimum: '{{field}} باید حداقل {{min}} باشد.',
+      required: '{{field}} الزامی است.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'ایجاد پوشه',
       deleteFolder: 'حذف پوشه',
       editFolder: 'ویرایش پوشه',
-    },
-    descriptions: {
-      editorDefault: 'پوشه‌ای برای دسته‌های مرتبط.',
     },
     dialogs: {
       deleteFolderDescription: '"{{name}}" به سطل زباله منتقل می‌شود. بعدا می‌توانید آن را بازیابی کنید.',
@@ -256,7 +264,6 @@ export const fa = {
       descriptionLabel: 'توضیحات پوشه',
       descriptionPlaceholder: 'چه چیزی در این پوشه قرار می‌گیرد؟',
       namePlaceholder: 'نام پوشه',
-      untitledFolder: 'پوشه بدون عنوان',
     },
     labels: {
       createFolderTitle: 'ایجاد پوشه',
@@ -586,7 +593,6 @@ export const fa = {
       openingWorkspace: 'در حال باز کردن {{title}}',
     },
     descriptions: {
-      editorDefault: 'زمینه مطالعه.',
       editorVisual: 'یک نشانه بصری برای این فضای کاری انتخاب کنید.',
       emptyList: 'دسته‌ها، یادداشت‌ها و صف‌های مرور را بر اساس زمینه مطالعه جدا کنید.',
     },
@@ -611,7 +617,6 @@ export const fa = {
       descriptionLabel: 'توضیحات فضای کاری',
       descriptionPlaceholder: 'چه چیزی در این فضای کاری قرار می‌گیرد؟',
       namePlaceholder: 'نام فضای کاری',
-      untitledWorkspace: 'فضای کاری بدون عنوان',
     },
     labels: {
       createWorkspaceTitle: 'ایجاد فضای کاری',

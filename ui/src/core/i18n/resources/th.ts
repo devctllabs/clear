@@ -158,7 +158,6 @@ export const th = {
     },
     descriptions: {
       emptyDeck: 'เพิ่มโน้ตเพื่อให้สำรับนี้มีเนื้อหาสำหรับทบทวน',
-      editorDefault: 'สำรับเรียนแบบโฟกัส',
       editorVisual: 'เลือกสัญลักษณ์หน้าปกสำหรับสำรับนี้',
       notesSearchPlaceholder: 'ค้นหาโน้ต…',
     },
@@ -190,8 +189,6 @@ export const th = {
       descriptionLabel: 'คำอธิบายสำรับ',
       descriptionPlaceholder: 'สำรับนี้จะช่วยคุณทบทวนอะไร',
       namePlaceholder: 'ชื่อสำรับ',
-      untitledDeck: 'สำรับไม่มีชื่อ',
-      untitledDeckLower: 'สำรับไม่มีชื่อ',
     },
     labels: {
       createDeckTitle: 'สร้างสำรับ',
@@ -221,19 +218,30 @@ export const th = {
       timeout: 'ใช้เวลานานเกินไป ลองอีกครั้ง',
       unauthorized: 'ลงชื่อเข้าใช้เพื่อดำเนินการต่อ',
       unavailable: 'บริการไม่พร้อมใช้งานชั่วคราว',
+      validation: 'ตรวจสอบช่องที่ไฮไลต์แล้วลองอีกครั้ง',
     },
     fallback: {
       unexpected: 'ข้อผิดพลาดที่ไม่คาดคิด',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} ไม่ถูกต้อง',
+      invalidEnum: 'เลือก {{field}} ที่ถูกต้อง',
+      invalidFormat: 'ป้อน {{field}} ที่ถูกต้อง',
+      maxLength: '{{field}} ต้องไม่เกิน {{max}} อักขระ',
+      maximum: '{{field}} ต้องไม่เกิน {{max}}',
+      minLength: '{{field}} ต้องมีอย่างน้อย {{min}} อักขระ',
+      minimum: '{{field}} ต้องมีค่าอย่างน้อย {{min}}',
+      required: 'ต้องระบุ {{field}}',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'สร้างโฟลเดอร์',
       deleteFolder: 'ลบโฟลเดอร์',
       editFolder: 'แก้ไขโฟลเดอร์',
-    },
-    descriptions: {
-      editorDefault: 'โฟลเดอร์สำหรับสำรับที่เกี่ยวข้องกัน',
     },
     dialogs: {
       deleteFolderDescription: 'การทำงานนี้จะย้าย "{{name}}" ไปที่ถังขยะ คุณสามารถกู้คืนได้ภายหลัง',
@@ -256,7 +264,6 @@ export const th = {
       descriptionLabel: 'คำอธิบายโฟลเดอร์',
       descriptionPlaceholder: 'อะไรอยู่ในโฟลเดอร์นี้',
       namePlaceholder: 'ชื่อโฟลเดอร์',
-      untitledFolder: 'โฟลเดอร์ไม่มีชื่อ',
     },
     labels: {
       createFolderTitle: 'สร้างโฟลเดอร์',
@@ -586,7 +593,6 @@ export const th = {
       openingWorkspace: 'กำลังเปิด {{title}}',
     },
     descriptions: {
-      editorDefault: 'บริบทการเรียน',
       editorVisual: 'เลือกจุดยึดภาพสำหรับพื้นที่ทำงานนี้',
       emptyList: 'แยกสำรับ โน้ต และคิวทบทวนตามบริบทการเรียน',
     },
@@ -611,7 +617,6 @@ export const th = {
       descriptionLabel: 'คำอธิบายพื้นที่ทำงาน',
       descriptionPlaceholder: 'อะไรอยู่ในพื้นที่ทำงานนี้',
       namePlaceholder: 'ชื่อพื้นที่ทำงาน',
-      untitledWorkspace: 'พื้นที่ทำงานไม่มีชื่อ',
     },
     labels: {
       createWorkspaceTitle: 'สร้างพื้นที่ทำงาน',

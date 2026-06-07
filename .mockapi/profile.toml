@@ -1,0 +1,437 @@
+schemaVersion = 1
+
+[generator]
+name = "mockapi"
+version = "0.1.0"
+
+[project]
+root = "."
+
+[project.target]
+packagePath = "api/mock-server"
+packageName = "@local/mock-server"
+serverName = "Mock API"
+
+[[apis]]
+name = "clear-web-api"
+openapi = "api/openapi/openapi.yaml"
+basePath = "/api/v1"
+contractOutput = "src/generated/clear-web-api/contract"
+runtimeOutput = "src/generated/clear-web-api/mock-runtime.ts"
+
+[[features]]
+name = "bootstrap"
+operations = ["bootstrap"]
+
+[[features]]
+name = "workspaces"
+stateSlices = ["workspaces", "activeWorkspace", "idCounters"]
+operations = [
+  "listWorkspaces",
+  "createWorkspace",
+  "getActiveWorkspace",
+  "setActiveWorkspace",
+  "deleteWorkspace",
+  "getWorkspace",
+  "updateWorkspace",
+]
+
+[[features]]
+name = "folders"
+stateSlices = ["folders"]
+operations = [
+  "listWorkspaceFolders",
+  "listFolderFolders",
+  "createFolder",
+  "deleteFolder",
+  "getFolder",
+  "updateFolder",
+  "getFolderPath",
+]
+
+[[features]]
+name = "decks"
+stateSlices = ["decks"]
+operations = [
+  "listWorkspaceDecks",
+  "listFolderDecks",
+  "createDeck",
+  "deleteDeck",
+  "getDeck",
+  "updateDeck",
+]
+
+[[features]]
+name = "notes"
+stateSlices = ["notes"]
+operations = [
+  "listNotesByDeck",
+  "createNote",
+  "deleteNote",
+  "getNote",
+  "updateNote",
+]
+
+[[features]]
+name = "review"
+stateSlices = ["reviewSessions"]
+operations = [
+  "startReviewSession",
+  "getReviewSession",
+  "gradeReviewSessionCard",
+]
+
+[[features]]
+name = "settings"
+stateSlices = ["settings"]
+operations = [
+  "getSettings",
+  "updateSettings",
+  "getDefaultSettings",
+  "resetSettings",
+]
+
+[[features]]
+name = "trash"
+stateSlices = ["trash"]
+operations = [
+  "emptyTrash",
+  "getTrash",
+  "restoreTrashItem",
+  "deleteTrashItem",
+]
+
+[[features]]
+name = "search"
+operations = ["searchContent"]
+
+[state]
+schemaVersion = 1
+
+[[state.slices]]
+name = "workspaces"
+recordType = "Workspace"
+schemaRef = "clear-web-api#/components/schemas/Workspace"
+array = true
+idField = "id"
+softDeleteField = "deletedAt"
+
+[[state.slices]]
+name = "activeWorkspace"
+recordType = "ActiveWorkspace"
+schemaRef = "clear-web-api#/components/schemas/ActiveWorkspace"
+array = false
+
+[[state.slices]]
+name = "folders"
+recordType = "Folder"
+schemaRef = "clear-web-api#/components/schemas/Folder"
+array = true
+idField = "id"
+softDeleteField = "deletedAt"
+
+[[state.slices]]
+name = "decks"
+recordType = "Deck"
+schemaRef = "clear-web-api#/components/schemas/Deck"
+array = true
+idField = "id"
+softDeleteField = "deletedAt"
+
+[[state.slices]]
+name = "notes"
+recordType = "NoteDetail"
+schemaRef = "clear-web-api#/components/schemas/NoteDetail"
+array = true
+idField = "id"
+softDeleteField = "deletedAt"
+
+[[state.slices]]
+name = "reviewSessions"
+recordType = "ReviewSession"
+schemaRef = "clear-web-api#/components/schemas/ReviewSession"
+array = true
+idField = "id"
+
+[[state.slices]]
+name = "settings"
+recordType = "Settings"
+schemaRef = "clear-web-api#/components/schemas/Settings"
+array = false
+
+[[state.slices]]
+name = "trash"
+recordType = "TrashState"
+schemaRef = "clear-web-api#/components/schemas/TrashState"
+array = false
+
+[[state.slices]]
+name = "idCounters"
+recordType = "Record<string, number>"
+array = false
+
+[[operations]]
+operationId = "bootstrap"
+api = "clear-web-api"
+feature = "bootstrap"
+method = "POST"
+path = "/bootstrap"
+
+[[operations]]
+operationId = "listWorkspaces"
+api = "clear-web-api"
+feature = "workspaces"
+method = "GET"
+path = "/workspaces"
+
+[[operations]]
+operationId = "createWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "POST"
+path = "/workspaces"
+
+[[operations]]
+operationId = "getActiveWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "GET"
+path = "/workspaces/active"
+
+[[operations]]
+operationId = "setActiveWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "PUT"
+path = "/workspaces/active"
+
+[[operations]]
+operationId = "deleteWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "DELETE"
+path = "/workspaces/{workspaceId}"
+
+[[operations]]
+operationId = "getWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "GET"
+path = "/workspaces/{workspaceId}"
+
+[[operations]]
+operationId = "updateWorkspace"
+api = "clear-web-api"
+feature = "workspaces"
+method = "PUT"
+path = "/workspaces/{workspaceId}"
+
+[[operations]]
+operationId = "listWorkspaceFolders"
+api = "clear-web-api"
+feature = "folders"
+method = "GET"
+path = "/workspaces/{workspaceId}/folders"
+
+[[operations]]
+operationId = "listWorkspaceDecks"
+api = "clear-web-api"
+feature = "decks"
+method = "GET"
+path = "/workspaces/{workspaceId}/decks"
+
+[[operations]]
+operationId = "createFolder"
+api = "clear-web-api"
+feature = "folders"
+method = "POST"
+path = "/folders"
+
+[[operations]]
+operationId = "deleteFolder"
+api = "clear-web-api"
+feature = "folders"
+method = "DELETE"
+path = "/folders/{folderId}"
+
+[[operations]]
+operationId = "getFolder"
+api = "clear-web-api"
+feature = "folders"
+method = "GET"
+path = "/folders/{folderId}"
+
+[[operations]]
+operationId = "updateFolder"
+api = "clear-web-api"
+feature = "folders"
+method = "PUT"
+path = "/folders/{folderId}"
+
+[[operations]]
+operationId = "listFolderFolders"
+api = "clear-web-api"
+feature = "folders"
+method = "GET"
+path = "/folders/{folderId}/folders"
+
+[[operations]]
+operationId = "listFolderDecks"
+api = "clear-web-api"
+feature = "decks"
+method = "GET"
+path = "/folders/{folderId}/decks"
+
+[[operations]]
+operationId = "getFolderPath"
+api = "clear-web-api"
+feature = "folders"
+method = "GET"
+path = "/folders/{folderId}/path"
+
+[[operations]]
+operationId = "createDeck"
+api = "clear-web-api"
+feature = "decks"
+method = "POST"
+path = "/decks"
+
+[[operations]]
+operationId = "deleteDeck"
+api = "clear-web-api"
+feature = "decks"
+method = "DELETE"
+path = "/decks/{deckId}"
+
+[[operations]]
+operationId = "getDeck"
+api = "clear-web-api"
+feature = "decks"
+method = "GET"
+path = "/decks/{deckId}"
+
+[[operations]]
+operationId = "updateDeck"
+api = "clear-web-api"
+feature = "decks"
+method = "PUT"
+path = "/decks/{deckId}"
+
+[[operations]]
+operationId = "listNotesByDeck"
+api = "clear-web-api"
+feature = "notes"
+method = "GET"
+path = "/decks/{deckId}/notes"
+
+[[operations]]
+operationId = "startReviewSession"
+api = "clear-web-api"
+feature = "review"
+method = "POST"
+path = "/decks/{deckId}/reviews"
+
+[[operations]]
+operationId = "getReviewSession"
+api = "clear-web-api"
+feature = "review"
+method = "GET"
+path = "/reviews/{reviewId}"
+
+[[operations]]
+operationId = "createNote"
+api = "clear-web-api"
+feature = "notes"
+method = "POST"
+path = "/notes"
+
+[[operations]]
+operationId = "deleteNote"
+api = "clear-web-api"
+feature = "notes"
+method = "DELETE"
+path = "/notes/{noteId}"
+
+[[operations]]
+operationId = "getNote"
+api = "clear-web-api"
+feature = "notes"
+method = "GET"
+path = "/notes/{noteId}"
+
+[[operations]]
+operationId = "updateNote"
+api = "clear-web-api"
+feature = "notes"
+method = "PUT"
+path = "/notes/{noteId}"
+
+[[operations]]
+operationId = "gradeReviewSessionCard"
+api = "clear-web-api"
+feature = "review"
+method = "POST"
+path = "/reviews/{reviewId}/cards/{cardId}/grade"
+
+[[operations]]
+operationId = "getSettings"
+api = "clear-web-api"
+feature = "settings"
+method = "GET"
+path = "/settings"
+
+[[operations]]
+operationId = "updateSettings"
+api = "clear-web-api"
+feature = "settings"
+method = "PUT"
+path = "/settings"
+
+[[operations]]
+operationId = "getDefaultSettings"
+api = "clear-web-api"
+feature = "settings"
+method = "GET"
+path = "/settings/defaults"
+
+[[operations]]
+operationId = "resetSettings"
+api = "clear-web-api"
+feature = "settings"
+method = "POST"
+path = "/settings/reset"
+
+[[operations]]
+operationId = "emptyTrash"
+api = "clear-web-api"
+feature = "trash"
+method = "DELETE"
+path = "/trash"
+
+[[operations]]
+operationId = "getTrash"
+api = "clear-web-api"
+feature = "trash"
+method = "GET"
+path = "/trash"
+
+[[operations]]
+operationId = "restoreTrashItem"
+api = "clear-web-api"
+feature = "trash"
+method = "POST"
+path = "/trash/items/{itemId}/restore"
+
+[[operations]]
+operationId = "deleteTrashItem"
+api = "clear-web-api"
+feature = "trash"
+method = "DELETE"
+path = "/trash/items/{itemId}"
+
+[[operations]]
+operationId = "searchContent"
+api = "clear-web-api"
+feature = "search"
+method = "POST"
+path = "/search"

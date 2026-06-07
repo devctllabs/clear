@@ -168,7 +168,6 @@ export const ro = {
     },
     descriptions: {
       emptyDeck: 'Adaugă o notiță pentru ca acest pachet să aibă material de recapitulat.',
-      editorDefault: 'Pachet de studiu concentrat.',
       editorVisual: 'Alege un simbol de copertă pentru acest pachet.',
       notesSearchPlaceholder: 'Caută notițe…',
     },
@@ -200,8 +199,6 @@ export const ro = {
       descriptionLabel: 'Descrierea pachetului',
       descriptionPlaceholder: 'Ce te va ajuta să recapitulezi acest pachet?',
       namePlaceholder: 'Numele pachetului',
-      untitledDeck: 'Pachet fără titlu',
-      untitledDeckLower: 'pachet fără titlu',
     },
     labels: {
       createDeckTitle: 'Creează pachet',
@@ -231,19 +228,30 @@ export const ro = {
       timeout: 'A durat prea mult. Încearcă din nou.',
       unauthorized: 'Conectează-te pentru a continua.',
       unavailable: 'Serviciul este temporar indisponibil.',
+      validation: 'Verifică câmpurile evidențiate și încearcă din nou.',
     },
     fallback: {
       unexpected: 'Eroare neașteptată',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} nu este valid.',
+      invalidEnum: 'Alege o valoare validă pentru {{field}}.',
+      invalidFormat: 'Introdu o valoare validă pentru {{field}}.',
+      maxLength: '{{field}} trebuie să aibă cel mult {{max}} caractere.',
+      maximum: '{{field}} trebuie să fie cel mult {{max}}.',
+      minLength: '{{field}} trebuie să aibă cel puțin {{min}} caractere.',
+      minimum: '{{field}} trebuie să fie cel puțin {{min}}.',
+      required: '{{field}} este obligatoriu.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Creează folder',
       deleteFolder: 'Șterge folderul',
       editFolder: 'Editează folderul',
-    },
-    descriptions: {
-      editorDefault: 'Folder pentru pachete asociate.',
     },
     dialogs: {
       deleteFolderDescription: 'Aceasta mută "{{name}}" în Coș. Îl poți restaura mai târziu.',
@@ -266,7 +274,6 @@ export const ro = {
       descriptionLabel: 'Descrierea folderului',
       descriptionPlaceholder: 'Ce aparține acestui folder?',
       namePlaceholder: 'Numele folderului',
-      untitledFolder: 'Folder fără titlu',
     },
     labels: {
       createFolderTitle: 'Creează folder',
@@ -599,7 +606,6 @@ export const ro = {
       openingWorkspace: 'Se deschide {{title}}',
     },
     descriptions: {
-      editorDefault: 'Context de studiu.',
       editorVisual: 'Alege o ancoră vizuală pentru acest spațiu de lucru.',
       emptyList: 'Separă pachetele, notițele și cozile de recapitulare după contextul de studiu.',
     },
@@ -624,7 +630,6 @@ export const ro = {
       descriptionLabel: 'Descrierea spațiului de lucru',
       descriptionPlaceholder: 'Ce aparține acestui spațiu de lucru?',
       namePlaceholder: 'Numele spațiului de lucru',
-      untitledWorkspace: 'Spațiu de lucru fără titlu',
     },
     labels: {
       createWorkspaceTitle: 'Creează spațiu de lucru',

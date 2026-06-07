@@ -158,7 +158,6 @@ export const id = {
     },
     descriptions: {
       emptyDeck: 'Tambahkan catatan agar deck ini memiliki materi untuk diulas.',
-      editorDefault: 'Deck belajar terfokus.',
       editorVisual: 'Pilih glif sampul untuk deck ini.',
       notesSearchPlaceholder: 'Cari catatan…',
     },
@@ -190,8 +189,6 @@ export const id = {
       descriptionLabel: 'Deskripsi deck',
       descriptionPlaceholder: 'Apa yang akan dibantu deck ini untuk Anda ulas?',
       namePlaceholder: 'Nama deck',
-      untitledDeck: 'Deck tanpa judul',
-      untitledDeckLower: 'deck tanpa judul',
     },
     labels: {
       createDeckTitle: 'Buat deck',
@@ -221,19 +218,30 @@ export const id = {
       timeout: 'Ini terlalu lama. Coba lagi.',
       unauthorized: 'Masuk untuk melanjutkan.',
       unavailable: 'Layanan sementara tidak tersedia.',
+      validation: 'Periksa bidang yang disorot lalu coba lagi.',
     },
     fallback: {
       unexpected: 'Error tidak terduga',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} tidak valid.',
+      invalidEnum: 'Pilih {{field}} yang valid.',
+      invalidFormat: 'Masukkan {{field}} yang valid.',
+      maxLength: '{{field}} maksimal {{max}} karakter.',
+      maximum: '{{field}} maksimal {{max}}.',
+      minLength: '{{field}} minimal {{min}} karakter.',
+      minimum: '{{field}} minimal {{min}}.',
+      required: '{{field}} wajib diisi.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Buat folder',
       deleteFolder: 'Hapus folder',
       editFolder: 'Edit folder',
-    },
-    descriptions: {
-      editorDefault: 'Folder untuk deck terkait.',
     },
     dialogs: {
       deleteFolderDescription: 'Ini memindahkan "{{name}}" ke Sampah. Anda dapat memulihkannya nanti.',
@@ -256,7 +264,6 @@ export const id = {
       descriptionLabel: 'Deskripsi folder',
       descriptionPlaceholder: 'Apa yang termasuk dalam folder ini?',
       namePlaceholder: 'Nama folder',
-      untitledFolder: 'Folder tanpa judul',
     },
     labels: {
       createFolderTitle: 'Buat folder',
@@ -586,7 +593,6 @@ export const id = {
       openingWorkspace: 'Membuka {{title}}',
     },
     descriptions: {
-      editorDefault: 'Konteks belajar.',
       editorVisual: 'Pilih jangkar visual untuk workspace ini.',
       emptyList: 'Pisahkan deck, catatan, dan antrean ulasan berdasarkan konteks belajar.',
     },
@@ -611,7 +617,6 @@ export const id = {
       descriptionLabel: 'Deskripsi workspace',
       descriptionPlaceholder: 'Apa yang termasuk dalam workspace ini?',
       namePlaceholder: 'Nama workspace',
-      untitledWorkspace: 'Workspace tanpa judul',
     },
     labels: {
       createWorkspaceTitle: 'Buat workspace',

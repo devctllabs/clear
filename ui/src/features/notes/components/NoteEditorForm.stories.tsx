@@ -13,6 +13,7 @@ const NoteEditorFormStory = ({
   basicDraft: initialBasicDraft,
   clozeDraft: initialClozeDraft,
   title: initialTitle,
+  ...args
 }: ComponentProps<typeof NoteEditorForm>) => {
   const [activeKind, setActiveKind] = useState<NoteKind>(initialKind)
   const [title, setTitle] = useState(initialTitle)
@@ -21,6 +22,7 @@ const NoteEditorFormStory = ({
 
   return (
     <NoteEditorForm
+      {...args}
       activeKind={activeKind}
       basicDraft={basicDraft}
       clozeDraft={clozeDraft}
@@ -76,6 +78,16 @@ export const BasicFilled: Story = {
   },
 }
 
+export const BasicValidation: Story = {
+  args: {
+    validationMessages: {
+      basicBack: ['Back is required.'],
+      basicFront: ['Front is required.'],
+      title: ['Title is required.'],
+    },
+  },
+}
+
 export const ClozeFilled: Story = {
   args: {
     activeKind: 'cloze',
@@ -83,5 +95,15 @@ export const ClozeFilled: Story = {
       body: 'The {{c1::hippocampus}} supports memory consolidation.',
     },
     title: 'Hippocampus Cloze',
+  },
+}
+
+export const ClozeValidation: Story = {
+  args: {
+    activeKind: 'cloze',
+    validationMessages: {
+      clozeBody: ['Note body is required.'],
+      title: ['Title is required.'],
+    },
   },
 }

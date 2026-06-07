@@ -1,16 +1,75 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { TFunction } from 'i18next'
+import { useController, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
 
+import {
+  fieldErrorMessages,
+  mergeFieldValidationMessages,
+  requiredFieldMessage,
+} from '@shared/components/forms/validation'
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
 import { EditorShell } from '@shared/components/layout/EditorShell'
 import { useDeck } from '@features/decks/hooks/useDecks'
+import { translateValidationIssuesForPath } from '@shared/errors/translation'
 import { useCloseTarget } from '@shared/lib/navigation-state'
 
 import { NoteEditorLoadingState } from '../components/NoteEditorLoadingState'
-import { NoteEditorForm } from '../components/NoteEditorForm'
+import { NoteEditorForm, type NoteEditorValidationMessages } from '../components/NoteEditorForm'
 import { useCreateNote, useNote, useUpdateNote } from '../hooks/useNotes'
-import type { BasicNoteEditor, ClozeNoteEditor, NoteKind } from '../types/note.types'
+import type { NoteKind } from '../types/note.types'
+
+const createNoteEditorSchema = (t: TFunction) =>
+  z
+    .object({
+      activeKind: z.enum(['basic', 'cloze']),
+      basicBack: z.string(),
+      basicFront: z.string(),
+      clozeBody: z.string(),
+      title: z.string(),
+    })
+    .superRefine((value, context) => {
+      if (value.activeKind === 'basic') {
+        if (value.basicFront.trim().length === 0) {
+          context.addIssue({
+            code: 'custom',
+            message: requiredFieldMessage(t, t(($) => $.notes.fields.front)),
+            path: ['basicFront'],
+          })
+        }
+
+        if (value.basicBack.trim().length === 0) {
+          context.addIssue({
+            code: 'custom',
+            message: requiredFieldMessage(t, t(($) => $.notes.fields.back)),
+            path: ['basicBack'],
+          })
+        }
+
+        return
+      }
+
+      if (value.clozeBody.trim().length === 0) {
+        context.addIssue({
+          code: 'custom',
+          message: requiredFieldMessage(t, t(($) => $.notes.fields.noteBody)),
+          path: ['clozeBody'],
+        })
+      }
+    })
+
+type NoteEditorFormValues = z.infer<ReturnType<typeof createNoteEditorSchema>>
+
+const noteEditorDefaultValues = (kind: NoteKind): NoteEditorFormValues => ({
+  activeKind: kind,
+  basicBack: '',
+  basicFront: '',
+  clozeBody: '',
+  title: '',
+})
 
 export const NoteEditorPage = ({
   deckId,
@@ -31,10 +90,15 @@ export const NoteEditorPage = ({
   const noteQuery = useNote(deckId, noteId ?? '')
   const createNote = useCreateNote()
   const updateNote = useUpdateNote(noteId ?? '')
-  const [title, setTitle] = useState('')
-  const [activeKind, setActiveKind] = useState<NoteKind>(kind)
-  const [basicDraft, setBasicDraft] = useState<BasicNoteEditor>({ back: '', front: '' })
-  const [clozeDraft, setClozeDraft] = useState<ClozeNoteEditor>({ body: '' })
+  const form = useForm<NoteEditorFormValues>({
+    defaultValues: noteEditorDefaultValues(kind),
+    resolver: zodResolver(createNoteEditorSchema(t), undefined, { mode: 'sync' }),
+  })
+  const title = useController({ control: form.control, name: 'title' })
+  const basicFront = useController({ control: form.control, name: 'basicFront' })
+  const basicBack = useController({ control: form.control, name: 'basicBack' })
+  const clozeBody = useController({ control: form.control, name: 'clozeBody' })
+  const activeKind = useWatch({ control: form.control, name: 'activeKind' })
   const fallbackTo =
     mode === 'edit' && noteId
       ? `/dashboard/${workspaceId}/decks/${deckId}/notes/${noteId}`
@@ -51,14 +115,25 @@ export const NoteEditorPage = ({
       return
     }
 
-    setTitle(noteQuery.data.title)
-    setActiveKind(noteQuery.data.kind)
     if (noteQuery.data.kind === 'basic') {
-      setBasicDraft(noteQuery.data.editor)
-    } else {
-      setClozeDraft(noteQuery.data.editor)
+      form.reset({
+        activeKind: noteQuery.data.kind,
+        basicBack: noteQuery.data.editor.back,
+        basicFront: noteQuery.data.editor.front,
+        clozeBody: '',
+        title: noteQuery.data.title,
+      })
+      return
     }
-  }, [mode, noteQuery.data])
+
+    form.reset({
+      activeKind: noteQuery.data.kind,
+      basicBack: '',
+      basicFront: '',
+      clozeBody: noteQuery.data.editor.body,
+      title: noteQuery.data.title,
+    })
+  }, [form, mode, noteQuery.data])
 
   if (deckQuery.isLoading || (mode === 'edit' && noteQuery.isLoading)) {
     return (
@@ -98,20 +173,28 @@ export const NoteEditorPage = ({
     )
   }
 
-  const submit = () => {
+  const submit = form.handleSubmit((values) => {
+    const trimmedTitle = values.title.trim()
+    const trimmedBasicDraft = {
+      back: values.basicBack.trim(),
+      front: values.basicFront.trim(),
+    }
+    const trimmedClozeDraft = {
+      body: values.clozeBody.trim(),
+    }
     const draft =
-      activeKind === 'basic'
+      values.activeKind === 'basic'
         ? {
             deckId,
-            editor: basicDraft,
+            editor: trimmedBasicDraft,
             kind: 'basic' as const,
-            title: title.trim() || basicDraft.front.trim() || t(($) => $.notes.fields.untitledNote),
+            title: trimmedTitle || trimmedBasicDraft.front || t(($) => $.notes.fields.untitledNote),
           }
         : {
             deckId,
-            editor: clozeDraft,
+            editor: trimmedClozeDraft,
             kind: 'cloze' as const,
-            title: title.trim() || t(($) => $.notes.fields.untitledCloze),
+            title: trimmedTitle || t(($) => $.notes.fields.untitledCloze),
           }
 
     if (mode === 'edit' && noteId) {
@@ -134,34 +217,77 @@ export const NoteEditorPage = ({
         })
       },
     })
-  }
+  })
 
   const switchKind = (nextKind: NoteKind) => {
-    if (nextKind === activeKind) {
+    const currentKind = form.getValues('activeKind')
+
+    if (nextKind === currentKind) {
       return
     }
 
+    resetMutationError()
+    form.clearErrors()
+
     if (nextKind === 'basic') {
-      setBasicDraft((current) =>
-        current.front.trim().length > 0
-          ? current
-          : {
-              ...current,
-              front: clozeDraft.body.trim().length > 0 ? clozeDraft.body : current.front,
-            },
-      )
-    } else {
-      setClozeDraft((current) =>
-        current.body.trim().length > 0
-          ? current
-          : {
-              ...current,
-              body: basicDraft.front.trim().length > 0 ? basicDraft.front : current.body,
-            },
-      )
+      const currentFront = form.getValues('basicFront')
+      const currentBody = form.getValues('clozeBody')
+
+      if (currentFront.trim().length === 0 && currentBody.trim().length > 0) {
+        form.setValue('basicFront', currentBody, { shouldDirty: true })
+      }
+
+      form.setValue('activeKind', nextKind, { shouldDirty: true })
+      return
     }
 
-    setActiveKind(nextKind)
+    const currentBody = form.getValues('clozeBody')
+    const currentFront = form.getValues('basicFront')
+
+    if (currentBody.trim().length === 0 && currentFront.trim().length > 0) {
+      form.setValue('clozeBody', currentFront, { shouldDirty: true })
+    }
+
+    form.setValue('activeKind', nextKind, { shouldDirty: true })
+  }
+
+  const resetMutationError = () => {
+    if (mode === 'edit' && updateNote.isError) {
+      updateNote.reset()
+    }
+
+    if (mode === 'create' && createNote.isError) {
+      createNote.reset()
+    }
+  }
+
+  const handleTitleChange = (nextTitle: string) => {
+    resetMutationError()
+    title.field.onChange(nextTitle)
+  }
+
+  const handleFrontChange = (front: string) => {
+    resetMutationError()
+    if (front.trim().length > 0) {
+      form.clearErrors('basicFront')
+    }
+    basicFront.field.onChange(front)
+  }
+
+  const handleBackChange = (back: string) => {
+    resetMutationError()
+    if (back.trim().length > 0) {
+      form.clearErrors('basicBack')
+    }
+    basicBack.field.onChange(back)
+  }
+
+  const handleBodyChange = (body: string) => {
+    resetMutationError()
+    if (body.trim().length > 0) {
+      form.clearErrors('clozeBody')
+    }
+    clozeBody.field.onChange(body)
   }
 
   const actionError =
@@ -170,6 +296,50 @@ export const NoteEditorPage = ({
       : mode === 'create' && createNote.isError
         ? { error: createNote.error, title: t(($) => $.notes.errors.couldNotCreateNote) }
         : null
+  const validationError =
+    mode === 'edit' && updateNote.isError
+      ? updateNote.error
+      : mode === 'create' && createNote.isError
+        ? createNote.error
+        : null
+  const serviceValidationMessages = validationError
+    ? {
+        basicBack: translateValidationIssuesForPath(
+          t,
+          validationError,
+          ['editor', 'back'],
+          t(($) => $.notes.fields.back),
+        ),
+        basicFront: translateValidationIssuesForPath(
+          t,
+          validationError,
+          ['editor', 'front'],
+          t(($) => $.notes.fields.front),
+        ),
+        clozeBody: translateValidationIssuesForPath(
+          t,
+          validationError,
+          ['editor', 'body'],
+          t(($) => $.notes.fields.noteBody),
+        ),
+        title: translateValidationIssuesForPath(
+          t,
+          validationError,
+          ['title'],
+          t(($) => $.notes.fields.title),
+        ),
+      }
+    : undefined
+  const formValidationMessages: NoteEditorValidationMessages = {
+    basicBack: fieldErrorMessages(form.formState.errors.basicBack),
+    basicFront: fieldErrorMessages(form.formState.errors.basicFront),
+    clozeBody: fieldErrorMessages(form.formState.errors.clozeBody),
+    title: fieldErrorMessages(form.formState.errors.title),
+  }
+  const validationMessages = mergeFieldValidationMessages(
+    serviceValidationMessages,
+    formValidationMessages,
+  )
   const contentBottomPadding =
     activeKind === 'cloze'
       ? actionError
@@ -191,14 +361,18 @@ export const NoteEditorPage = ({
     >
       <NoteEditorForm
         activeKind={activeKind}
-        basicDraft={basicDraft}
-        clozeDraft={clozeDraft}
-        title={title}
-        onBackChange={(back) => setBasicDraft((draft) => ({ ...draft, back }))}
-        onBodyChange={(body) => setClozeDraft({ body })}
-        onFrontChange={(front) => setBasicDraft((draft) => ({ ...draft, front }))}
+        basicDraft={{
+          back: basicBack.field.value,
+          front: basicFront.field.value,
+        }}
+        clozeDraft={{ body: clozeBody.field.value }}
+        title={title.field.value}
+        validationMessages={validationMessages}
+        onBackChange={handleBackChange}
+        onBodyChange={handleBodyChange}
+        onFrontChange={handleFrontChange}
         onKindChange={switchKind}
-        onTitleChange={setTitle}
+        onTitleChange={handleTitleChange}
       />
     </EditorShell>
   )

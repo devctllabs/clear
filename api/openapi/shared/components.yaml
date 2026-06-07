@@ -112,11 +112,11 @@ components:
             validation:
               value:
                 type: validation
-                message: Invalid input.
                 retryable: false
-                fieldErrors:
-                  title:
-                    - Title is required.
+                issues:
+                  - path:
+                      - title
+                    code: required
 
     Unauthorized:
       description: Authentication is required.
@@ -235,17 +235,56 @@ components:
         - validation
       example: validation
 
-    FieldErrors:
+    ValidationIssue:
       type: object
-      additionalProperties:
-        type: array
-        items:
+      additionalProperties: false
+      required:
+        - code
+      properties:
+        path:
+          type: array
+          items:
+            type: string
+        code:
           type: string
+          minLength: 1
+        params:
+          type: object
+          additionalProperties: true
       example:
-        title:
-          - Title is required.
+        path:
+          - title
+        code: required
 
-    DomainError:
+    ValidationDomainError:
+      type: object
+      additionalProperties: false
+      required:
+        - issues
+        - retryable
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - validation
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationIssue'
+        retryable:
+          type: boolean
+          enum:
+            - false
+      example:
+        type: validation
+        retryable: false
+        issues:
+          - path:
+              - title
+            code: required
+
+    MessageDomainError:
       type: object
       additionalProperties: false
       required:
@@ -254,25 +293,49 @@ components:
         - type
       properties:
         type:
-          $ref: '#/components/schemas/DomainErrorType'
+          type: string
+          enum:
+            - conflict
+            - forbidden
+            - not_found
+            - offline
+            - timeout
+            - unauthorized
+            - unexpected
+            - unavailable
         message:
           type: string
           minLength: 1
         retryable:
           type: boolean
-        fieldErrors:
-          $ref: '#/components/schemas/FieldErrors'
         entity:
           type: string
         entityId:
           type: string
+
+    DomainError:
+      oneOf:
+        - $ref: '#/components/schemas/ValidationDomainError'
+        - $ref: '#/components/schemas/MessageDomainError'
+      discriminator:
+        propertyName: type
+        mapping:
+          conflict: '#/components/schemas/MessageDomainError'
+          forbidden: '#/components/schemas/MessageDomainError'
+          not_found: '#/components/schemas/MessageDomainError'
+          offline: '#/components/schemas/MessageDomainError'
+          timeout: '#/components/schemas/MessageDomainError'
+          unauthorized: '#/components/schemas/MessageDomainError'
+          unexpected: '#/components/schemas/MessageDomainError'
+          unavailable: '#/components/schemas/MessageDomainError'
+          validation: '#/components/schemas/ValidationDomainError'
       examples:
         - type: validation
-          message: Invalid input.
           retryable: false
-          fieldErrors:
-            title:
-              - Title is required.
+          issues:
+            - path:
+                - title
+              code: required
         - type: not_found
           message: Note not found.
           retryable: false

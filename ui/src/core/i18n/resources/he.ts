@@ -168,7 +168,6 @@ export const he = {
     },
     descriptions: {
       emptyDeck: 'הוסיפו הערה כדי שלחפיסה הזו יהיה חומר לסקירה.',
-      editorDefault: 'חפיסת לימוד ממוקדת.',
       editorVisual: 'בחרו סמל כיסוי לחפיסה הזו.',
       notesSearchPlaceholder: 'חיפוש הערות…',
     },
@@ -200,8 +199,6 @@ export const he = {
       descriptionLabel: 'תיאור החפיסה',
       descriptionPlaceholder: 'מה החפיסה הזו תעזור לכם לסקור?',
       namePlaceholder: 'שם החפיסה',
-      untitledDeck: 'חפיסה ללא שם',
-      untitledDeckLower: 'חפיסה ללא שם',
     },
     labels: {
       createDeckTitle: 'יצירת חפיסה',
@@ -231,19 +228,30 @@ export const he = {
       timeout: 'זה נמשך יותר מדי זמן. נסו שוב.',
       unauthorized: 'התחברו כדי להמשיך.',
       unavailable: 'השירות אינו זמין זמנית.',
+      validation: 'בדוק את השדות המסומנים ונסה שוב.',
     },
     fallback: {
       unexpected: 'שגיאה בלתי צפויה',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} אינו תקין.',
+      invalidEnum: 'בחר ערך תקין עבור {{field}}.',
+      invalidFormat: 'הזן ערך תקין עבור {{field}}.',
+      maxLength: '{{field}} חייב להכיל לכל היותר {{max}} תווים.',
+      maximum: '{{field}} חייב להיות לכל היותר {{max}}.',
+      minLength: '{{field}} חייב להכיל לפחות {{min}} תווים.',
+      minimum: '{{field}} חייב להיות לפחות {{min}}.',
+      required: '{{field}} הוא שדה חובה.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'יצירת תיקייה',
       deleteFolder: 'מחיקת תיקייה',
       editFolder: 'עריכת תיקייה',
-    },
-    descriptions: {
-      editorDefault: 'תיקייה לחפיסות קשורות.',
     },
     dialogs: {
       deleteFolderDescription: '"{{name}}" תועבר לאשפה. ניתן לשחזר אותה מאוחר יותר.',
@@ -266,7 +274,6 @@ export const he = {
       descriptionLabel: 'תיאור התיקייה',
       descriptionPlaceholder: 'מה שייך לתיקייה הזו?',
       namePlaceholder: 'שם התיקייה',
-      untitledFolder: 'תיקייה ללא שם',
     },
     labels: {
       createFolderTitle: 'יצירת תיקייה',
@@ -599,7 +606,6 @@ export const he = {
       openingWorkspace: '{{title}} נפתח',
     },
     descriptions: {
-      editorDefault: 'הקשר לימוד.',
       editorVisual: 'בחרו עוגן חזותי למרחב העבודה הזה.',
       emptyList: 'הפרידו חפיסות, הערות ותורי סקירה לפי הקשר לימוד.',
     },
@@ -624,7 +630,6 @@ export const he = {
       descriptionLabel: 'תיאור מרחב העבודה',
       descriptionPlaceholder: 'מה שייך למרחב העבודה הזה?',
       namePlaceholder: 'שם מרחב העבודה',
-      untitledWorkspace: 'מרחב עבודה ללא שם',
     },
     labels: {
       createWorkspaceTitle: 'יצירת מרחב עבודה',

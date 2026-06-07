@@ -1,18 +1,43 @@
 import { useNavigate } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { TFunction } from 'i18next'
+import { useController, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { z } from 'zod'
 
-import type { VisualIconName } from '@shared/components/icons/IconGlyph'
+import {
+  isVisualIconName,
+  type VisualIconName,
+} from '@shared/components/icons/IconGlyph'
 import { useFolderPath } from '@features/folders/hooks/useFolders'
 import { InlineErrorState } from '@shared/components/feedback/LoadErrorState'
+import {
+  fieldErrorMessages,
+  mergeFieldValidationMessages,
+  requiredFieldMessage,
+  requiredTrimmedText,
+} from '@shared/components/forms/validation'
 import { EditorErrorState } from '@shared/components/layout/EditorErrorState'
 import { EditorShell } from '@shared/components/layout/EditorShell'
 import { EditorLoadingState } from '@shared/components/layout/EditorLoadingState'
+import { translateValidationIssuesForPath } from '@shared/errors/translation'
 import { useCloseTarget } from '@shared/lib/navigation-state'
 
-import { DeckEditorForm } from '../components/DeckEditorForm'
+import { DeckEditorForm, type DeckEditorValidationMessages } from '../components/DeckEditorForm'
 import { defaultDeckVisualIcon } from '../constants/visuals'
 import { useDeck, useUpdateDeck } from '../hooks/useDecks'
+
+const createDeckEditorSchema = (t: TFunction) =>
+  z.object({
+    description: z.string(),
+    icon: z.custom<VisualIconName>(isVisualIconName, {
+      message: requiredFieldMessage(t, t(($) => $.common.labels.visual)),
+    }),
+    title: requiredTrimmedText(t, t(($) => $.common.labels.name)),
+  })
+
+type DeckEditorFormValues = z.infer<ReturnType<typeof createDeckEditorSchema>>
 
 export const DeckEditPage = ({
   deckId,
@@ -28,21 +53,86 @@ export const DeckEditPage = ({
   const isRootContainer = currentParentId === workspaceId
   const folderPathQuery = useFolderPath(isRootContainer ? '' : currentParentId)
   const updateDeck = useUpdateDeck(deckId)
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [icon, setIcon] = useState<VisualIconName>(defaultDeckVisualIcon)
+  const form = useForm<DeckEditorFormValues>({
+    defaultValues: {
+      description: '',
+      icon: defaultDeckVisualIcon,
+      title: '',
+    },
+    resolver: zodResolver(createDeckEditorSchema(t), undefined, { mode: 'sync' }),
+  })
+  const title = useController({ control: form.control, name: 'title' })
+  const description = useController({ control: form.control, name: 'description' })
+  const icon = useController({ control: form.control, name: 'icon' })
   const parentLocationPath = isRootContainer ? [t(($) => $.workspaces.labels.workspace)] : folderPathQuery.data
   const closeTo = useCloseTarget(`/dashboard/${workspaceId}/decks/${deckId}`)
+  const serviceValidationMessages = updateDeck.isError
+    ? {
+        description: translateValidationIssuesForPath(
+          t,
+          updateDeck.error,
+          ['description'],
+          t(($) => $.common.labels.description),
+        ),
+        icon: translateValidationIssuesForPath(
+          t,
+          updateDeck.error,
+          ['icon'],
+          t(($) => $.common.labels.visual),
+        ),
+        title: translateValidationIssuesForPath(
+          t,
+          updateDeck.error,
+          ['title'],
+          t(($) => $.common.labels.name),
+        ),
+      }
+    : undefined
+  const formValidationMessages: DeckEditorValidationMessages = {
+    description: fieldErrorMessages(form.formState.errors.description),
+    icon: fieldErrorMessages(form.formState.errors.icon),
+    title: fieldErrorMessages(form.formState.errors.title),
+  }
+  const validationMessages = mergeFieldValidationMessages(
+    serviceValidationMessages,
+    formValidationMessages,
+  )
+
+  const resetMutationError = () => {
+    if (updateDeck.isError) {
+      updateDeck.reset()
+    }
+  }
+
+  const handleTitleChange = (nextTitle: string) => {
+    resetMutationError()
+    if (nextTitle.trim().length > 0) {
+      form.clearErrors('title')
+    }
+    title.field.onChange(nextTitle)
+  }
+
+  const handleDescriptionChange = (nextDescription: string) => {
+    resetMutationError()
+    description.field.onChange(nextDescription)
+  }
+
+  const handleIconChange = (nextIcon: VisualIconName) => {
+    resetMutationError()
+    icon.field.onChange(nextIcon)
+  }
 
   useEffect(() => {
     if (!deckQuery.data) {
       return
     }
 
-    setTitle(deckQuery.data.title)
-    setDescription(deckQuery.data.description)
-    setIcon(deckQuery.data.icon)
-  }, [deckQuery.data])
+    form.reset({
+      description: deckQuery.data.description,
+      icon: deckQuery.data.icon,
+      title: deckQuery.data.title,
+    })
+  }, [deckQuery.data, form])
 
   if (deckQuery.isLoading) {
     return <EditorLoadingState backTo={closeTo} formKind="deck" title={t(($) => $.decks.actions.editDeck)} />
@@ -73,13 +163,13 @@ export const DeckEditPage = ({
       backTo={closeTo}
       isSubmitting={updateDeck.isPending}
       title={t(($) => $.decks.actions.editDeck)}
-      onSubmit={() => {
+      onSubmit={form.handleSubmit((values) => {
         updateDeck.mutate(
           {
-            description,
-            icon,
+            description: values.description.trim(),
+            icon: values.icon,
             parentId: currentParentId,
-            title,
+            title: values.title,
           },
           {
             onSuccess: () => {
@@ -90,7 +180,7 @@ export const DeckEditPage = ({
             },
           },
         )
-      }}
+      })}
     >
       {folderPathQuery.isError && folderPathQuery.data === undefined ? (
         <InlineErrorState
@@ -100,13 +190,14 @@ export const DeckEditPage = ({
         />
       ) : null}
       <DeckEditorForm
-        description={description}
-        icon={icon}
+        description={description.field.value}
+        icon={icon.field.value}
         locationPath={parentLocationPath}
-        title={title}
-        onDescriptionChange={setDescription}
-        onIconChange={setIcon}
-        onTitleChange={setTitle}
+        title={title.field.value}
+        validationMessages={validationMessages}
+        onDescriptionChange={handleDescriptionChange}
+        onIconChange={handleIconChange}
+        onTitleChange={handleTitleChange}
       />
     </EditorShell>
   )

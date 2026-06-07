@@ -2,7 +2,43 @@ use std::collections::BTreeMap;
 
 use serde::Serialize;
 
-pub type FieldErrors = BTreeMap<String, Vec<String>>;
+pub type ValidationIssueParams = BTreeMap<String, serde_json::Value>;
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidationIssue {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<Vec<String>>,
+    pub code: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub params: Option<ValidationIssueParams>,
+}
+
+impl ValidationIssue {
+    pub fn new(code: impl Into<String>) -> Self {
+        Self {
+            path: None,
+            code: code.into(),
+            params: None,
+        }
+    }
+
+    pub fn at_path(
+        path: impl IntoIterator<Item = impl Into<String>>,
+        code: impl Into<String>,
+    ) -> Self {
+        Self {
+            path: Some(path.into_iter().map(Into::into).collect()),
+            code: code.into(),
+            params: None,
+        }
+    }
+
+    pub fn with_params(mut self, params: ValidationIssueParams) -> Self {
+        self.params = Some(params);
+        self
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -18,15 +54,16 @@ pub enum DomainErrorType {
     Unexpected,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DomainError {
     #[serde(rename = "type")]
     pub error_type: DomainErrorType,
-    pub message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message: Option<String>,
     pub retryable: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub field_errors: Option<FieldErrors>,
+    pub issues: Option<Vec<ValidationIssue>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub entity: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -34,12 +71,12 @@ pub struct DomainError {
 }
 
 impl DomainError {
-    pub fn validation(message: impl Into<String>, field_errors: FieldErrors) -> Self {
+    pub fn validation(issues: Vec<ValidationIssue>) -> Self {
         Self {
             error_type: DomainErrorType::Validation,
-            message: message.into(),
+            message: None,
             retryable: false,
-            field_errors: Some(field_errors),
+            issues: Some(issues),
             entity: None,
             entity_id: None,
         }
@@ -60,9 +97,9 @@ impl DomainError {
     ) -> Self {
         Self {
             error_type: DomainErrorType::NotFound,
-            message: message.into(),
+            message: Some(message.into()),
             retryable: false,
-            field_errors: None,
+            issues: None,
             entity,
             entity_id,
         }
@@ -95,9 +132,9 @@ impl DomainError {
     ) -> Self {
         Self {
             error_type,
-            message: message.into(),
+            message: Some(message.into()),
             retryable,
-            field_errors: None,
+            issues: None,
             entity: None,
             entity_id: None,
         }
@@ -108,19 +145,11 @@ impl DomainError {
 mod tests {
     use serde_json::json;
 
-    use super::{DomainError, DomainErrorType};
+    use super::{DomainError, DomainErrorType, ValidationIssue};
 
     #[test]
     fn serializes_validation_errors_using_the_ui_contract_shape() {
-        let error = DomainError::validation(
-            "Invalid input.",
-            [(
-                String::from("email"),
-                vec![String::from("Email is required.")],
-            )]
-            .into_iter()
-            .collect(),
-        );
+        let error = DomainError::validation(vec![ValidationIssue::at_path(["email"], "required")]);
 
         let value = serde_json::to_value(error).expect("serialize domain error");
 
@@ -128,11 +157,13 @@ mod tests {
             value,
             json!({
                 "type": "validation",
-                "message": "Invalid input.",
                 "retryable": false,
-                "fieldErrors": {
-                    "email": ["Email is required."]
-                }
+                "issues": [
+                    {
+                        "path": ["email"],
+                        "code": "required"
+                    }
+                ]
             })
         );
     }

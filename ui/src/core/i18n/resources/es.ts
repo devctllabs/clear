@@ -158,7 +158,6 @@ export const es = {
     },
     descriptions: {
       emptyDeck: 'Añade una nota para que este mazo tenga material de repaso.',
-      editorDefault: 'Mazo de estudio enfocado.',
       editorVisual: 'Elige un glifo de portada para este mazo.',
       notesSearchPlaceholder: 'Buscar notas…',
     },
@@ -190,8 +189,6 @@ export const es = {
       descriptionLabel: 'Descripción del mazo',
       descriptionPlaceholder: '¿Qué te ayudará a repasar este mazo?',
       namePlaceholder: 'Nombre del mazo',
-      untitledDeck: 'Mazo sin título',
-      untitledDeckLower: 'mazo sin título',
     },
     labels: {
       createDeckTitle: 'Crear mazo',
@@ -221,19 +218,30 @@ export const es = {
       timeout: 'Esto tardó demasiado. Inténtalo de nuevo.',
       unauthorized: 'Inicia sesión para continuar.',
       unavailable: 'El servicio no está disponible temporalmente.',
+      validation: 'Revisa los campos resaltados e inténtalo de nuevo.',
     },
     fallback: {
       unexpected: 'Error inesperado',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}} no es válido.',
+      invalidEnum: 'Elige un {{field}} válido.',
+      invalidFormat: 'Introduce un {{field}} válido.',
+      maxLength: '{{field}} debe tener como máximo {{max}} caracteres.',
+      maximum: '{{field}} debe ser como máximo {{max}}.',
+      minLength: '{{field}} debe tener al menos {{min}} caracteres.',
+      minimum: '{{field}} debe ser al menos {{min}}.',
+      required: '{{field}} es obligatorio.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Crear carpeta',
       deleteFolder: 'Eliminar carpeta',
       editFolder: 'Editar carpeta',
-    },
-    descriptions: {
-      editorDefault: 'Carpeta para mazos relacionados.',
     },
     dialogs: {
       deleteFolderDescription: 'Esto mueve "{{name}}" a la Papelera. Puedes restaurarla más tarde.',
@@ -256,7 +264,6 @@ export const es = {
       descriptionLabel: 'Descripción de la carpeta',
       descriptionPlaceholder: '¿Qué pertenece a esta carpeta?',
       namePlaceholder: 'Nombre de la carpeta',
-      untitledFolder: 'Carpeta sin título',
     },
     labels: {
       createFolderTitle: 'Crear carpeta',
@@ -586,7 +593,6 @@ export const es = {
       openingWorkspace: 'Abriendo {{title}}',
     },
     descriptions: {
-      editorDefault: 'Contexto de estudio.',
       editorVisual: 'Elige un ancla visual para este espacio de trabajo.',
       emptyList: 'Separa mazos, notas y colas de repaso por contexto de estudio.',
     },
@@ -611,7 +617,6 @@ export const es = {
       descriptionLabel: 'Descripción del espacio de trabajo',
       descriptionPlaceholder: '¿Qué pertenece a este espacio de trabajo?',
       namePlaceholder: 'Nombre del espacio de trabajo',
-      untitledWorkspace: 'Espacio de trabajo sin título',
     },
     labels: {
       createWorkspaceTitle: 'Crear espacio de trabajo',

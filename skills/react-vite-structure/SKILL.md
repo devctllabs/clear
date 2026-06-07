@@ -1,6 +1,6 @@
 ---
 name: react-vite-structure
-description: React + Vite + TypeScript project structure guidance for creating, organizing, refactoring, or migrating frontend apps. Use when Codex needs folder architecture, feature-module boundaries, TanStack Router file-based route modules, hierarchical route-facing pages, platform-dependent service implementations, dependency injection, typed Result/DomainError handling, UI loading/error/empty states, web/Tauri/mock services, composite/routed services, generated code placement, OpenAPI codegen organization, shadcn/ui and Tailwind placement, Storybook stories and UI testing strategy, shared/core conventions, path aliases, naming rules, common types, feature scaffolding workflow, testing strategy, state management choices, code quality tooling, documentation templates, or migration checklists for React/Vite projects.
+description: React + Vite + TypeScript project structure guidance for creating, organizing, refactoring, or migrating frontend apps. Use when Codex needs folder architecture, feature-module boundaries, TanStack Router file-based route modules, hierarchical route-facing pages, platform-dependent service implementations, dependency injection, typed Result/DomainError handling, form ownership and validation with React Hook Form/Zod, UI loading/error/empty states, web/Tauri/mock services, composite/routed services, generated code placement, OpenAPI codegen organization, shadcn/ui and Tailwind placement, Storybook stories and UI testing strategy, i18n provider/resource architecture, typed translation keys, locale handling, RTL/document metadata, shared/core conventions, path aliases, naming rules, common types, feature scaffolding workflow, testing strategy, state management choices, code quality tooling, documentation templates, or migration checklists for React/Vite projects.
 ---
 
 # React Vite Structure
@@ -22,6 +22,8 @@ Use this skill to organize React + Vite + TypeScript apps around feature modules
 - Read `references/generated-code.md` for generated code placement, OpenAPI codegen output, generated DTO usage, API adapters, and generated TanStack Query hooks.
 - Read `references/platform-services-and-di.md` for platform-dependent services, feature service contracts, `platform/services`, composite services, object-scoped backend routing, and DI wiring.
 - Read `references/error-handling.md` for `Result`, `DomainResult`, `DomainErrorType`, typed domain errors, API/Tauri error mapping, and React Query unwrapping.
+- Read `references/i18n.md` when adding or changing localization, typed translation resources, language selection, locale metadata, RTL handling, translated shared helpers, or Storybook i18n wiring.
+- Read `references/forms-and-validation.md` when adding or changing typed forms, React Hook Form/Zod validation, form ownership boundaries, validation-message mapping, or form accessibility/tests.
 - Read `references/ui-error-states.md` for UI loading, empty, query error, partial-data, retry, mutation pending, and mutation error rendering policy.
 - Read `references/typescript-and-naming.md` for `tsconfig.json`, `vite.config.ts` path aliases, naming conventions, component/hook/service/type examples, and common shared types.
 - Read `references/feature-workflow.md` when adding or scaffolding a new feature module, including types, service, React Query hooks, components, pages, and public exports.
@@ -39,6 +41,8 @@ Use this skill to organize React + Vite + TypeScript apps around feature modules
 - For every user-visible async operation, account for loading, no-data query error, stale-data query error, mutation pending, and mutation error states when those states are possible. Do not leave a query or mutation failure silent in the UI.
 - For new projects, use `pnpm` by default. For existing projects, follow the detected lockfile/package manager unless the user asks to migrate.
 - For new UI projects, prefer Tailwind via the Vite plugin and shadcn/ui primitives under `src/shared/components/ui`. For existing projects, keep the coherent detected UI stack unless the user asks to migrate.
+- When localization is needed and no coherent existing stack exists, prefer `i18next + react-i18next` with typed selector resources under `src/core/i18n`.
+- When form validation is needed and no coherent existing stack exists, prefer `react-hook-form` with `zod` and `@hookform/resolvers/zod`; keep simple one-field search/filter controls in local state when schema validation adds no value.
 - Keep `index.html` in the Vite app root next to `package.json` and `vite.config.ts`; use `ui/index.html` only when `ui/` is itself the app/package root.
 - Use `public/` only for static files served as-is by stable URL. Use `src/assets/` for imported or bundled images, icons, fonts, and global styles.
 - Use strict TypeScript and Vite path aliases that mirror `src/features`, `src/shared`, `src/core`, and `src/assets`.
@@ -57,6 +61,8 @@ Use this skill to organize React + Vite + TypeScript apps around feature modules
 - Avoid redundant domain prefixes inside a feature. Prefer route-facing page basenames such as `ListPage.tsx`, `CreatePage.tsx`, `DetailPage.tsx`, `EditPage.tsx`, singleton `<Feature>Page.tsx`, or workflow-step pages such as `SessionPage.tsx`; add aliases or prefixes only at public export boundaries or when ambiguity is real.
 - Keep platform-dependent service implementations in `src/platform/services/[feature]/{web,tauri,mock,composite}`.
 - Keep `src/core/services` for DI composition and React service providers only; do not put concrete feature service implementations there.
+- Keep app-wide i18n infrastructure in `src/core/i18n`; features consume translations but do not own i18n initialization, public locale lists, fallback behavior, or document language/direction metadata.
 - Keep `features/[feature]/services/[feature]Service.ts` interface-only. Features must not import `apiClient`, `@tauri-apps/api`, `platform/*`, or concrete service implementations.
 - Use `src/platform/services/[feature]/web/[feature]Service.ts` as the default concrete implementation, even before Tauri/mock/composite implementations exist.
 - Use `DomainResult<T>` for async backend/runtime service contract methods. Platform services return `ok`/`err`; React Query hooks call `unwrapDomainResult` so `query.data` is `T` and `query.error` is `DomainError`.
+- Keep platform services, generated API code, backend contracts, route paths, fixture seeds, and internal test strings language-agnostic unless they are visible UI.

@@ -31,6 +31,7 @@ export const SettingsPageContent = ({
   onOpenTimezonePicker,
   onThemePreferenceChange,
   onUpdateSettings,
+  validationMessages,
 }: {
   settings: Settings
   themePreference: ThemePreference
@@ -39,10 +40,12 @@ export const SettingsPageContent = ({
   onOpenTimezonePicker: () => void
   onThemePreferenceChange: (theme: ThemePreference) => void
   onUpdateSettings: (patch: Partial<Settings>) => void
+  validationMessages?: Partial<Record<keyof Settings, string[]>>
 }) => (
   <SettingsPageContentInner
     settings={settings}
     themePreference={themePreference}
+    validationMessages={validationMessages}
     onOpenFsrsParamsEditor={onOpenFsrsParamsEditor}
     onOpenResetDialog={onOpenResetDialog}
     onOpenTimezonePicker={onOpenTimezonePicker}
@@ -59,6 +62,7 @@ const SettingsPageContentInner = ({
   onOpenTimezonePicker,
   onThemePreferenceChange,
   onUpdateSettings,
+  validationMessages,
 }: {
   settings: Settings
   themePreference: ThemePreference
@@ -67,6 +71,7 @@ const SettingsPageContentInner = ({
   onOpenTimezonePicker: () => void
   onThemePreferenceChange: (theme: ThemePreference) => void
   onUpdateSettings: (patch: Partial<Settings>) => void
+  validationMessages?: Partial<Record<keyof Settings, string[]>>
 }) => {
   const { t } = useTranslation()
   const newCardsOrderOptions = settingsNewCardsOrderOptions.map((option) => ({
@@ -87,6 +92,7 @@ const SettingsPageContentInner = ({
             description={t(($) => $.settings.rows.languageDescription)}
             label={t(($) => $.settings.labels.language)}
             options={settingsLanguageOptions}
+            validationMessages={validationMessages?.language}
             value={getDocumentLocale(settings.language)}
             onSelect={(language) => {
               onUpdateSettings({ language })
@@ -97,6 +103,7 @@ const SettingsPageContentInner = ({
           chevron
           description={t(($) => $.settings.rows.timezoneDescription)}
           label={t(($) => $.settings.labels.timezone)}
+          validationMessages={validationMessages?.timezone}
           value={
             settings.timezone === 'auto'
               ? t(($) => $.settings.labels.automatic)
@@ -125,6 +132,7 @@ const SettingsPageContentInner = ({
         <SettingsNumberRow
           description={t(($) => $.settings.rows.newCardsPerDayDescription)}
           label={t(($) => $.settings.labels.newCardsPerDay)}
+          validationMessages={validationMessages?.dailyNewLimit}
           value={settings.dailyNewLimit}
           onChange={(dailyNewLimit) => {
             onUpdateSettings({ dailyNewLimit })
@@ -133,6 +141,7 @@ const SettingsPageContentInner = ({
         <SettingsNumberRow
           description={t(($) => $.settings.rows.reviewCardsPerDayDescription)}
           label={t(($) => $.settings.labels.reviewCardsPerDay)}
+          validationMessages={validationMessages?.dailyReviewLimit}
           value={settings.dailyReviewLimit}
           onChange={(dailyReviewLimit) => {
             onUpdateSettings({ dailyReviewLimit })
@@ -142,6 +151,7 @@ const SettingsPageContentInner = ({
           description={t(($) => $.settings.rows.newCardOrderDescription)}
           label={t(($) => $.settings.labels.newCardOrder)}
           options={newCardsOrderOptions}
+          validationMessages={validationMessages?.newCardsOrder}
           value={settings.newCardsOrder}
           onSelect={(newCardsOrder) => {
             onUpdateSettings({ newCardsOrder })
@@ -153,6 +163,7 @@ const SettingsPageContentInner = ({
         <SettingsSliderRow
           description={t(($) => $.settings.rows.targetRecallProbabilityDescription)}
           label={t(($) => $.settings.labels.targetRecallProbability)}
+          validationMessages={validationMessages?.fsrsRetention}
           value={settings.fsrsRetention}
           onChange={(fsrsRetention) => {
             onUpdateSettings({ fsrsRetention })
@@ -161,6 +172,7 @@ const SettingsPageContentInner = ({
         <SettingsNumberRow
           description={t(($) => $.settings.rows.masteryHorizonDescription)}
           label={t(($) => $.settings.labels.masteryHorizon)}
+          validationMessages={validationMessages?.masteryHorizonDays}
           value={settings.masteryHorizonDays}
           onChange={(masteryHorizonDays) => {
             onUpdateSettings({ masteryHorizonDays })
@@ -170,6 +182,7 @@ const SettingsPageContentInner = ({
           chevron
           description={t(($) => $.settings.rows.fsrsDescription)}
           label={t(($) => $.settings.labels.fsrsParameters)}
+          validationMessages={validationMessages?.fsrsParams}
           value={
             isDefaultSettingsFsrsParams(settings.fsrsParams)
               ? t(($) => $.common.labels.default)

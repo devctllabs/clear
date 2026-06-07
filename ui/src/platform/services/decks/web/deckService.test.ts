@@ -146,10 +146,7 @@ describe('webDeckService', () => {
       http.post(apiUrl('/decks'), () =>
         HttpResponse.json(
           {
-            fieldErrors: {
-              title: ['Title is required.'],
-            },
-            message: 'Invalid deck.',
+            issues: [{ code: 'required', path: ['title'] }],
             retryable: false,
             type: DomainErrorType.Validation,
           },
@@ -159,10 +156,7 @@ describe('webDeckService', () => {
     )
 
     expect(expectErr(await webDeckService.create(draft))).toEqual({
-      fieldErrors: {
-        title: ['Title is required.'],
-      },
-      message: 'Invalid deck.',
+      issues: [{ code: 'required', path: ['title'] }],
       retryable: false,
       type: DomainErrorType.Validation,
     })

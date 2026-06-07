@@ -158,7 +158,6 @@ export const ja = {
     },
     descriptions: {
       emptyDeck: '復習する内容を作るためにノートを追加してください。',
-      editorDefault: '集中学習用のデッキ。',
       editorVisual: 'このデッキのカバーグリフを選びます。',
       notesSearchPlaceholder: 'ノートを検索…',
     },
@@ -190,8 +189,6 @@ export const ja = {
       descriptionLabel: 'デッキの説明',
       descriptionPlaceholder: 'このデッキで何を復習しますか？',
       namePlaceholder: 'デッキ名',
-      untitledDeck: '無題のデッキ',
-      untitledDeckLower: '無題のデッキ',
     },
     labels: {
       createDeckTitle: 'デッキを作成',
@@ -221,19 +218,30 @@ export const ja = {
       timeout: '時間がかかりすぎました。もう一度お試しください。',
       unauthorized: '続行するにはサインインしてください。',
       unavailable: 'サービスは一時的に利用できません。',
+      validation: '強調表示された項目を確認して、もう一度試してください。',
     },
     fallback: {
       unexpected: '予期しないエラー',
     },
   },
+  forms: {
+    validation: {
+      invalid: '{{field}}が無効です。',
+      invalidEnum: '有効な{{field}}を選択してください。',
+      invalidFormat: '有効な{{field}}を入力してください。',
+      maxLength: '{{field}}は{{max}}文字以内にしてください。',
+      maximum: '{{field}}は{{max}}以下にしてください。',
+      minLength: '{{field}}は{{min}}文字以上にしてください。',
+      minimum: '{{field}}は{{min}}以上にしてください。',
+      required: '{{field}}は必須です。',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'フォルダーを作成',
       deleteFolder: 'フォルダーを削除',
       editFolder: 'フォルダーを編集',
-    },
-    descriptions: {
-      editorDefault: '関連するデッキ用のフォルダー。',
     },
     dialogs: {
       deleteFolderDescription: '"{{name}}" をゴミ箱に移動します。後で復元できます。',
@@ -256,7 +264,6 @@ export const ja = {
       descriptionLabel: 'フォルダーの説明',
       descriptionPlaceholder: 'このフォルダーには何を入れますか？',
       namePlaceholder: 'フォルダー名',
-      untitledFolder: '無題のフォルダー',
     },
     labels: {
       createFolderTitle: 'フォルダーを作成',
@@ -586,7 +593,6 @@ export const ja = {
       openingWorkspace: '{{title}} を開いています',
     },
     descriptions: {
-      editorDefault: '学習コンテキスト。',
       editorVisual: 'このワークスペースの視覚的な目印を選びます。',
       emptyList: 'デッキ、ノート、復習キューを学習コンテキストごとに分けます。',
     },
@@ -611,7 +617,6 @@ export const ja = {
       descriptionLabel: 'ワークスペースの説明',
       descriptionPlaceholder: 'このワークスペースには何を入れますか？',
       namePlaceholder: 'ワークスペース名',
-      untitledWorkspace: '無題のワークスペース',
     },
     labels: {
       createWorkspaceTitle: 'ワークスペースを作成',

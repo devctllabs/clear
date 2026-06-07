@@ -210,15 +210,6 @@ export const LongInvalidDate: Story = {
   },
 }
 
-export const EmptyTitle: Story = {
-  args: {
-    deck: createDeck({
-      id: 'empty-title',
-      title: '',
-    }),
-  },
-}
-
 export const LongTitle: Story = {
   args: {
     deck: createDeck({

@@ -158,7 +158,6 @@ export const el = {
     },
     descriptions: {
       emptyDeck: 'Προσθέστε μια σημείωση ώστε αυτή η τράπουλα να έχει υλικό για επανάληψη.',
-      editorDefault: 'Εστιασμένη τράπουλα μελέτης.',
       editorVisual: 'Επιλέξτε ένα σύμβολο εξωφύλλου για αυτήν την τράπουλα.',
       notesSearchPlaceholder: 'Αναζήτηση σημειώσεων…',
     },
@@ -190,8 +189,6 @@ export const el = {
       descriptionLabel: 'Περιγραφή τράπουλας',
       descriptionPlaceholder: 'Τι θα σας βοηθήσει να επαναλάβετε αυτή η τράπουλα;',
       namePlaceholder: 'Όνομα τράπουλας',
-      untitledDeck: 'Τράπουλα χωρίς τίτλο',
-      untitledDeckLower: 'τράπουλα χωρίς τίτλο',
     },
     labels: {
       createDeckTitle: 'Δημιουργία τράπουλας',
@@ -221,19 +218,30 @@ export const el = {
       timeout: 'Αυτό πήρε πολύ χρόνο. Δοκιμάστε ξανά.',
       unauthorized: 'Συνδεθείτε για να συνεχίσετε.',
       unavailable: 'Η υπηρεσία δεν είναι προσωρινά διαθέσιμη.',
+      validation: 'Ελέγξτε τα επισημασμένα πεδία και δοκιμάστε ξανά.',
     },
     fallback: {
       unexpected: 'Απροσδόκητο σφάλμα',
     },
   },
+  forms: {
+    validation: {
+      invalid: 'Το {{field}} δεν είναι έγκυρο.',
+      invalidEnum: 'Επιλέξτε έγκυρη τιμή για το {{field}}.',
+      invalidFormat: 'Εισαγάγετε έγκυρη τιμή για το {{field}}.',
+      maxLength: 'Το {{field}} πρέπει να έχει το πολύ {{max}} χαρακτήρες.',
+      maximum: 'Το {{field}} πρέπει να είναι το πολύ {{max}}.',
+      minLength: 'Το {{field}} πρέπει να έχει τουλάχιστον {{min}} χαρακτήρες.',
+      minimum: 'Το {{field}} πρέπει να είναι τουλάχιστον {{min}}.',
+      required: 'Το {{field}} είναι υποχρεωτικό.',
+    },
+  },
+
   folders: {
     actions: {
       createFolder: 'Δημιουργία φακέλου',
       deleteFolder: 'Διαγραφή φακέλου',
       editFolder: 'Επεξεργασία φακέλου',
-    },
-    descriptions: {
-      editorDefault: 'Φάκελος για σχετικές τράπουλες.',
     },
     dialogs: {
       deleteFolderDescription: 'Αυτό μετακινεί το "{{name}}" στον Κάδο. Μπορείτε να το επαναφέρετε αργότερα.',
@@ -256,7 +264,6 @@ export const el = {
       descriptionLabel: 'Περιγραφή φακέλου',
       descriptionPlaceholder: 'Τι ανήκει σε αυτόν τον φάκελο;',
       namePlaceholder: 'Όνομα φακέλου',
-      untitledFolder: 'Φάκελος χωρίς τίτλο',
     },
     labels: {
       createFolderTitle: 'Δημιουργία φακέλου',
@@ -586,7 +593,6 @@ export const el = {
       openingWorkspace: 'Άνοιγμα {{title}}',
     },
     descriptions: {
-      editorDefault: 'Πλαίσιο μελέτης.',
       editorVisual: 'Επιλέξτε μια οπτική άγκυρα για αυτόν τον χώρο εργασίας.',
       emptyList: 'Διαχωρίστε τράπουλες, σημειώσεις και ουρές επανάληψης ανά πλαίσιο μελέτης.',
     },
@@ -611,7 +617,6 @@ export const el = {
       descriptionLabel: 'Περιγραφή χώρου εργασίας',
       descriptionPlaceholder: 'Τι ανήκει σε αυτόν τον χώρο εργασίας;',
       namePlaceholder: 'Όνομα χώρου εργασίας',
-      untitledWorkspace: 'Χώρος εργασίας χωρίς τίτλο',
     },
     labels: {
       createWorkspaceTitle: 'Δημιουργία χώρου εργασίας',
