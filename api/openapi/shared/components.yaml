@@ -92,26 +92,30 @@ components:
     BadRequest:
       description: The request was malformed.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
           examples:
             badRequest:
               value:
-                type: unexpected
-                message: Request body is malformed.
+                type: /problems/bad-request
+                title: Bad Request
+                status: 400
+                detail: Request body is malformed.
                 retryable: false
 
     Validation:
       description: The request failed domain validation.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
           examples:
             validation:
               value:
-                type: validation
+                type: /problems/validation
+                title: Validation Failed
+                status: 422
                 retryable: false
                 issues:
                   - path:
@@ -121,28 +125,30 @@ components:
     Unauthorized:
       description: Authentication is required.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
     Forbidden:
       description: The caller is not allowed to perform this action.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
     NotFound:
       description: The requested resource was not found.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
           examples:
             notFound:
               value:
-                type: not_found
-                message: Workspace not found.
+                type: /problems/not-found
+                title: Not Found
+                status: 404
+                detail: Workspace not found.
                 retryable: false
                 entity: workspace
                 entityId: editorial-production
@@ -150,30 +156,30 @@ components:
     Conflict:
       description: The request conflicts with current resource state.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
     Timeout:
       description: The operation timed out.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
     Unavailable:
       description: The service is temporarily unavailable.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
     Unexpected:
       description: An unexpected error occurred.
       content:
-        application/json:
+        application/problem+json:
           schema:
-            $ref: '#/components/schemas/DomainError'
+            $ref: '#/components/schemas/ProblemDetails'
 
   schemas:
     Id:
@@ -221,19 +227,20 @@ components:
       description: Lucide icon name used by the UI visual picker.
       example: book-open
 
-    DomainErrorType:
+    ProblemType:
       type: string
+      format: uri-reference
       enum:
-        - conflict
-        - forbidden
-        - not_found
-        - offline
-        - timeout
-        - unauthorized
-        - unexpected
-        - unavailable
-        - validation
-      example: validation
+        - /problems/bad-request
+        - /problems/conflict
+        - /problems/forbidden
+        - /problems/not-found
+        - /problems/timeout
+        - /problems/unauthorized
+        - /problems/unexpected
+        - /problems/unavailable
+        - /problems/validation
+      example: /problems/validation
 
     ValidationIssue:
       type: object
@@ -256,18 +263,32 @@ components:
           - title
         code: required
 
-    ValidationDomainError:
+    ValidationProblemDetails:
       type: object
       additionalProperties: false
       required:
         - issues
         - retryable
+        - status
+        - title
         - type
       properties:
         type:
           type: string
           enum:
-            - validation
+            - /problems/validation
+          format: uri-reference
+        title:
+          type: string
+          minLength: 1
+          example: Validation Failed
+        status:
+          type: integer
+          enum:
+            - 422
+        detail:
+          type: string
+          minLength: 1
         issues:
           type: array
           items:
@@ -277,33 +298,44 @@ components:
           enum:
             - false
       example:
-        type: validation
+        type: /problems/validation
+        title: Validation Failed
+        status: 422
         retryable: false
         issues:
           - path:
               - title
             code: required
 
-    MessageDomainError:
+    MessageProblemDetails:
       type: object
       additionalProperties: false
       required:
-        - message
         - retryable
+        - status
+        - title
         - type
       properties:
         type:
           type: string
+          format: uri-reference
           enum:
-            - conflict
-            - forbidden
-            - not_found
-            - offline
-            - timeout
-            - unauthorized
-            - unexpected
-            - unavailable
-        message:
+            - /problems/bad-request
+            - /problems/conflict
+            - /problems/forbidden
+            - /problems/not-found
+            - /problems/timeout
+            - /problems/unauthorized
+            - /problems/unexpected
+            - /problems/unavailable
+        title:
+          type: string
+          minLength: 1
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
           type: string
           minLength: 1
         retryable:
@@ -313,31 +345,35 @@ components:
         entityId:
           type: string
 
-    DomainError:
+    ProblemDetails:
       oneOf:
-        - $ref: '#/components/schemas/ValidationDomainError'
-        - $ref: '#/components/schemas/MessageDomainError'
+        - $ref: '#/components/schemas/ValidationProblemDetails'
+        - $ref: '#/components/schemas/MessageProblemDetails'
       discriminator:
         propertyName: type
         mapping:
-          conflict: '#/components/schemas/MessageDomainError'
-          forbidden: '#/components/schemas/MessageDomainError'
-          not_found: '#/components/schemas/MessageDomainError'
-          offline: '#/components/schemas/MessageDomainError'
-          timeout: '#/components/schemas/MessageDomainError'
-          unauthorized: '#/components/schemas/MessageDomainError'
-          unexpected: '#/components/schemas/MessageDomainError'
-          unavailable: '#/components/schemas/MessageDomainError'
-          validation: '#/components/schemas/ValidationDomainError'
+          /problems/bad-request: '#/components/schemas/MessageProblemDetails'
+          /problems/conflict: '#/components/schemas/MessageProblemDetails'
+          /problems/forbidden: '#/components/schemas/MessageProblemDetails'
+          /problems/not-found: '#/components/schemas/MessageProblemDetails'
+          /problems/timeout: '#/components/schemas/MessageProblemDetails'
+          /problems/unauthorized: '#/components/schemas/MessageProblemDetails'
+          /problems/unexpected: '#/components/schemas/MessageProblemDetails'
+          /problems/unavailable: '#/components/schemas/MessageProblemDetails'
+          /problems/validation: '#/components/schemas/ValidationProblemDetails'
       examples:
-        - type: validation
+        - type: /problems/validation
+          title: Validation Failed
+          status: 422
           retryable: false
           issues:
             - path:
                 - title
               code: required
-        - type: not_found
-          message: Note not found.
+        - type: /problems/not-found
+          title: Not Found
+          status: 404
+          detail: Note not found.
           retryable: false
           entity: note
           entityId: constitutional-crisis

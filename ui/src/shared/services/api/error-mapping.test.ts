@@ -37,7 +37,13 @@ describe('mapApiErrorToDomainError', () => {
     expect(
       mapApiErrorToDomainError({
         response: {
-          data: { message: 'Gateway failed.' },
+          data: {
+            detail: 'Gateway failed.',
+            retryable: true,
+            status,
+            title: 'Service Unavailable',
+            type: '/problems/unavailable',
+          },
           status,
         },
       }),
@@ -48,14 +54,16 @@ describe('mapApiErrorToDomainError', () => {
     })
   })
 
-  it('keeps 422 API validation errors as issue validation', () => {
+  it('maps 422 problem validation errors to issue validation', () => {
     expect(
       mapApiErrorToDomainError({
         response: {
           data: {
             issues: [{ code: 'required', path: ['title'] }],
             retryable: false,
-            type: DomainErrorType.Validation,
+            status: 422,
+            title: 'Validation Failed',
+            type: '/problems/validation',
           },
           status: 422,
         },
@@ -73,6 +81,10 @@ describe('mapApiErrorToDomainError', () => {
         response: {
           data: {
             issues: [{ code: 42, path: ['title'] }],
+            retryable: false,
+            status: 422,
+            title: 'Validation Failed',
+            type: '/problems/validation',
           },
           status: 422,
         },
@@ -80,6 +92,91 @@ describe('mapApiErrorToDomainError', () => {
     ).toMatchObject({
       issues: [],
       type: DomainErrorType.Validation,
+    })
+  })
+
+  it('maps not found problem metadata to domain error metadata', () => {
+    expect(
+      mapApiErrorToDomainError({
+        response: {
+          data: {
+            detail: 'Workspace missing.',
+            entity: 'workspace',
+            entityId: 'workspace-1',
+            retryable: false,
+            status: 404,
+            title: 'Not Found',
+            type: '/problems/not-found',
+          },
+          status: 404,
+        },
+      }),
+    ).toEqual({
+      entity: 'workspace',
+      entityId: 'workspace-1',
+      message: 'Workspace missing.',
+      retryable: false,
+      type: DomainErrorType.NotFound,
+    })
+  })
+
+  it('maps bad request and conflict problems to domain errors', () => {
+    expect(
+      mapApiErrorToDomainError({
+        response: {
+          data: {
+            detail: 'Request body must be valid JSON.',
+            retryable: false,
+            status: 400,
+            title: 'Bad Request',
+            type: '/problems/bad-request',
+          },
+          status: 400,
+        },
+      }),
+    ).toMatchObject({
+      message: 'Request body must be valid JSON.',
+      retryable: false,
+      type: DomainErrorType.Unexpected,
+    })
+
+    expect(
+      mapApiErrorToDomainError({
+        response: {
+          data: {
+            detail: 'Workspace already exists.',
+            retryable: false,
+            status: 409,
+            title: 'Conflict',
+            type: '/problems/conflict',
+          },
+          status: 409,
+        },
+      }),
+    ).toMatchObject({
+      message: 'Workspace already exists.',
+      retryable: false,
+      type: DomainErrorType.Conflict,
+    })
+  })
+
+  it('falls back to HTTP status for unknown problem types', () => {
+    expect(
+      mapApiErrorToDomainError({
+        response: {
+          data: {
+            detail: 'Custom conflict.',
+            status: 409,
+            title: 'Custom Conflict',
+            type: '/problems/custom-conflict',
+          },
+          status: 409,
+        },
+      }),
+    ).toMatchObject({
+      message: 'Custom conflict.',
+      retryable: false,
+      type: DomainErrorType.Conflict,
     })
   })
 

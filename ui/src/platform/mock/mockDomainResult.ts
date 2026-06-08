@@ -7,11 +7,11 @@ import {
 import {
   domainError,
   err,
-  isDomainError,
   ok,
   type DomainError,
   type Result,
 } from '@shared/errors'
+import { mapApiErrorToDomainError } from '@shared/services/api/error-mapping'
 import type {
   DueReviewSession,
   ReviewSession,
@@ -61,9 +61,5 @@ const toMockDomainError = (error: unknown): DomainError => {
     return domainError.unexpected('Mock service failed.')
   }
 
-  if (isDomainError(error.body)) {
-    return error.body
-  }
-
-  return domainError.unexpected(error.message)
+  return mapApiErrorToDomainError(error.body, error.message)
 }

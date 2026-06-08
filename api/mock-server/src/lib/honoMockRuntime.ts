@@ -2,6 +2,7 @@ import type { Hono } from 'hono'
 import { ZodError, type ZodIssue, type z } from 'zod'
 
 import {
+  ValidationIssueCode,
   badRequest,
   MockHttpError,
   unexpected,
@@ -37,10 +38,21 @@ const methods = {
 } as const
 
 export const mockJsonResponse = (body: unknown, status: number, headers?: Headers) =>
+  mockBodyResponse(body, status, 'application/json', headers)
+
+export const mockProblemResponse = (body: unknown, status: number, headers?: Headers) =>
+  mockBodyResponse(body, status, 'application/problem+json', headers)
+
+const mockBodyResponse = (
+  body: unknown,
+  status: number,
+  contentType: string,
+  headers?: Headers,
+) =>
   new Response(JSON.stringify(body), {
     headers: {
-      'content-type': 'application/json',
       ...(headers ? Object.fromEntries(headers.entries()) : {}),
+      'content-type': contentType,
     },
     status,
   })
@@ -98,16 +110,20 @@ const toValidationIssueCode = (
   switch (issue.code) {
     case 'invalid_type':
       return typeof issue.message === 'string' && issue.message.includes('received undefined')
-        ? 'required'
-        : 'invalid'
+        ? ValidationIssueCode.Required
+        : ValidationIssueCode.Invalid
     case 'too_small':
-      return rawIssue.origin === 'string' ? 'min_length' : 'minimum'
+      return rawIssue.origin === 'string'
+        ? ValidationIssueCode.MinLength
+        : ValidationIssueCode.Minimum
     case 'too_big':
-      return rawIssue.origin === 'string' ? 'max_length' : 'maximum'
+      return rawIssue.origin === 'string'
+        ? ValidationIssueCode.MaxLength
+        : ValidationIssueCode.Maximum
     case 'invalid_value':
-      return 'invalid_value'
+      return ValidationIssueCode.InvalidValue
     case 'invalid_format':
-      return 'invalid_format'
+      return ValidationIssueCode.InvalidFormat
     default:
       return issue.code
   }
@@ -185,7 +201,7 @@ export const registerGeneratedMockRoutes = (
               ? unexpected(caught.message)
               : unexpected()
 
-        return mockJsonResponse(error.body, error.status, requestContext.responseHeaders)
+        return mockProblemResponse(error.body, error.status, requestContext.responseHeaders)
       }
     })
   }

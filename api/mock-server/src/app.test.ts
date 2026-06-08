@@ -4,6 +4,11 @@ import { newMockApiApp } from './app.ts'
 
 const json = async <T>(response: Response) => response.json() as Promise<T>
 
+const expectProblemResponse = (response: Response, status: number) => {
+  expect(response.status).toBe(status)
+  expect(response.headers.get('content-type')).toContain('application/problem+json')
+}
+
 describe('mock api app', () => {
   it('creates counter ids and exposes them through the workspace list', async () => {
     const app = await newMockApiApp()
@@ -66,7 +71,7 @@ describe('mock api app', () => {
       }),
     )
 
-    expect(response.status).toBe(422)
+    expectProblemResponse(response, 422)
     await expect(json(response)).resolves.toMatchObject({
       issues: [
         {
@@ -79,7 +84,49 @@ describe('mock api app', () => {
         },
       ],
       retryable: false,
-      type: 'validation',
+      status: 422,
+      title: 'Validation Failed',
+      type: '/problems/validation',
+    })
+  })
+
+  it('returns problem details for malformed request bodies', async () => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(
+      new Request('http://localhost/api/v1/workspaces', {
+        body: '{',
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      }),
+    )
+
+    expectProblemResponse(response, 400)
+    await expect(json(response)).resolves.toMatchObject({
+      detail: 'Request body must be valid JSON.',
+      retryable: false,
+      status: 400,
+      title: 'Bad Request',
+      type: '/problems/bad-request',
+    })
+  })
+
+  it('returns problem details for unknown routes', async () => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(new Request('http://localhost/api/v1/not-real'))
+
+    expectProblemResponse(response, 404)
+    await expect(json(response)).resolves.toMatchObject({
+      detail: 'route request was not found',
+      entity: 'route',
+      entityId: 'request',
+      retryable: false,
+      status: 404,
+      title: 'Not Found',
+      type: '/problems/not-found',
     })
   })
 
@@ -165,7 +212,7 @@ describe('mock api app', () => {
       }),
     )
 
-    expect(response.status).toBe(422)
+    expectProblemResponse(response, 422)
     await expect(json(response)).resolves.toMatchObject({
       issues: [
         {
@@ -174,7 +221,9 @@ describe('mock api app', () => {
         },
       ],
       retryable: false,
-      type: 'validation',
+      status: 422,
+      title: 'Validation Failed',
+      type: '/problems/validation',
     })
   })
 

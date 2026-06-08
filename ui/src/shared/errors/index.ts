@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 export const DomainErrorType = {
   Conflict: 'conflict',
   Forbidden: 'forbidden',
@@ -18,6 +20,27 @@ export type ValidationIssue = {
   code: string
   params?: Record<string, unknown>
 }
+
+export const ValidationIssueCode = {
+  Invalid: 'invalid',
+  InvalidEnum: 'invalid_enum',
+  InvalidFormat: 'invalid_format',
+  InvalidValue: 'invalid_value',
+  Maximum: 'maximum',
+  MaxLength: 'max_length',
+  Minimum: 'minimum',
+  MinLength: 'min_length',
+  Required: 'required',
+} as const
+
+export type ValidationIssueCode =
+  (typeof ValidationIssueCode)[keyof typeof ValidationIssueCode]
+
+const validationIssueSchema = z.object({
+  path: z.array(z.string()).optional(),
+  code: z.string().min(1),
+  params: z.record(z.string(), z.unknown()).optional(),
+})
 
 export type DomainError =
   | {
@@ -96,77 +119,49 @@ export const domainError = {
   },
 } as const
 
-export const isDomainError = (value: unknown): value is DomainError => {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
+const messageDomainErrorSchema = z.object({
+  message: z.string(),
+})
 
-  const candidate = value as {
-    entity?: unknown
-    entityId?: unknown
-    issues?: unknown
-    message?: unknown
-    retryable?: unknown
-    type?: unknown
-  }
+const nonRetryableMessageDomainErrorSchema = messageDomainErrorSchema.extend({
+  type: z.enum([
+    DomainErrorType.Conflict,
+    DomainErrorType.Forbidden,
+    DomainErrorType.NotFound,
+    DomainErrorType.Unauthorized,
+    DomainErrorType.Unexpected,
+  ]),
+  retryable: z.literal(false),
+  entity: z.string().optional(),
+  entityId: z.string().optional(),
+})
 
-  if (
-    typeof candidate.type !== 'string' ||
-    !Object.values(DomainErrorType).includes(candidate.type as DomainErrorType)
-  ) {
-    return false
-  }
+const retryableMessageDomainErrorSchema = messageDomainErrorSchema.extend({
+  type: z.enum([
+    DomainErrorType.Offline,
+    DomainErrorType.Timeout,
+    DomainErrorType.Unavailable,
+  ]),
+  retryable: z.literal(true),
+})
 
-  if (candidate.type === DomainErrorType.Validation) {
-    return candidate.retryable === false && isValidationIssues(candidate.issues)
-  }
+const validationDomainErrorSchema = z.object({
+  type: z.literal(DomainErrorType.Validation),
+  issues: z.array(validationIssueSchema),
+  retryable: z.literal(false),
+})
 
-  if (typeof candidate.message !== 'string') {
-    return false
-  }
+const domainErrorSchema = z.union([
+  validationDomainErrorSchema,
+  nonRetryableMessageDomainErrorSchema,
+  retryableMessageDomainErrorSchema,
+])
 
-  switch (candidate.type) {
-    case DomainErrorType.Conflict:
-    case DomainErrorType.Forbidden:
-    case DomainErrorType.NotFound:
-    case DomainErrorType.Unauthorized:
-    case DomainErrorType.Unexpected:
-      return (
-        candidate.retryable === false &&
-        (candidate.entity === undefined || typeof candidate.entity === 'string') &&
-        (candidate.entityId === undefined || typeof candidate.entityId === 'string')
-      )
-    case DomainErrorType.Offline:
-    case DomainErrorType.Timeout:
-    case DomainErrorType.Unavailable:
-      return candidate.retryable === true
-  }
-
-  return false
-}
+export const isDomainError = (value: unknown): value is DomainError =>
+  domainErrorSchema.safeParse(value).success
 
 export const isValidationIssues = (value: unknown): value is ValidationIssue[] =>
   Array.isArray(value) && value.every(isValidationIssue)
 
-export const isValidationIssue = (value: unknown): value is ValidationIssue => {
-  if (typeof value !== 'object' || value === null) {
-    return false
-  }
-
-  const candidate = value as {
-    code?: unknown
-    params?: unknown
-    path?: unknown
-  }
-
-  return (
-    typeof candidate.code === 'string' &&
-    (candidate.path === undefined ||
-      (Array.isArray(candidate.path) &&
-        candidate.path.every((segment) => typeof segment === 'string'))) &&
-    (candidate.params === undefined ||
-      (typeof candidate.params === 'object' &&
-        candidate.params !== null &&
-        !Array.isArray(candidate.params)))
-  )
-}
+export const isValidationIssue = (value: unknown): value is ValidationIssue =>
+  validationIssueSchema.safeParse(value).success

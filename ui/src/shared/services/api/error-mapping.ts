@@ -25,6 +25,18 @@ type ApiErrorInfo = {
   status?: number
 }
 
+const ProblemType = {
+  BadRequest: '/problems/bad-request',
+  Conflict: '/problems/conflict',
+  Forbidden: '/problems/forbidden',
+  NotFound: '/problems/not-found',
+  Timeout: '/problems/timeout',
+  Unauthorized: '/problems/unauthorized',
+  Unexpected: '/problems/unexpected',
+  Unavailable: '/problems/unavailable',
+  Validation: '/problems/validation',
+} as const
+
 export const mapApiErrorToDomainError = (
   error: unknown,
   fallbackMessage = 'Request failed.',
@@ -37,6 +49,12 @@ export const mapApiErrorToDomainError = (
 
   if (isResponseValidationError(error)) {
     return domainError.unavailable(fallbackMessage)
+  }
+
+  const problemError = mapProblemDetailsToDomainError(payload, message)
+
+  if (problemError) {
+    return problemError
   }
 
   switch (code) {
@@ -53,7 +71,11 @@ export const mapApiErrorToDomainError = (
     case 403:
       return domainError.forbidden(message)
     case 404:
-      return domainError.notFound(message)
+      return domainError.notFound(
+        message,
+        readStringProperty(payload, 'entity'),
+        readStringProperty(payload, 'entityId'),
+      )
     case 408:
       return domainError.timeout(message)
     case 409:
@@ -79,16 +101,60 @@ const readApiError = (error: unknown, fallbackMessage: string): ApiErrorInfo => 
 
   const candidate = error as ErrorLike
   const payload = candidate.error ?? candidate.response?.data ?? error
-  const status = candidate.response?.status
+  const responseStatus = candidate.response?.status
   const code = candidate.code
-  const payloadMessage = isObject(payload) ? payload.message : undefined
+  const payloadStatus = isObject(payload) ? payload.status : undefined
+  const payloadMessage = readProblemMessage(payload)
 
   return {
     code: typeof code === 'string' ? code : undefined,
     message:
       readMessage(payloadMessage) ?? readMessage(candidate.message) ?? fallbackMessage,
     payload,
-    status: typeof status === 'number' ? status : undefined,
+    status:
+      typeof responseStatus === 'number'
+        ? responseStatus
+        : typeof payloadStatus === 'number'
+          ? payloadStatus
+          : undefined,
+  }
+}
+
+const mapProblemDetailsToDomainError = (
+  payload: unknown,
+  fallbackMessage: string,
+): DomainError | undefined => {
+  if (!isObject(payload) || typeof payload.type !== 'string') {
+    return undefined
+  }
+
+  const message = readProblemMessage(payload) ?? fallbackMessage
+
+  switch (payload.type) {
+    case ProblemType.BadRequest:
+      return domainError.unexpected(message)
+    case ProblemType.Conflict:
+      return domainError.conflict(message)
+    case ProblemType.Forbidden:
+      return domainError.forbidden(message)
+    case ProblemType.NotFound:
+      return domainError.notFound(
+        message,
+        readStringProperty(payload, 'entity'),
+        readStringProperty(payload, 'entityId'),
+      )
+    case ProblemType.Timeout:
+      return domainError.timeout(message)
+    case ProblemType.Unauthorized:
+      return domainError.unauthorized(message)
+    case ProblemType.Unexpected:
+      return domainError.unexpected(message)
+    case ProblemType.Unavailable:
+      return domainError.unavailable(message)
+    case ProblemType.Validation:
+      return domainError.validation(getValidationIssues(payload))
+    default:
+      return undefined
   }
 }
 
@@ -108,6 +174,24 @@ const isResponseValidationError = (error: unknown) =>
 
 const readMessage = (message: unknown) =>
   typeof message === 'string' && message.trim().length > 0 ? message : undefined
+
+const readProblemMessage = (value: unknown) => {
+  if (!isObject(value)) {
+    return undefined
+  }
+
+  return readMessage(value.detail) ?? readMessage(value.title) ?? readMessage(value.message)
+}
+
+const readStringProperty = (value: unknown, property: string) => {
+  if (!isObject(value)) {
+    return undefined
+  }
+
+  const propertyValue = value[property]
+
+  return typeof propertyValue === 'string' ? propertyValue : undefined
+}
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null

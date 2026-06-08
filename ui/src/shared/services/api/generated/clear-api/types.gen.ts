@@ -10,11 +10,11 @@ export type BootstrapResult = BootstrapBootstrapResult;
 
 export type Deck = DecksDeck;
 
-export type DomainError = ComponentsDomainError;
-
 export type Folder = FoldersFolder;
 
 export type NoteDetail = NotesNoteDetail;
+
+export type ProblemDetails = ComponentsProblemDetails;
 
 export type ReviewCard = ReviewReviewCard;
 
@@ -449,19 +449,15 @@ export type DateTime = string;
 
 export type DeckSortField = 'dueToday' | 'title' | 'updated';
 
-export type ComponentsDomainError = ({
-    type: 'validation';
-} & ValidationDomainError) | ({
-    type: 'conflict' | 'forbidden' | 'not_found' | 'offline' | 'timeout' | 'unauthorized' | 'unexpected' | 'unavailable';
-} & MessageDomainError);
-
 export type FolderSortField = 'title' | 'updated';
 
 export type Id = string;
 
-export type MessageDomainError = {
-    type: 'conflict' | 'forbidden' | 'not_found' | 'offline' | 'timeout' | 'unauthorized' | 'unexpected' | 'unavailable';
-    message: string;
+export type MessageProblemDetails = {
+    type: '/problems/bad-request' | '/problems/conflict' | '/problems/forbidden' | '/problems/not-found' | '/problems/timeout' | '/problems/unauthorized' | '/problems/unexpected' | '/problems/unavailable';
+    title: string;
+    status: number;
+    detail?: string;
     retryable: boolean;
     entity?: string;
     entityId?: string;
@@ -469,13 +465,13 @@ export type MessageDomainError = {
 
 export type NoteSortField = 'title' | 'updated';
 
-export type SortDirection = 'asc' | 'desc';
+export type ComponentsProblemDetails = ({
+    type: '/problems/validation';
+} & ValidationProblemDetails) | ({
+    type: '/problems/bad-request' | '/problems/conflict' | '/problems/forbidden' | '/problems/not-found' | '/problems/timeout' | '/problems/unauthorized' | '/problems/unexpected' | '/problems/unavailable';
+} & MessageProblemDetails);
 
-export type ValidationDomainError = {
-    type: 'validation';
-    issues: Array<ValidationIssue>;
-    retryable: false;
-};
+export type SortDirection = 'asc' | 'desc';
 
 export type ValidationIssue = {
     path?: Array<string>;
@@ -483,6 +479,15 @@ export type ValidationIssue = {
     params?: {
         [key: string]: unknown;
     };
+};
+
+export type ValidationProblemDetails = {
+    type: '/problems/validation';
+    title: string;
+    status: 422;
+    detail?: string;
+    issues: Array<ValidationIssue>;
+    retryable: false;
 };
 
 /**
@@ -611,15 +616,15 @@ export type BootstrapErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
     /**
      * The service is temporarily unavailable.
      */
-    503: ComponentsDomainError;
+    503: ComponentsProblemDetails;
 };
 
 export type BootstrapError = BootstrapErrors[keyof BootstrapErrors];
@@ -644,11 +649,11 @@ export type ListWorkspacesErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListWorkspacesError = ListWorkspacesErrors[keyof ListWorkspacesErrors];
@@ -673,19 +678,19 @@ export type CreateWorkspaceErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type CreateWorkspaceError = CreateWorkspaceErrors[keyof CreateWorkspaceErrors];
@@ -710,11 +715,11 @@ export type GetActiveWorkspaceErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetActiveWorkspaceError = GetActiveWorkspaceErrors[keyof GetActiveWorkspaceErrors];
@@ -739,19 +744,19 @@ export type SetActiveWorkspaceErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type SetActiveWorkspaceError = SetActiveWorkspaceErrors[keyof SetActiveWorkspaceErrors];
@@ -781,15 +786,15 @@ export type DeleteWorkspaceErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type DeleteWorkspaceError = DeleteWorkspaceErrors[keyof DeleteWorkspaceErrors];
@@ -819,11 +824,11 @@ export type GetWorkspaceErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetWorkspaceError = GetWorkspaceErrors[keyof GetWorkspaceErrors];
@@ -853,23 +858,23 @@ export type UpdateWorkspaceErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type UpdateWorkspaceError = UpdateWorkspaceErrors[keyof UpdateWorkspaceErrors];
@@ -908,11 +913,11 @@ export type ListWorkspaceFoldersErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListWorkspaceFoldersError = ListWorkspaceFoldersErrors[keyof ListWorkspaceFoldersErrors];
@@ -951,11 +956,11 @@ export type ListWorkspaceDecksErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListWorkspaceDecksError = ListWorkspaceDecksErrors[keyof ListWorkspaceDecksErrors];
@@ -980,23 +985,23 @@ export type CreateFolderErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type CreateFolderError = CreateFolderErrors[keyof CreateFolderErrors];
@@ -1026,15 +1031,15 @@ export type DeleteFolderErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type DeleteFolderError = DeleteFolderErrors[keyof DeleteFolderErrors];
@@ -1064,11 +1069,11 @@ export type GetFolderErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetFolderError = GetFolderErrors[keyof GetFolderErrors];
@@ -1098,23 +1103,23 @@ export type UpdateFolderErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type UpdateFolderError = UpdateFolderErrors[keyof UpdateFolderErrors];
@@ -1153,11 +1158,11 @@ export type ListFolderFoldersErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListFolderFoldersError = ListFolderFoldersErrors[keyof ListFolderFoldersErrors];
@@ -1196,11 +1201,11 @@ export type ListFolderDecksErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListFolderDecksError = ListFolderDecksErrors[keyof ListFolderDecksErrors];
@@ -1230,11 +1235,11 @@ export type GetFolderPathErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetFolderPathError = GetFolderPathErrors[keyof GetFolderPathErrors];
@@ -1259,23 +1264,23 @@ export type CreateDeckErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type CreateDeckError = CreateDeckErrors[keyof CreateDeckErrors];
@@ -1305,15 +1310,15 @@ export type DeleteDeckErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type DeleteDeckError = DeleteDeckErrors[keyof DeleteDeckErrors];
@@ -1343,11 +1348,11 @@ export type GetDeckErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetDeckError = GetDeckErrors[keyof GetDeckErrors];
@@ -1377,23 +1382,23 @@ export type UpdateDeckErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type UpdateDeckError = UpdateDeckErrors[keyof UpdateDeckErrors];
@@ -1432,11 +1437,11 @@ export type ListNotesByDeckErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ListNotesByDeckError = ListNotesByDeckErrors[keyof ListNotesByDeckErrors];
@@ -1466,11 +1471,11 @@ export type StartReviewSessionErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type StartReviewSessionError = StartReviewSessionErrors[keyof StartReviewSessionErrors];
@@ -1500,11 +1505,11 @@ export type GetReviewSessionErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetReviewSessionError = GetReviewSessionErrors[keyof GetReviewSessionErrors];
@@ -1529,23 +1534,23 @@ export type CreateNoteErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type CreateNoteError = CreateNoteErrors[keyof CreateNoteErrors];
@@ -1575,15 +1580,15 @@ export type DeleteNoteErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type DeleteNoteError = DeleteNoteErrors[keyof DeleteNoteErrors];
@@ -1613,11 +1618,11 @@ export type GetNoteErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetNoteError = GetNoteErrors[keyof GetNoteErrors];
@@ -1647,23 +1652,23 @@ export type UpdateNoteErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type UpdateNoteError = UpdateNoteErrors[keyof UpdateNoteErrors];
@@ -1697,23 +1702,23 @@ export type GradeReviewSessionCardErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GradeReviewSessionCardError = GradeReviewSessionCardErrors[keyof GradeReviewSessionCardErrors];
@@ -1738,11 +1743,11 @@ export type GetSettingsErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetSettingsError = GetSettingsErrors[keyof GetSettingsErrors];
@@ -1767,15 +1772,15 @@ export type UpdateSettingsErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type UpdateSettingsError = UpdateSettingsErrors[keyof UpdateSettingsErrors];
@@ -1800,11 +1805,11 @@ export type GetDefaultSettingsErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetDefaultSettingsError = GetDefaultSettingsErrors[keyof GetDefaultSettingsErrors];
@@ -1829,11 +1834,11 @@ export type ResetSettingsErrors = {
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type ResetSettingsError = ResetSettingsErrors[keyof ResetSettingsErrors];
@@ -1858,11 +1863,11 @@ export type EmptyTrashErrors = {
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type EmptyTrashError = EmptyTrashErrors[keyof EmptyTrashErrors];
@@ -1887,11 +1892,11 @@ export type GetTrashErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type GetTrashError = GetTrashErrors[keyof GetTrashErrors];
@@ -1921,15 +1926,15 @@ export type RestoreTrashItemErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type RestoreTrashItemError = RestoreTrashItemErrors[keyof RestoreTrashItemErrors];
@@ -1959,15 +1964,15 @@ export type DeleteTrashItemErrors = {
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request conflicts with current resource state.
      */
-    409: ComponentsDomainError;
+    409: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type DeleteTrashItemError = DeleteTrashItemErrors[keyof DeleteTrashItemErrors];
@@ -1992,19 +1997,19 @@ export type SearchContentErrors = {
     /**
      * The request was malformed.
      */
-    400: ComponentsDomainError;
+    400: ComponentsProblemDetails;
     /**
      * The requested resource was not found.
      */
-    404: ComponentsDomainError;
+    404: ComponentsProblemDetails;
     /**
      * The request failed domain validation.
      */
-    422: ComponentsDomainError;
+    422: ComponentsProblemDetails;
     /**
      * An unexpected error occurred.
      */
-    500: ComponentsDomainError;
+    500: ComponentsProblemDetails;
 };
 
 export type SearchContentError = SearchContentErrors[keyof SearchContentErrors];

@@ -224,6 +224,15 @@ shared error translation pattern and validation-field translation boundary.
 
 Keep HTTP and API-client specific logic outside `shared/errors`:
 
+For owned HTTP APIs, use RFC 9457 Problem Details as the wire error contract:
+publish errors as `application/problem+json` with `type`, `title`, `status`,
+optional `detail`, and project-specific extension members. Keep internal
+`DomainError` as the service/UI contract; do not expose it as the default HTTP
+wire schema. Generated `ProblemDetails` types stay under
+`shared/services/api/generated/<source-name>/`, and
+`shared/services/api/error-mapping.ts` converts them into complete
+`DomainError` values.
+
 ```ts
 // shared/services/api/error-mapping.ts
 import { domainError, isDomainError, type DomainError } from '@shared/errors';
@@ -237,8 +246,9 @@ export function mapApiErrorToDomainError(
   }
 
   // Map the current HTTP client here:
-  // - validation payloads -> domainError.validation(...)
-  // - 401/403/404/409/429 -> matching domain errors
+  // - ProblemDetails type/status/detail -> matching domain errors
+  // - ProblemDetails validation extensions -> domainError.validation(...)
+  // - transport statuses without usable payloads -> matching domain errors
   // - timeouts/offline/5xx -> domainError.network(...)
   // - unknown failures -> domainError.unexpected(...)
 
@@ -256,11 +266,11 @@ string messages only as debug/fallback data outside the main UI contract when a
 project explicitly needs them.
 
 `mapApiErrorToDomainError()` is also the right place to handle partial
-transport-shaped errors. If a payload has a known domain error `type` but is
-missing or malformed fields, preserve the type when practical by rebuilding a
+transport-shaped errors. If a Problem Details payload has a known `type`,
+`status`, or usable extension members but is missing optional fields, rebuild a
 complete `DomainError` through `domainError.*(...)` with safe defaults. Fall
-back to `domainError.unexpected(...)` only when the type is unknown or the
-payload cannot be interpreted safely.
+back to status-based mapping or `domainError.unexpected(...)` when the payload
+cannot be interpreted safely.
 
 If the project uses Axios, Axios-specific checks stay in this file. Do not import Axios from `shared/errors`.
 
@@ -292,10 +302,10 @@ export function mapTauriErrorToDomainError(
 }
 ```
 
-Apply the same partial-payload policy here as in `mapApiErrorToDomainError()`:
-`isDomainError()` accepts only complete serialized domain errors, while
-`mapTauriErrorToDomainError()` may preserve known domain error types by
-rebuilding full errors with safe defaults.
+For Tauri, keep the serialized internal `DomainError` boundary separate from
+HTTP Problem Details: `isDomainError()` accepts only complete serialized domain
+errors, while `mapTauriErrorToDomainError()` may preserve known domain error
+types by rebuilding full errors with safe defaults.
 
 Wrap Tauri invoke calls to remove repeated `try/catch` from services:
 
@@ -399,7 +409,8 @@ Test:
 - validation issue paths, codes, params, and form-level issues without paths;
 - `isDomainError()` rejecting malformed partial payloads instead of coercing them;
 - retryability rules;
-- API status/payload mapping for the current HTTP client;
-- API/Tauri mappers preserving known domain error types from partial serialized payloads by rebuilding complete `DomainError` values;
+- API Problem Details mapping by `type`, `status`, `detail`/`title`, and extension members;
+- malformed validation extensions, unknown problem types, and status-only fallbacks;
+- API mappers rebuilding complete `DomainError` values from usable Problem Details payloads;
 - Tauri unknown fallback and pass-through of complete serialized `DomainError`;
 - `unwrapDomainResult` resolving values and rejecting with `DomainError`.
