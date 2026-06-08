@@ -388,18 +388,20 @@ export const zSetActiveWorkspaceRequest = z.object({
     workspaceId: zId
 });
 
-export const zMessageDomainError = z.object({
+export const zMessageProblemDetails = z.object({
     type: z.enum([
-        'conflict',
-        'forbidden',
-        'not_found',
-        'offline',
-        'timeout',
-        'unauthorized',
-        'unexpected',
-        'unavailable'
+        '/problems/bad-request',
+        '/problems/conflict',
+        '/problems/forbidden',
+        '/problems/not-found',
+        '/problems/timeout',
+        '/problems/unauthorized',
+        '/problems/unexpected',
+        '/problems/unavailable'
     ]),
-    message: z.string().min(1),
+    title: z.string().min(1),
+    status: z.int().gte(400).lte(599),
+    detail: z.string().min(1).optional(),
     retryable: z.boolean(),
     entity: z.string().optional(),
     entityId: z.string().optional()
@@ -415,31 +417,34 @@ export const zValidationIssue = z.object({
     params: z.record(z.string(), z.unknown()).optional()
 });
 
-export const zValidationDomainError = z.object({
-    type: z.enum(['validation']),
+export const zValidationProblemDetails = z.object({
+    type: z.enum(['/problems/validation']),
+    title: z.string().min(1),
+    status: z.literal(422),
+    detail: z.string().min(1).optional(),
     issues: z.array(zValidationIssue),
     retryable: z.literal(false)
 });
 
-export const zComponentsDomainError = z.union([
+export const zComponentsProblemDetails = z.union([
     z.object({
-        type: z.literal('validation')
-    }).and(zValidationDomainError),
+        type: z.literal('/problems/validation')
+    }).and(zValidationProblemDetails),
     z.object({
         type: z.union([
-            z.literal('conflict'),
-            z.literal('forbidden'),
-            z.literal('not_found'),
-            z.literal('offline'),
-            z.literal('timeout'),
-            z.literal('unauthorized'),
-            z.literal('unexpected'),
-            z.literal('unavailable')
+            z.literal('/problems/bad-request'),
+            z.literal('/problems/conflict'),
+            z.literal('/problems/forbidden'),
+            z.literal('/problems/not-found'),
+            z.literal('/problems/timeout'),
+            z.literal('/problems/unauthorized'),
+            z.literal('/problems/unexpected'),
+            z.literal('/problems/unavailable')
         ])
-    }).and(zMessageDomainError)
+    }).and(zMessageProblemDetails)
 ]);
 
-export const zDomainError = zComponentsDomainError;
+export const zProblemDetails = zComponentsProblemDetails;
 
 /**
  * Lucide icon name used by the UI visual picker.

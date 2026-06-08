@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DomainErrorType,
+  ValidationIssueCode,
   isDomainError,
   type DomainError,
   type ValidationIssue,
@@ -44,30 +45,31 @@ export const translateValidationIssue = (
   fieldLabel: string,
 ): string => {
   switch (issue.code) {
-    case 'required':
+    case ValidationIssueCode.Required:
       return t(($) => $.forms.validation.required, { field: fieldLabel })
-    case 'min_length':
+    case ValidationIssueCode.MinLength:
     case 'too_small':
       return translateLengthOrNumberMinimum(t, issue, fieldLabel)
-    case 'max_length':
+    case ValidationIssueCode.MaxLength:
     case 'too_big':
       return translateLengthOrNumberMaximum(t, issue, fieldLabel)
-    case 'minimum':
+    case ValidationIssueCode.Minimum:
       return t(($) => $.forms.validation.minimum, {
         field: fieldLabel,
         min: formatParamValue(issue.params?.min ?? issue.params?.minimum),
       })
-    case 'maximum':
+    case ValidationIssueCode.Maximum:
       return t(($) => $.forms.validation.maximum, {
         field: fieldLabel,
         max: formatParamValue(issue.params?.max ?? issue.params?.maximum),
       })
-    case 'invalid_enum':
-    case 'invalid_value':
+    case ValidationIssueCode.InvalidEnum:
+    case ValidationIssueCode.InvalidValue:
       return t(($) => $.forms.validation.invalidEnum, { field: fieldLabel })
-    case 'invalid_format':
+    case ValidationIssueCode.InvalidFormat:
     case 'invalid_string':
       return t(($) => $.forms.validation.invalidFormat, { field: fieldLabel })
+    case ValidationIssueCode.Invalid:
     default:
       return t(($) => $.forms.validation.invalid, { field: fieldLabel })
   }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { createAppI18n } from '@core/i18n'
 
-import { domainError, type DomainError } from './index'
+import { ValidationIssueCode, domainError, type DomainError } from './index'
 import {
   translateDomainError,
   translateValidationIssue,
@@ -65,33 +65,44 @@ describe('translateDomainError', () => {
   it.each([
     {
       expected: 'Title is required.',
-      issue: { code: 'required' },
+      issue: { code: ValidationIssueCode.Required },
       name: 'required',
     },
     {
       expected: 'Title must be at least 3 characters.',
-      issue: { code: 'min_length', params: { min: 3, valueType: 'string' } },
+      issue: {
+        code: ValidationIssueCode.MinLength,
+        params: { min: 3, valueType: 'string' },
+      },
       name: 'min length',
     },
     {
       expected: 'Title must be at most 20 characters.',
-      issue: { code: 'max_length', params: { max: 20, valueType: 'string' } },
+      issue: {
+        code: ValidationIssueCode.MaxLength,
+        params: { max: 20, valueType: 'string' },
+      },
       name: 'max length',
     },
     {
       expected: 'Title must be at least 1.',
-      issue: { code: 'minimum', params: { min: 1 } },
+      issue: { code: ValidationIssueCode.Minimum, params: { min: 1 } },
       name: 'minimum',
     },
     {
       expected: 'Title must be at most 100.',
-      issue: { code: 'maximum', params: { max: 100 } },
+      issue: { code: ValidationIssueCode.Maximum, params: { max: 100 } },
       name: 'maximum',
     },
     {
       expected: 'Enter a valid Title.',
-      issue: { code: 'invalid_format' },
+      issue: { code: ValidationIssueCode.InvalidFormat },
       name: 'invalid format',
+    },
+    {
+      expected: 'Title is invalid.',
+      issue: { code: 'custom_code' },
+      name: 'unknown code fallback',
     },
   ])('translates $name validation issues', ({ expected, issue }) => {
     expect(translateValidationIssue(createAppI18n().t, issue, 'Title')).toBe(expected)

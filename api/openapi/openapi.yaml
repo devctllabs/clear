@@ -132,12 +132,12 @@ components:
       $ref: './domains/bootstrap.yaml#/components/schemas/BootstrapResult'
     Deck:
       $ref: './domains/decks.yaml#/components/schemas/Deck'
-    DomainError:
-      $ref: './shared/components.yaml#/components/schemas/DomainError'
     Folder:
       $ref: './domains/folders.yaml#/components/schemas/Folder'
     NoteDetail:
       $ref: './domains/notes.yaml#/components/schemas/NoteDetail'
+    ProblemDetails:
+      $ref: './shared/components.yaml#/components/schemas/ProblemDetails'
     ReviewCard:
       $ref: './domains/review.yaml#/components/schemas/ReviewCard'
     ReviewSession:

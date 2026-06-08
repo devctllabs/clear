@@ -148,7 +148,9 @@ describe('webDeckService', () => {
           {
             issues: [{ code: 'required', path: ['title'] }],
             retryable: false,
-            type: DomainErrorType.Validation,
+            status: 422,
+            title: 'Validation Failed',
+            type: '/problems/validation',
           },
           { status: 422 },
         ),

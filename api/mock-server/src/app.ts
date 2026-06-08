@@ -12,7 +12,7 @@ import { generatedMockRuntime as adminRuntime } from './generated/mock-admin/moc
 import { generatedMockRuntime as clearWebApiRuntime } from './generated/clear-web-api/mock-runtime.ts'
 import { notFound } from './lib/errors.ts'
 import {
-  mockJsonResponse,
+  mockProblemResponse,
   registerGeneratedMockRoutes,
 } from './lib/honoMockRuntime.ts'
 
@@ -42,7 +42,7 @@ export const newMockApiApp = async ({
   app.notFound(() => {
     const routeError = notFound('route', 'request')
 
-    return mockJsonResponse(routeError.body, routeError.status)
+    return mockProblemResponse(routeError.body, routeError.status)
   })
 
   return app
