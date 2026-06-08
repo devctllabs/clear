@@ -131,7 +131,11 @@ export const webProductService: ProductService = {
 
 ## Additional Platform Implementations
 
-Add `tauri`, `mock`, or `composite` implementations only when the feature needs them. The interface still stays in the feature:
+Add `tauri`, `mock`, or `composite` implementations only when the feature needs them.
+
+For first-pass `mock` service implementations that need reusable state, CRUD, filtering, or relations, prefer an `@msw/data`-backed store over ad hoc arrays or maps. Simple injected fake services are still fine for one-off tests, static Storybook states, or behavior that does not need realistic state transitions.
+
+The interface still stays in the feature:
 
 ```ts
 // features/projects/services/projectService.ts
