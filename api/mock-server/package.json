@@ -23,7 +23,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.97.1",
+    "@hey-api/openapi-ts": "^0.98.1",
     "@types/node": "^20.0.0",
     "esbuild": "^0.28.0",
     "tsx": "^4.22.4",
