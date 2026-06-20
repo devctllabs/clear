@@ -116,7 +116,6 @@ export const th = {
     },
     labels: {
       deleted: 'ลบแล้ว {{value}}',
-      due: 'ครบกำหนด: {{value}}',
       reviewed: 'ทบทวนแล้ว: {{value}}',
       updated: 'อัปเดตแล้ว {{value}}',
       updatedUppercase: 'อัปเดตแล้ว {{value}}',

@@ -139,10 +139,10 @@ export const zDateTime = z.iso.datetime();
 export const zDeckSortField = z.enum([
     'dueToday',
     'title',
-    'updated'
+    'updatedAt'
 ]);
 
-export const zFolderSortField = z.enum(['title', 'updated']);
+export const zFolderSortField = z.enum(['title', 'updatedAt']);
 
 export const zId = z.string().min(1);
 
@@ -407,7 +407,12 @@ export const zMessageProblemDetails = z.object({
     entityId: z.string().optional()
 });
 
-export const zNoteSortField = z.enum(['title', 'updated']);
+export const zNoteSortField = z.enum([
+    'dueAt',
+    'progress',
+    'title',
+    'updatedAt'
+]);
 
 export const zSortDirection = z.enum(['asc', 'desc']);
 

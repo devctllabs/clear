@@ -120,7 +120,6 @@ export const he = {
     },
     labels: {
       deleted: 'נמחק {{value}}',
-      due: 'מועד: {{value}}',
       reviewed: 'נסקר: {{value}}',
       updated: 'עודכן {{value}}',
       updatedUppercase: 'עודכן {{value}}',

@@ -3,6 +3,7 @@ import { ArrowRight, Clock3, Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
+import { DateText } from '@shared/components/data/DateText'
 import {
   InventoryRowShell,
   inventoryRowOverlayClassName,
@@ -45,8 +46,9 @@ export const DeckCard = ({
   surface = 'card',
 }: DeckCardProps) => {
   const { t } = useTranslation()
-  const { formatRelativeDate } = useDateFormatters()
+  const { formatAbsoluteDateTime, formatRelativeDate } = useDateFormatters()
   const deckTitle = deck.title.trim()
+  const updatedAtTitle = formatAbsoluteDateTime(deck.updatedAt)
   const dueToday = normalizeNonNegativeInteger(deck.dueToday)
   const dueTodayLabel = formatNonNegativeInteger(deck.dueToday)
   const hasDueToday = dueToday > 0
@@ -70,6 +72,7 @@ export const DeckCard = ({
         <Button
           aria-label={openDeckLabel}
           className={inventoryRowOverlayClassName}
+          title={updatedAtTitle}
           type="button"
           onClick={openDeck}
         />
@@ -83,7 +86,7 @@ export const DeckCard = ({
             {deckTitle}
           </h3>
           <p className="mt-1 line-clamp-2 text-wrap-anywhere text-xs font-medium text-muted-foreground">
-            {formatRelativeDate(deck.updatedAt)}
+            <DateText timestamp={deck.updatedAt}>{formatRelativeDate(deck.updatedAt)}</DateText>
           </p>
         </div>
         <div className="pointer-events-auto relative z-20 col-start-3 row-start-1 justify-self-end sm:col-start-4 sm:-translate-y-2 sm:self-start">
@@ -162,6 +165,7 @@ export const DeckCard = ({
           focusRingClassName,
           'absolute inset-0 z-10 cursor-pointer rounded-card text-left focus-visible:ring-inset focus-visible:ring-offset-0',
         )}
+        title={updatedAtTitle}
         type="button"
         onClick={openDeck}
       />
@@ -177,7 +181,7 @@ export const DeckCard = ({
               {deckTitle}
             </h3>
             <p className="mt-0.5 line-clamp-2 text-wrap-anywhere text-xs font-medium text-muted-foreground">
-              {formatRelativeDate(deck.updatedAt)}
+              <DateText timestamp={deck.updatedAt}>{formatRelativeDate(deck.updatedAt)}</DateText>
             </p>
           </div>
         </div>

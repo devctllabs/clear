@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
@@ -10,19 +10,27 @@ import {
 } from './NoteEditorForm'
 
 const NoteEditorFormHarness = ({
-  validationMessages,
-}: {
-  validationMessages?: NoteEditorValidationMessages
-}) => {
-  const [activeKind, setActiveKind] = useState<NoteKind>('basic')
-  const [title, setTitle] = useState('')
-  const [basicDraft, setBasicDraft] = useState<BasicNoteEditor>({
+  initialActiveKind = 'basic',
+  initialBasicDraft = {
     back: '',
     front: '',
-  })
-  const [clozeDraft, setClozeDraft] = useState<ClozeNoteEditor>({
+  },
+  initialClozeDraft = {
     body: '',
-  })
+  },
+  initialTitle = '',
+  validationMessages,
+}: {
+  initialActiveKind?: NoteKind
+  initialBasicDraft?: BasicNoteEditor
+  initialClozeDraft?: ClozeNoteEditor
+  initialTitle?: string
+  validationMessages?: NoteEditorValidationMessages
+}) => {
+  const [activeKind, setActiveKind] = useState<NoteKind>(initialActiveKind)
+  const [title, setTitle] = useState(initialTitle)
+  const [basicDraft, setBasicDraft] = useState<BasicNoteEditor>(initialBasicDraft)
+  const [clozeDraft, setClozeDraft] = useState<ClozeNoteEditor>(initialClozeDraft)
 
   return (
     <NoteEditorForm
@@ -99,8 +107,42 @@ describe('NoteEditorForm', () => {
     expect(screen.getByRole('button', { name: 'Italic' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Link' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'List' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Review' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    )
     expect(screen.queryByRole('button', { name: 'Underline' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Highlight' })).not.toBeInTheDocument()
+  })
+
+  it('opens a basic review preview and reveals the answer on demand', async () => {
+    const user = userEvent.setup()
+    render(
+      <NoteEditorFormHarness
+        initialBasicDraft={{
+          back: 'Back answer',
+          front: 'Front prompt',
+        }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Review' }))
+
+    const preview = getReviewPreview()
+    const previewQueries = within(preview)
+
+    expect(previewQueries.getByText('Review')).toBeInTheDocument()
+    expect(previewQueries.getByText('BASIC')).toBeInTheDocument()
+    expect(previewQueries.getByText('Front prompt')).toBeInTheDocument()
+    expect(preview).not.toHaveTextContent('Back answer')
+
+    await user.click(screen.getByRole('button', { name: 'Show answer' }))
+
+    expect(previewQueries.getByText('Back answer')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show answer' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('applies bold markdown to the selected basic back text', async () => {
@@ -242,6 +284,61 @@ describe('NoteEditorForm', () => {
     expect(clozeBody).toHaveValue('The {{c1::hippocampus}} supports memory.')
   })
 
+  it('previews cloze cards with selectable hidden and revealed clozes', async () => {
+    const user = userEvent.setup()
+    render(
+      <NoteEditorFormHarness
+        initialActiveKind="cloze"
+        initialClozeDraft={{
+          body: 'The {{c1::hippocampus}} supports {{c2::memory}}.',
+        }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Review' }))
+
+    const preview = getReviewPreview()
+    const previewQueries = within(preview)
+
+    expect(previewQueries.getByText('CLOZE')).toBeInTheDocument()
+    expect(previewQueries.getByText('•••')).toHaveAttribute('data-cloze-id', 'c1')
+    expect(preview).not.toHaveTextContent('hippocampus')
+    expect(preview).toHaveTextContent('memory')
+
+    await user.click(screen.getByRole('button', { name: 'c2' }))
+
+    expect(preview).toHaveTextContent('hippocampus')
+    expect(previewQueries.getByText('•••')).toHaveAttribute('data-cloze-id', 'c2')
+    expect(preview).not.toHaveTextContent('memory')
+
+    await user.click(screen.getByRole('button', { name: 'Show answer' }))
+
+    expect(previewQueries.getByText('memory').closest('[data-cloze-state="revealed"]')).toHaveAttribute(
+      'data-cloze-id',
+      'c2',
+    )
+  })
+
+  it('folds cloze format guidance into the empty cloze preview', async () => {
+    const user = userEvent.setup()
+    render(
+      <NoteEditorFormHarness
+        initialActiveKind="cloze"
+        initialClozeDraft={{
+          body: 'Plain study note without a marker.',
+        }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Review' }))
+
+    const previewQueries = within(getReviewPreview())
+
+    expect(previewQueries.getByText('Plain study note without a marker.')).toBeInTheDocument()
+    expect(previewQueries.getByText('Cloze format')).toBeInTheDocument()
+    expect(previewQueries.getByText('{{c1::...}}')).toBeInTheDocument()
+  })
+
   it('adds the next cloze marker around selected cloze body text', async () => {
     const user = userEvent.setup()
     render(<NoteEditorFormHarness />)
@@ -263,3 +360,11 @@ describe('NoteEditorForm', () => {
     )
   })
 })
+
+const getReviewPreview = () => {
+  const preview = document.querySelector('[data-slot="note-review-preview"]')
+
+  expect(preview).toBeInstanceOf(HTMLElement)
+
+  return preview as HTMLElement
+}

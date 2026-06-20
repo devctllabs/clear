@@ -49,7 +49,13 @@ export class NotesService {
   listNotesByDeck(deckId: string, query?: { sortField?: string; sortDirection?: string }): NoteListItem[] {
     const deck = this.decks.require(deckId)
     const sortQuery = query ?? {}
-    const sortField = sortQuery.sortField === 'title' || sortQuery.sortField === 'updated' ? sortQuery.sortField : undefined
+    const sortField =
+      sortQuery.sortField === 'dueAt' ||
+      sortQuery.sortField === 'progress' ||
+      sortQuery.sortField === 'title' ||
+      sortQuery.sortField === 'updatedAt'
+        ? sortQuery.sortField
+        : undefined
     const sortDirection = sortQuery.sortDirection === 'desc' ? 'desc' : 'asc'
 
     return this.notes.listByDeck(deck.id ?? '', { sortField, sortDirection }).map(toNoteListItem)

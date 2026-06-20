@@ -5,7 +5,7 @@ import { visible } from '../../lib/softDelete.ts'
 import { byStringField } from '../../lib/sort.ts'
 
 type SortDirection = 'asc' | 'desc'
-type FolderSortField = 'title' | 'updated'
+type FolderSortField = 'title' | 'updatedAt'
 
 const sortFolders = (
   folders: FolderRecord[],
@@ -19,7 +19,7 @@ const sortFolders = (
   const direction = sortDirection === 'desc' ? -1 : 1
 
   return [...folders].sort((left, right) => {
-    if (sortField === 'updated') {
+    if (sortField === 'updatedAt') {
       return left.updatedAt.localeCompare(right.updatedAt) * direction
     }
 

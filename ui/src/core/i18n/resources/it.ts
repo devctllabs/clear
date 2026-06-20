@@ -120,7 +120,6 @@ export const it = {
     },
     labels: {
       deleted: 'Eliminato {{value}}',
-      due: 'In scadenza: {{value}}',
       reviewed: 'Ripassato: {{value}}',
       updated: 'Aggiornato {{value}}',
       updatedUppercase: 'AGGIORNATO {{value}}',

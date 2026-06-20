@@ -297,6 +297,28 @@ describe('DeckCard', () => {
     expect(onDelete).toHaveBeenCalledWith(baseDeck)
   })
 
+  it('adds the absolute updated date tooltip to the row overlay control', () => {
+    const callbacks = {
+      onDelete: vi.fn(),
+      onEdit: vi.fn(),
+      onOpen: vi.fn(),
+      onReview: vi.fn(),
+    }
+
+    render(
+      <DeckCard
+        deck={{ ...baseDeck, updatedAt: '2026-04-24T12:00:00' }}
+        surface="row"
+        {...callbacks}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Open Biology deck' })).toHaveAttribute(
+      'title',
+      '24.04.2026 12:00',
+    )
+  })
+
   it('opens deck details from keyboard interaction', async () => {
     const user = userEvent.setup()
     renderDeckRoute()

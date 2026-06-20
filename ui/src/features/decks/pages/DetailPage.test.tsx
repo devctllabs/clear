@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createAppServices } from '@core/services'
+import type { NoteSortPreference } from '@features/notes'
 import { ok } from '@shared/errors'
 import { renderRoute } from '@/test/renderRoute'
 import { mockMatchMedia } from '@/test/matchMedia'
@@ -422,12 +423,12 @@ describe('DeckDetailPage', () => {
     ).toBe(true)
 
     await user.click(await screen.findByRole('button', { name: 'Sort notes' }))
-    await user.click(await screen.findByRole('menuitem', { name: 'Updated' }))
+    await user.click(await screen.findByRole('menuitem', { name: 'Due' }))
     await user.click(await screen.findByRole('button', { name: 'Sort notes' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Desc' }))
 
     expect(JSON.parse(window.localStorage.getItem('workspace-sort:deck-notes') ?? '{}')).toMatchObject(
-      { direction: 'desc', field: 'updated' },
+      { direction: 'desc', field: 'dueAt' },
     )
   })
 
@@ -444,7 +445,7 @@ describe('DeckDetailPage', () => {
         listByDeck: (...args: Parameters<typeof baseServices.notes.listByDeck>) => {
           const [, sort] = args
 
-          if (sort?.field === 'updated') {
+          if (sort?.field === 'dueAt') {
             return sortedNotes.promise
           }
 
@@ -458,7 +459,7 @@ describe('DeckDetailPage', () => {
     expect(await screen.findByText('Industrial Revolution Causes')).toBeInTheDocument()
 
     await user.click(await screen.findByRole('button', { name: 'Sort notes' }))
-    await user.click(await screen.findByRole('menuitem', { name: 'Updated' }))
+    await user.click(await screen.findByRole('menuitem', { name: 'Due' }))
 
     expect(screen.queryByRole('status', { name: 'Loading deck' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'World History' })).toBeInTheDocument()
@@ -466,12 +467,108 @@ describe('DeckDetailPage', () => {
 
     const sortedResult = await originalListByDeck('world-history', {
       direction: 'asc',
-      field: 'updated',
+      field: 'dueAt',
     })
 
     await act(async () => {
       sortedNotes.resolve(sortedResult)
       await sortedNotes.promise
+    })
+  })
+
+  it('shows the earliest-due note first after sorting notes by due date', async () => {
+    const user = userEvent.setup()
+    const baseServices = createAppServices('mock')
+    const notes = [
+      {
+        dueAt: '2026-01-03T00:00:00.000Z',
+        id: 'zeta-note',
+        kind: 'basic' as const,
+        progress: 46,
+        reviewedAt: '2026-01-02T00:00:00.000Z',
+        status: 'in-progress' as const,
+        title: 'Zeta Note',
+        updatedAt: '2026-01-02T00:00:00.000Z',
+      },
+      {
+        dueAt: '2026-02-01T00:00:00.000Z',
+        id: 'alpha-note',
+        kind: 'basic' as const,
+        progress: 46,
+        reviewedAt: '2026-01-03T00:00:00.000Z',
+        status: 'in-progress' as const,
+        title: 'Alpha Note',
+        updatedAt: '2026-01-03T00:00:00.000Z',
+      },
+      {
+        dueAt: '2026-01-12T00:00:00.000Z',
+        id: 'middle-note',
+        kind: 'basic' as const,
+        progress: 46,
+        reviewedAt: '2026-01-01T00:00:00.000Z',
+        status: 'in-progress' as const,
+        title: 'Middle Note',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+      },
+    ]
+    const sortNotes = (sort?: NoteSortPreference) => {
+      const direction = sort?.direction === 'desc' ? -1 : 1
+
+      return [...notes].sort((left, right) => {
+        if (sort?.field === 'dueAt') {
+          return (new Date(left.dueAt).getTime() - new Date(right.dueAt).getTime()) * direction
+        }
+
+        if (sort?.field === 'updatedAt') {
+          return (new Date(left.updatedAt).getTime() - new Date(right.updatedAt).getTime()) * direction
+        }
+
+        return left.title.localeCompare(right.title) * direction
+      })
+    }
+    const services = {
+      ...baseServices,
+      notes: {
+        ...baseServices.notes,
+        listByDeck: vi.fn(
+          async (_deckId: string, sort?: NoteSortPreference) =>
+            ok(sortNotes(sort)),
+        ),
+      },
+    }
+
+    renderRoute('/dashboard/independent-study/decks/world-history', { services })
+
+    expect(await screen.findByRole('heading', { name: 'Alpha Note' })).toBeInTheDocument()
+    expect(
+      appearsBefore(
+        screen.getByRole('heading', { name: 'Alpha Note' }),
+        screen.getByRole('heading', { name: 'Middle Note' }),
+      ),
+    ).toBe(true)
+    expect(
+      appearsBefore(
+        screen.getByRole('heading', { name: 'Middle Note' }),
+        screen.getByRole('heading', { name: 'Zeta Note' }),
+      ),
+    ).toBe(true)
+
+    await user.click(await screen.findByRole('button', { name: 'Sort notes' }))
+    await user.click(await screen.findByRole('menuitem', { name: 'Due' }))
+
+    await waitFor(() => {
+      expect(
+        appearsBefore(
+          screen.getByRole('heading', { name: 'Zeta Note' }),
+          screen.getByRole('heading', { name: 'Middle Note' }),
+        ),
+      ).toBe(true)
+      expect(
+        appearsBefore(
+          screen.getByRole('heading', { name: 'Middle Note' }),
+          screen.getByRole('heading', { name: 'Alpha Note' }),
+        ),
+      ).toBe(true)
     })
   })
 

@@ -13,14 +13,16 @@ const items = [
 
 const sortFieldOptions = [
   { field: 'title', label: 'Title' },
-  { field: 'updated', label: 'Updated' },
+  { field: 'updatedAt', label: 'Updated' },
 ] as const
+
+type DemoSortField = (typeof sortFieldOptions)[number]['field']
 
 const renderInventoryListWithSort = ({
   onSortChange = vi.fn(),
   showSort = true,
 }: {
-  onSortChange?: (sort: SortPreference) => void
+  onSortChange?: (sort: SortPreference<DemoSortField>) => void
   showSort?: boolean
 } = {}) => {
   render(
@@ -55,7 +57,7 @@ describe('InventoryListWithSort', () => {
     await user.click(screen.getByRole('button', { name: 'Sort items' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Updated' }))
 
-    expect(onSortChange).toHaveBeenCalledWith({ direction: 'asc', field: 'updated' })
+    expect(onSortChange).toHaveBeenCalledWith({ direction: 'asc', field: 'updatedAt' })
 
     await user.click(screen.getByRole('button', { name: 'Sort items' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Desc' }))

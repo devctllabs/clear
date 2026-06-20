@@ -120,7 +120,11 @@ export const TrashPage = () => {
         rightSlot={<TrashHeaderAction />}
         screenClassName={screenBottomPadding}
       >
-        <WorkspaceTrashSummary ageLabel={summaryAge} countLabel={summaryLabel} />
+        <WorkspaceTrashSummary
+          ageLabel={summaryAge}
+          ageTimestamp={trashState.lastEmptiedAt}
+          countLabel={summaryLabel}
+        />
         <div className="mt-6">
           {itemCount > 0 ? (
             <WorkspaceTrashList

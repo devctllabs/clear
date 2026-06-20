@@ -20,6 +20,8 @@ type DemoItem = {
   title: string
 }
 
+type DemoSortField = 'title' | 'updatedAt'
+
 type DemoInventoryListWithSortProps = {
   items: DemoItem[]
   showSort?: boolean
@@ -47,9 +49,9 @@ const DemoInventoryListWithSort = ({
   items,
   showSort = true,
 }: DemoInventoryListWithSortProps) => {
-  const [sort, setSort] = useState<SortPreference>({
+  const [sort, setSort] = useState<SortPreference<DemoSortField>>({
     direction: 'desc',
-    field: 'updated',
+    field: 'updatedAt',
   })
 
   return (
@@ -90,7 +92,7 @@ const DemoInventoryListWithSort = ({
       sortAriaLabel="Sort items"
       sortFieldOptions={[
         { field: 'title', label: 'Title' },
-        { field: 'updated', label: 'Updated' },
+        { field: 'updatedAt', label: 'Updated' },
       ]}
       title="Items"
       onSortChange={setSort}
@@ -99,9 +101,9 @@ const DemoInventoryListWithSort = ({
 }
 
 const OffsetRegressionInventorySections = () => {
-  const [sort, setSort] = useState<SortPreference>({
+  const [sort, setSort] = useState<SortPreference<DemoSortField>>({
     direction: 'desc',
-    field: 'updated',
+    field: 'updatedAt',
   })
 
   return (
@@ -139,7 +141,7 @@ const OffsetRegressionInventorySections = () => {
         sortAriaLabel="Sort many items"
         sortFieldOptions={[
           { field: 'title', label: 'Title' },
-          { field: 'updated', label: 'Updated' },
+          { field: 'updatedAt', label: 'Updated' },
         ]}
         title="Many Items"
         onSortChange={setSort}
@@ -178,7 +180,7 @@ const OffsetRegressionInventorySections = () => {
         sortAriaLabel="Sort single item"
         sortFieldOptions={[
           { field: 'title', label: 'Title' },
-          { field: 'updated', label: 'Updated' },
+          { field: 'updatedAt', label: 'Updated' },
         ]}
         title="Single Item"
         onSortChange={setSort}

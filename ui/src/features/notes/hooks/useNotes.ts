@@ -7,18 +7,17 @@ import {
 
 import { unwrapDomainResult } from '@core/query/domain-query'
 import { useServices } from '@core/services'
-import type { SortPreference } from '@shared/types/sort.types'
 
-import type { NoteDraft } from '../types/note.types'
+import type { NoteDraft, NoteSortPreference } from '../types/note.types'
 
 export const noteKeys = {
   all: ['notes'] as const,
-  deck: (deckId: string, sort?: SortPreference) =>
+  deck: (deckId: string, sort?: NoteSortPreference) =>
     ['notes', 'deck', deckId, sort ?? 'default'] as const,
   detail: (deckId: string, noteId: string) => ['notes', deckId, noteId] as const,
 }
 
-export const useNotesByDeck = (deckId: string, sort?: SortPreference) => {
+export const useNotesByDeck = (deckId: string, sort?: NoteSortPreference) => {
   const { notes } = useServices()
 
   return useQuery({

@@ -116,7 +116,6 @@ export const sv = {
     },
     labels: {
       deleted: 'Borttaget {{value}}',
-      due: 'Förfaller: {{value}}',
       reviewed: 'Repeterat: {{value}}',
       updated: 'Uppdaterat {{value}}',
       updatedUppercase: 'UPPDATERAT {{value}}',

@@ -6,18 +6,19 @@ import { InventoryList, InventorySection } from './InventoryList'
 import type { InventoryListProps } from './InventoryList'
 import { SortMenu, type SortFieldOption } from './SortMenu'
 
-export type InventoryListWithSortProps<TItem> = InventoryListProps<TItem> & {
+export type InventoryListWithSortProps<TItem, TField extends string> =
+  InventoryListProps<TItem> & {
   headerClassName?: string
-  onSortChange: (sort: SortPreference) => void
+  onSortChange: (sort: SortPreference<TField>) => void
   sectionClassName?: string
   showSort?: boolean
-  sort: SortPreference
+  sort: SortPreference<TField>
   sortAriaLabel: string
-  sortFieldOptions: readonly SortFieldOption[]
+  sortFieldOptions: readonly SortFieldOption<TField>[]
   title: ReactNode
 }
 
-export const InventoryListWithSort = <TItem,>({
+export const InventoryListWithSort = <TItem, TField extends string>({
   headerClassName,
   items,
   onSortChange,
@@ -28,7 +29,7 @@ export const InventoryListWithSort = <TItem,>({
   sortFieldOptions,
   title,
   ...listProps
-}: InventoryListWithSortProps<TItem>) => {
+}: InventoryListWithSortProps<TItem, TField>) => {
   if (items.length === 0) {
     return null
   }

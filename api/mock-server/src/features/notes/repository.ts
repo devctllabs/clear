@@ -5,7 +5,7 @@ import { visible } from '../../lib/softDelete.ts'
 import { byStringField } from '../../lib/sort.ts'
 
 type SortDirection = 'asc' | 'desc'
-type NoteSortField = 'title' | 'updated'
+type NoteSortField = 'dueAt' | 'progress' | 'title' | 'updatedAt'
 
 const sortNotes = (
   notes: NoteDetailRecord[],
@@ -19,7 +19,15 @@ const sortNotes = (
   const direction = sortDirection === 'desc' ? -1 : 1
 
   return [...notes].sort((left, right) => {
-    if (sortField === 'updated') {
+    if (sortField === 'dueAt') {
+      return (new Date(left.dueAt).getTime() - new Date(right.dueAt).getTime()) * direction
+    }
+
+    if (sortField === 'progress') {
+      return (left.progress - right.progress) * direction
+    }
+
+    if (sortField === 'updatedAt') {
       return left.updatedAt.localeCompare(right.updatedAt) * direction
     }
 

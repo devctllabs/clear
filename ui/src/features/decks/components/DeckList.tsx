@@ -1,9 +1,8 @@
 import { InventoryListWithSort } from '@shared/components/data/InventoryListWithSort'
-import type { SortPreference } from '@shared/types/sort.types'
 import { useTranslation } from 'react-i18next'
 
 import { ConnectedDeckCard } from './DeckCard'
-import type { Deck } from '../types/deck.types'
+import type { Deck, DeckSortPreference } from '../types/deck.types'
 
 export const DeckList = ({
   decks,
@@ -14,9 +13,9 @@ export const DeckList = ({
 }: {
   decks: Deck[]
   onDelete: (deck: Deck) => void
-  onSortChange: (sort: SortPreference) => void
+  onSortChange: (sort: DeckSortPreference) => void
   openedFrom?: string
-  sort: SortPreference
+  sort: DeckSortPreference
 }) => {
   const { t } = useTranslation()
 
@@ -41,7 +40,7 @@ export const DeckList = ({
       sortAriaLabel={t(($) => $.decks.sort.ariaLabel)}
       sortFieldOptions={[
         { field: 'title', label: t(($) => $.decks.sort.title) },
-        { field: 'updated', label: t(($) => $.decks.sort.updated) },
+        { field: 'updatedAt', label: t(($) => $.decks.sort.updated) },
         { field: 'dueToday', label: t(($) => $.decks.sort.dueToday) },
       ]}
       title={t(($) => $.decks.labels.decks)}

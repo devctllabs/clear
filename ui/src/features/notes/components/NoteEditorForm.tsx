@@ -3,8 +3,9 @@ import {
   type ReactNode,
   type RefObject,
   useRef,
+  useState,
 } from 'react'
-import { Bold, Braces, Italic, Link2, List } from 'lucide-react'
+import { Bold, Braces, Eye, EyeOff, Italic, Link2, List } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@shared/components/ui/button'
@@ -20,6 +21,7 @@ import {
   applyMarkdownFormat,
   type MarkdownFormatAction,
 } from '../utils/markdown-formatting'
+import { NoteReviewPreview } from './NoteReviewPreview'
 
 type MarkdownFieldId = 'back' | 'body' | 'front'
 
@@ -68,29 +70,38 @@ export const NoteEditorForm = ({
   onTitleChange: (value: string) => void
   title: string
   validationMessages?: NoteEditorValidationMessages
-}) => (
-  <>
-    <ModeSwitcher activeKind={activeKind} onKindChange={onKindChange} />
-    {activeKind === 'basic' ? (
-      <BasicNoteForm
-        draft={basicDraft}
-        title={title}
-        validationMessages={validationMessages}
-        onBackChange={onBackChange}
-        onFrontChange={onFrontChange}
-        onTitleChange={onTitleChange}
-      />
-    ) : (
-      <ClozeNoteForm
-        draft={clozeDraft}
-        title={title}
-        validationMessages={validationMessages}
-        onBodyChange={onBodyChange}
-        onTitleChange={onTitleChange}
-      />
-    )}
-  </>
-)
+}) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const togglePreview = () => setIsPreviewOpen((isOpen) => !isOpen)
+
+  return (
+    <>
+      <ModeSwitcher activeKind={activeKind} onKindChange={onKindChange} />
+      {activeKind === 'basic' ? (
+        <BasicNoteForm
+          draft={basicDraft}
+          isPreviewOpen={isPreviewOpen}
+          title={title}
+          validationMessages={validationMessages}
+          onBackChange={onBackChange}
+          onFrontChange={onFrontChange}
+          onTitleChange={onTitleChange}
+          onTogglePreview={togglePreview}
+        />
+      ) : (
+        <ClozeNoteForm
+          draft={clozeDraft}
+          isPreviewOpen={isPreviewOpen}
+          title={title}
+          validationMessages={validationMessages}
+          onBodyChange={onBodyChange}
+          onTitleChange={onTitleChange}
+          onTogglePreview={togglePreview}
+        />
+      )}
+    </>
+  )
+}
 
 const ModeSwitcher = ({
   activeKind,
@@ -135,16 +146,20 @@ const ModeSwitcher = ({
 
 const BasicNoteForm = ({
   draft,
+  isPreviewOpen,
   onBackChange,
   onFrontChange,
   onTitleChange,
+  onTogglePreview,
   title,
   validationMessages,
 }: {
   draft: BasicNoteEditor
+  isPreviewOpen: boolean
   onBackChange: (value: string) => void
   onFrontChange: (value: string) => void
   onTitleChange: (value: string) => void
+  onTogglePreview: () => void
   title: string
   validationMessages?: NoteEditorValidationMessages
 }) => {
@@ -172,74 +187,83 @@ const BasicNoteForm = ({
     activeFieldRef.current === 'front' ? frontTarget : backTarget
 
   return (
-    <Card className="overflow-hidden rounded-card border border-border bg-card shadow-card">
-      <div className="px-8 pb-8 pt-8">
-        <TextField
-          id="basic-note-title"
-          label={t(($) => $.notes.fields.title)}
-          name="note-title"
-          placeholder={t(($) => $.notes.fields.titlePlaceholder)}
-          validationMessages={validationMessages?.title}
-          value={title}
-          onChange={onTitleChange}
-        />
-      </div>
-      <hr className="mx-8 border-t border-border" />
-      <div className="px-8 pt-8">
-        <TextAreaField
-          id="basic-note-front"
-          label={t(($) => $.notes.fields.front)}
-          name="note-front"
-          placeholder={t(($) => $.notes.fields.frontPlaceholder)}
-          textareaRef={frontTextareaRef}
-          validationMessages={validationMessages?.basicFront}
-          value={draft.front}
-          onChange={(value) => {
-            clearUndoEntries('front')
-            onFrontChange(value)
-          }}
-          onFocus={() => setActiveField('front')}
-          onKeyDown={(event) => handleUndo(event, frontTarget)}
-          onSelect={() => setActiveField('front')}
-        />
-      </div>
-      <hr className="mx-8 border-t border-border" />
-      <div className="px-8 py-8">
-        <TextAreaField
-          id="basic-note-back"
-          label={t(($) => $.notes.fields.back)}
-          name="note-back"
-          placeholder={t(($) => $.notes.fields.backPlaceholder)}
-          textareaRef={backTextareaRef}
-          validationMessages={validationMessages?.basicBack}
-          value={draft.back}
-          onChange={(value) => {
-            clearUndoEntries('back')
-            onBackChange(value)
-          }}
-          onFocus={() => setActiveField('back')}
-          onKeyDown={(event) => handleUndo(event, backTarget)}
-          onSelect={() => setActiveField('back')}
-        />
-        <EditorToolbar
-          getTarget={getActiveTarget}
-          onSaveUndo={pushUndoEntry}
-        />
-      </div>
-    </Card>
+    <div className="space-y-6">
+      <Card className="overflow-hidden rounded-card border border-border bg-card shadow-card">
+        <div className="px-8 pb-8 pt-8">
+          <TextField
+            id="basic-note-title"
+            label={t(($) => $.notes.fields.title)}
+            name="note-title"
+            placeholder={t(($) => $.notes.fields.titlePlaceholder)}
+            validationMessages={validationMessages?.title}
+            value={title}
+            onChange={onTitleChange}
+          />
+        </div>
+        <hr className="mx-8 border-t border-border" />
+        <div className="px-8 pt-8">
+          <TextAreaField
+            id="basic-note-front"
+            label={t(($) => $.notes.fields.front)}
+            name="note-front"
+            placeholder={t(($) => $.notes.fields.frontPlaceholder)}
+            textareaRef={frontTextareaRef}
+            validationMessages={validationMessages?.basicFront}
+            value={draft.front}
+            onChange={(value) => {
+              clearUndoEntries('front')
+              onFrontChange(value)
+            }}
+            onFocus={() => setActiveField('front')}
+            onKeyDown={(event) => handleUndo(event, frontTarget)}
+            onSelect={() => setActiveField('front')}
+          />
+        </div>
+        <hr className="mx-8 border-t border-border" />
+        <div className="px-8 py-8">
+          <TextAreaField
+            id="basic-note-back"
+            label={t(($) => $.notes.fields.back)}
+            name="note-back"
+            placeholder={t(($) => $.notes.fields.backPlaceholder)}
+            textareaRef={backTextareaRef}
+            validationMessages={validationMessages?.basicBack}
+            value={draft.back}
+            onChange={(value) => {
+              clearUndoEntries('back')
+              onBackChange(value)
+            }}
+            onFocus={() => setActiveField('back')}
+            onKeyDown={(event) => handleUndo(event, backTarget)}
+            onSelect={() => setActiveField('back')}
+          />
+          <EditorToolbar
+            getTarget={getActiveTarget}
+            isPreviewOpen={isPreviewOpen}
+            onSaveUndo={pushUndoEntry}
+            onTogglePreview={onTogglePreview}
+          />
+        </div>
+      </Card>
+      {isPreviewOpen ? <NoteReviewPreview draft={draft} kind="basic" /> : null}
+    </div>
   )
 }
 
 const ClozeNoteForm = ({
   draft,
+  isPreviewOpen,
   onBodyChange,
   onTitleChange,
+  onTogglePreview,
   title,
   validationMessages,
 }: {
   draft: ClozeNoteEditor
+  isPreviewOpen: boolean
   onBodyChange: (value: string) => void
   onTitleChange: (value: string) => void
+  onTogglePreview: () => void
   title: string
   validationMessages?: NoteEditorValidationMessages
 }) => {
@@ -286,29 +310,33 @@ const ClozeNoteForm = ({
           />
           <EditorToolbar
             getTarget={() => bodyTarget}
+            isPreviewOpen={isPreviewOpen}
             showAddCloze
             onSaveUndo={pushUndoEntry}
+            onTogglePreview={onTogglePreview}
           />
         </div>
       </Card>
-      <Card className="overflow-hidden rounded-card border border-border bg-card p-6 shadow-card">
-        <div className="flex items-start gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
-            <Braces className="size-4" />
+      {isPreviewOpen ? <NoteReviewPreview draft={draft} kind="cloze" /> : null}
+      {!isPreviewOpen ? (
+        <Card className="overflow-hidden rounded-card border border-border bg-card p-6 shadow-card">
+          <div className="flex items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+              <Braces className="size-4" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="type-row-title text-foreground">
+                {t(($) => $.notes.labels.clozeFormat)}
+              </h2>
+              <p className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground">
+                {t(($) => $.notes.descriptions.clozeFormatPrefix)}{' '}
+                <span className="font-bold text-foreground">{'{{c1::...}}'}</span>.{' '}
+                {t(($) => $.notes.descriptions.clozeFormat)}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h2 className="type-row-title text-foreground">
-              {t(($) => $.notes.labels.clozeFormat)}
-            </h2>
-            <p className="text-wrap-anywhere mt-2 text-sm leading-6 text-muted-foreground">
-              {t(($) => $.notes.descriptions.clozeFormatPrefix)}{' '}
-              <span className="font-bold text-foreground">{'{{c1::...}}'}</span>.
-              {' '}
-              {t(($) => $.notes.descriptions.clozeFormat)}
-            </p>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      ) : null}
     </div>
   )
 }
@@ -419,11 +447,15 @@ const TextAreaField = ({
 
 const EditorToolbar = ({
   getTarget,
+  isPreviewOpen,
   onSaveUndo,
+  onTogglePreview,
   showAddCloze = false,
 }: {
   getTarget: () => MarkdownToolbarTarget
+  isPreviewOpen: boolean
   onSaveUndo: (target: MarkdownToolbarTarget, selection: MarkdownSelection) => void
+  onTogglePreview: () => void
   showAddCloze?: boolean
 }) => {
   const { t } = useTranslation()
@@ -485,22 +517,35 @@ const EditorToolbar = ({
           onClick={() => applyFormat('cloze')}
         />
       ) : null}
+      <span aria-hidden="true" className="mx-1 h-6 w-px shrink-0 bg-border" />
+      <ToolbarButton
+        icon={isPreviewOpen ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+        isPressed={isPreviewOpen}
+        label={t(($) => $.review.labels.review)}
+        onClick={onTogglePreview}
+      />
     </div>
   )
 }
 
 const ToolbarButton = ({
   icon,
+  isPressed,
   label,
   onClick,
 }: {
   icon: ReactNode
+  isPressed?: boolean
   label: string
   onClick: () => void
 }) => {
   return (
     <IconButton
-      className="border border-border bg-card text-muted-foreground"
+      aria-pressed={isPressed}
+      className={cn(
+        'border border-border bg-card text-muted-foreground',
+        isPressed && 'bg-muted text-foreground',
+      )}
       focusSurface="card"
       icon={icon}
       label={label}

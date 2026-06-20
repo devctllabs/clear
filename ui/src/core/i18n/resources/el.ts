@@ -116,7 +116,6 @@ export const el = {
     },
     labels: {
       deleted: 'Διαγράφηκε {{value}}',
-      due: 'Προθεσμία: {{value}}',
       reviewed: 'Επαναλήφθηκε: {{value}}',
       updated: 'Ενημερώθηκε {{value}}',
       updatedUppercase: 'ΕΝΗΜΕΡΩΘΗΚΕ {{value}}',

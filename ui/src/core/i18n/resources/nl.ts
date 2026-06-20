@@ -116,7 +116,6 @@ export const nl = {
     },
     labels: {
       deleted: 'Verwijderd {{value}}',
-      due: 'Te doen: {{value}}',
       reviewed: 'Herhaald: {{value}}',
       updated: 'Bijgewerkt {{value}}',
       updatedUppercase: 'BIJGEWERKT {{value}}',

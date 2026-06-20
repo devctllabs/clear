@@ -5,7 +5,7 @@ import { visible } from '../../lib/softDelete.ts'
 import { byStringField } from '../../lib/sort.ts'
 
 type SortDirection = 'asc' | 'desc'
-type DeckSortField = 'dueToday' | 'title' | 'updated'
+type DeckSortField = 'dueToday' | 'title' | 'updatedAt'
 
 const sortDecks = (
   decks: DeckRecord[],
@@ -23,7 +23,7 @@ const sortDecks = (
       return (left.dueToday - right.dueToday) * direction
     }
 
-    if (sortField === 'updated') {
+    if (sortField === 'updatedAt') {
       return left.updatedAt.localeCompare(right.updatedAt) * direction
     }
 

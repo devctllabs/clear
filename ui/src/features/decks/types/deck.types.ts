@@ -1,4 +1,16 @@
 import type { VisualIconName } from '@shared/components/icons/IconGlyph'
+import type { SortPreference } from '@shared/types/sort.types'
+
+export const deckSortFields = ['title', 'updatedAt', 'dueToday'] as const
+
+export type DeckSortField = (typeof deckSortFields)[number]
+
+export type DeckSortPreference = SortPreference<DeckSortField>
+
+export const defaultDeckSortPreference: DeckSortPreference = {
+  direction: 'asc',
+  field: 'title',
+}
 
 type DeckBase = {
   description: string

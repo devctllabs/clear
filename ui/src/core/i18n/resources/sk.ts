@@ -124,7 +124,6 @@ export const sk = {
     },
     labels: {
       deleted: 'Odstránené {{value}}',
-      due: 'Termín: {{value}}',
       reviewed: 'Opakované: {{value}}',
       updated: 'Aktualizované {{value}}',
       updatedUppercase: 'AKTUALIZOVANÉ {{value}}',

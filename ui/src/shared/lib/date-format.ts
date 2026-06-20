@@ -9,6 +9,9 @@ const isValidDate = (value: Date) => !Number.isNaN(value.getTime())
 
 const pad2 = (value: number) => value.toString().padStart(2, '0')
 
+const formatDateParts = (value: Date) =>
+  `${pad2(value.getDate())}.${pad2(value.getMonth() + 1)}.${value.getFullYear()}`
+
 const formatAbsoluteDate = (timestamp: string) => {
   const parsed = new Date(timestamp)
 
@@ -16,7 +19,17 @@ const formatAbsoluteDate = (timestamp: string) => {
     return timestamp
   }
 
-  return `${pad2(parsed.getDate())}.${pad2(parsed.getMonth() + 1)}.${parsed.getFullYear()}`
+  return formatDateParts(parsed)
+}
+
+export const formatAbsoluteDateTime = (timestamp: string) => {
+  const parsed = new Date(timestamp)
+
+  if (!isValidDate(parsed)) {
+    return undefined
+  }
+
+  return `${formatDateParts(parsed)} ${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`
 }
 
 const getCalendarDayDifference = (left: Date, right: Date) => {
@@ -119,8 +132,7 @@ export const formatRelativeTimestamp = (
 export const formatReviewedLabel = (timestamp: string) =>
   `Reviewed: ${formatRelativeTimestamp(timestamp, 'past')}`
 
-export const formatDueLabel = (timestamp: string) =>
-  `Due: ${formatRelativeTimestamp(timestamp, 'future')}`
+export const formatDueLabel = (timestamp: string) => formatRelativeTimestamp(timestamp)
 
 export const formatUpdatedChipLabel = (timestamp: string) =>
   `UPDATED ${formatRelativeDate(timestamp).replace('Updated ', '').toUpperCase()}`

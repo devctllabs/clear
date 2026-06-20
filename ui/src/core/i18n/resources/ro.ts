@@ -120,7 +120,6 @@ export const ro = {
     },
     labels: {
       deleted: 'Șters {{value}}',
-      due: 'Scadent: {{value}}',
       reviewed: 'Recapitulat: {{value}}',
       updated: 'Actualizat {{value}}',
       updatedUppercase: 'ACTUALIZAT {{value}}',

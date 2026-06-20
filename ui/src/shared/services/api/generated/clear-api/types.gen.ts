@@ -447,9 +447,9 @@ export type Workspaces = unknown;
 
 export type DateTime = string;
 
-export type DeckSortField = 'dueToday' | 'title' | 'updated';
+export type DeckSortField = 'dueToday' | 'title' | 'updatedAt';
 
-export type FolderSortField = 'title' | 'updated';
+export type FolderSortField = 'title' | 'updatedAt';
 
 export type Id = string;
 
@@ -463,7 +463,7 @@ export type MessageProblemDetails = {
     entityId?: string;
 };
 
-export type NoteSortField = 'title' | 'updated';
+export type NoteSortField = 'dueAt' | 'progress' | 'title' | 'updatedAt';
 
 export type ComponentsProblemDetails = ({
     type: '/problems/validation';

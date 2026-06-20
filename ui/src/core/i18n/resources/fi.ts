@@ -116,7 +116,6 @@ export const fi = {
     },
     labels: {
       deleted: 'Poistettu {{value}}',
-      due: 'Erääntyy: {{value}}',
       reviewed: 'Kerrattu: {{value}}',
       updated: 'Päivitetty {{value}}',
       updatedUppercase: 'PÄIVITETTY {{value}}',

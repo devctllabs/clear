@@ -1,7 +1,9 @@
 import { useState, type ComponentProps } from 'react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, userEvent, within } from 'storybook/test'
 
 import { formCanvas } from '@/test/storybook/decorators'
+import { expectNoHorizontalOverflow } from '@/test/storybook/assertions'
 
 import type { NoteKind } from '../types/note.types'
 import { NoteEditorForm } from './NoteEditorForm'
@@ -78,6 +80,34 @@ export const BasicFilled: Story = {
   },
 }
 
+export const BasicPreview: Story = {
+  args: {
+    basicDraft: {
+      back: 'The hippocampus consolidates short-term memories into long-term memory.',
+      front: 'Which structure is central to memory consolidation?',
+    },
+    title: 'Memory Consolidation',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Review' }))
+    const preview = getPreviewElement(canvasElement)
+    const previewCanvas = within(preview)
+
+    await expect(
+      previewCanvas.getByText('Which structure is central to memory consolidation?'),
+    ).toBeVisible()
+    await userEvent.click(await canvas.findByRole('button', { name: 'Show answer' }))
+    await expect(
+      previewCanvas.getByText(
+        'The hippocampus consolidates short-term memories into long-term memory.',
+      ),
+    ).toBeVisible()
+    await expectNoHorizontalOverflow(canvasElement)
+  },
+}
+
 export const BasicValidation: Story = {
   args: {
     validationMessages: {
@@ -98,6 +128,29 @@ export const ClozeFilled: Story = {
   },
 }
 
+export const ClozePreview: Story = {
+  args: {
+    activeKind: 'cloze',
+    clozeDraft: {
+      body: 'The {{c1::hippocampus}} supports {{c2::memory consolidation}}.',
+    },
+    title: 'Hippocampus Cloze',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await userEvent.click(await canvas.findByRole('button', { name: 'Review' }))
+    const preview = getPreviewElement(canvasElement)
+    const previewCanvas = within(preview)
+
+    await expect(previewCanvas.getByText('•••')).toBeVisible()
+    await userEvent.click(await canvas.findByRole('button', { name: 'c2' }))
+    await userEvent.click(await canvas.findByRole('button', { name: 'Show answer' }))
+    await expect(previewCanvas.getByText('memory consolidation')).toBeVisible()
+    await expectNoHorizontalOverflow(canvasElement)
+  },
+}
+
 export const ClozeValidation: Story = {
   args: {
     activeKind: 'cloze',
@@ -106,4 +159,14 @@ export const ClozeValidation: Story = {
       title: ['Title is required.'],
     },
   },
+}
+
+const getPreviewElement = (canvasElement: HTMLElement) => {
+  const preview = canvasElement.querySelector('[data-slot="note-review-preview"]')
+
+  if (!(preview instanceof HTMLElement)) {
+    throw new Error('Expected note review preview to render.')
+  }
+
+  return preview
 }

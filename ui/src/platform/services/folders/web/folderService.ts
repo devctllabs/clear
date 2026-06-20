@@ -10,7 +10,6 @@ import {
 import type {
   Folder as ApiFolder,
   FolderDraft as ApiFolderDraft,
-  FolderSortField as ApiFolderSortField,
 } from '@api-generated/clear-api'
 
 import type { FolderService } from '@features/folders/services/folderService'
@@ -50,10 +49,7 @@ export const webFolderService: FolderService = {
     )
   },
   listFolderChildren(folderId, sort) {
-    const query = toSortQuery(sort) as {
-      sortDirection?: 'asc' | 'desc'
-      sortField?: ApiFolderSortField
-    }
+    const query = toSortQuery(sort)
 
     return toDomainResult(
       apiListFolderFolders({ path: { folderId }, query }),
@@ -62,10 +58,7 @@ export const webFolderService: FolderService = {
     )
   },
   listWorkspaceRoot(workspaceId, sort) {
-    const query = toSortQuery(sort) as {
-      sortDirection?: 'asc' | 'desc'
-      sortField?: ApiFolderSortField
-    }
+    const query = toSortQuery(sort)
 
     return toDomainResult(
       apiListWorkspaceFolders({ path: { workspaceId }, query }),

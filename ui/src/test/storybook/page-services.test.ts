@@ -88,18 +88,21 @@ describe('storybook page services', () => {
       noteDetails: [
         createBasicNoteDetail({
           deckId,
+          dueAt: '2026-02-01T00:00:00.000Z',
           id: 'zeta-note',
           title: 'Zeta Note',
           updatedAt: '2026-01-02T00:00:00.000Z',
         }),
         createBasicNoteDetail({
           deckId,
+          dueAt: '2026-01-03T00:00:00.000Z',
           id: 'alpha-note',
           title: 'Alpha Note',
           updatedAt: '2026-01-03T00:00:00.000Z',
         }),
         createBasicNoteDetail({
           deckId,
+          dueAt: '2026-01-12T00:00:00.000Z',
           id: 'middle-note',
           title: 'Middle Note',
           updatedAt: '2026-01-01T00:00:00.000Z',
@@ -125,7 +128,13 @@ describe('storybook page services', () => {
     const notesByUpdatedDesc = expectOkValue(
       await noteService.listByDeck(deckId, {
         direction: 'desc',
-        field: 'updated',
+        field: 'updatedAt',
+      }),
+    )
+    const notesByDueAtAsc = expectOkValue(
+      await noteService.listByDeck(deckId, {
+        direction: 'asc',
+        field: 'dueAt',
       }),
     )
 
@@ -148,6 +157,11 @@ describe('storybook page services', () => {
       'alpha-note',
       'zeta-note',
       'middle-note',
+    ])
+    expect(notesByDueAtAsc.map((note) => note.id)).toEqual([
+      'alpha-note',
+      'middle-note',
+      'zeta-note',
     ])
   })
 

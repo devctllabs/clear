@@ -6,13 +6,13 @@ import {
   InventoryRowShell,
   inventoryRowOverlayClassName,
 } from '@shared/components/data/InventoryList'
+import { DateText } from '@shared/components/data/DateText'
 import { InventoryListWithSort } from '@shared/components/data/InventoryListWithSort'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { useDateFormatters } from '@shared/lib/translated-date-format'
-import type { SortPreference } from '@shared/types/sort.types'
 import { createOpenedFromState } from '@shared/lib/navigation-state'
 
-import type { Folder } from '../types/folder.types'
+import type { Folder, FolderSortPreference } from '../types/folder.types'
 
 export const FolderList = ({
   folders,
@@ -24,9 +24,9 @@ export const FolderList = ({
 }: {
   folders: Folder[]
   onDelete: (folder: Folder) => void
-  onSortChange: (sort: SortPreference) => void
+  onSortChange: (sort: FolderSortPreference) => void
   openedFrom?: string
-  sort: SortPreference
+  sort: FolderSortPreference
   workspaceId: string
 }) => (
   <FolderListContent
@@ -49,9 +49,9 @@ const FolderListContent = ({
 }: {
   folders: Folder[]
   onDelete: (folder: Folder) => void
-  onSortChange: (sort: SortPreference) => void
+  onSortChange: (sort: FolderSortPreference) => void
   openedFrom?: string
-  sort: SortPreference
+  sort: FolderSortPreference
   workspaceId: string
 }) => {
   const { t } = useTranslation()
@@ -84,7 +84,7 @@ const FolderListContent = ({
       sortAriaLabel={t(($) => $.folders.sort.ariaLabel)}
       sortFieldOptions={[
         { field: 'title', label: t(($) => $.folders.sort.name) },
-        { field: 'updated', label: t(($) => $.folders.sort.updated) },
+        { field: 'updatedAt', label: t(($) => $.folders.sort.updated) },
       ]}
       title={t(($) => $.folders.labels.folders)}
       onSortChange={onSortChange}
@@ -123,7 +123,8 @@ const FolderRowContent = ({
   workspaceId: string
 }) => {
   const { t } = useTranslation()
-  const { formatRelativeDate } = useDateFormatters()
+  const { formatAbsoluteDateTime, formatRelativeDate } = useDateFormatters()
+  const updatedAtTitle = formatAbsoluteDateTime(folder.updatedAt)
 
   return (
   <InventoryRowShell>
@@ -131,6 +132,7 @@ const FolderRowContent = ({
       aria-label={folder.name}
       className={inventoryRowOverlayClassName}
       params={{ folderId: folder.id, workspaceId }}
+      title={updatedAtTitle}
       to="/dashboard/$workspaceId/folders/$folderId"
     />
     <span className="pointer-events-none relative z-20 inline-flex size-6 shrink-0 items-center justify-center text-foreground">
@@ -141,7 +143,7 @@ const FolderRowContent = ({
         {folder.name}
       </span>
       <span className="mt-1 block text-wrap-anywhere text-xs font-medium text-muted-foreground">
-        {formatRelativeDate(folder.updatedAt)}
+        <DateText timestamp={folder.updatedAt}>{formatRelativeDate(folder.updatedAt)}</DateText>
       </span>
     </span>
     <div className="pointer-events-auto relative z-20 flex shrink-0 items-center justify-self-end">

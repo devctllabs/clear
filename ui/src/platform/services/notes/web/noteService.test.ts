@@ -102,7 +102,7 @@ describe('webNoteService', () => {
 
         expect(params.deckId).toBe('world-history')
         expect(url.searchParams.get('sortDirection')).toBe('desc')
-        expect(url.searchParams.get('sortField')).toBe('updated')
+        expect(url.searchParams.get('sortField')).toBe('progress')
 
         return HttpResponse.json([noteListItem])
       }),
@@ -111,7 +111,7 @@ describe('webNoteService', () => {
     const result = expectOk(
       await webNoteService.listByDeck('world-history', {
         direction: 'desc',
-        field: 'updated',
+        field: 'progress',
       }),
     )
 

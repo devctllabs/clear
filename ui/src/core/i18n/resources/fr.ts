@@ -116,7 +116,6 @@ export const fr = {
     },
     labels: {
       deleted: 'Supprimé {{value}}',
-      due: 'À réviser : {{value}}',
       reviewed: 'Révisé : {{value}}',
       updated: 'Mis à jour {{value}}',
       updatedUppercase: 'MIS À JOUR {{value}}',

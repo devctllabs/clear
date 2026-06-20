@@ -116,7 +116,6 @@ export const de = {
     },
     labels: {
       deleted: 'Gelöscht {{value}}',
-      due: 'Fällig: {{value}}',
       reviewed: 'Wiederholt: {{value}}',
       updated: 'Aktualisiert {{value}}',
       updatedUppercase: 'AKTUALISIERT {{value}}',

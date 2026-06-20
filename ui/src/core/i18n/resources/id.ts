@@ -116,7 +116,6 @@ export const id = {
     },
     labels: {
       deleted: 'Dihapus {{value}}',
-      due: 'Jatuh tempo: {{value}}',
       reviewed: 'Diulas: {{value}}',
       updated: 'Diperbarui {{value}}',
       updatedUppercase: 'DIPERBARUI {{value}}',

@@ -120,7 +120,6 @@ export const ca = {
     },
     labels: {
       deleted: 'Suprimit {{value}}',
-      due: 'Venciment: {{value}}',
       reviewed: 'Repassat: {{value}}',
       updated: 'Actualitzat {{value}}',
       updatedUppercase: 'ACTUALITZAT {{value}}',

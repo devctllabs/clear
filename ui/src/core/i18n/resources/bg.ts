@@ -116,7 +116,6 @@ export const bg = {
     },
     labels: {
       deleted: 'Изтрито {{value}}',
-      due: 'Срок: {{value}}',
       reviewed: 'Преговорено: {{value}}',
       updated: 'Обновено {{value}}',
       updatedUppercase: 'ОБНОВЕНО {{value}}',

@@ -124,7 +124,6 @@ export const sl = {
     },
     labels: {
       deleted: 'Izbrisano {{value}}',
-      due: 'Rok: {{value}}',
       reviewed: 'Ponovljeno: {{value}}',
       updated: 'Posodobljeno {{value}}',
       updatedUppercase: 'POSODOBLJENO {{value}}',

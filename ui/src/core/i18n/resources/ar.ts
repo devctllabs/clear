@@ -132,7 +132,6 @@ export const ar = {
     },
     labels: {
       deleted: 'حذف {{value}}',
-      due: 'مستحق: {{value}}',
       reviewed: 'تمت المراجعة: {{value}}',
       updated: 'تم التحديث {{value}}',
       updatedUppercase: 'تم التحديث {{value}}',

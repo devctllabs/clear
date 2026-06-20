@@ -124,7 +124,6 @@ export const lt = {
     },
     labels: {
       deleted: 'Ištrinta {{value}}',
-      due: 'Terminas: {{value}}',
       reviewed: 'Kartota: {{value}}',
       updated: 'Atnaujinta {{value}}',
       updatedUppercase: 'ATNAUJINTA {{value}}',

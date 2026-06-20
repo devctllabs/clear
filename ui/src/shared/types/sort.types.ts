@@ -1,12 +1,6 @@
 export type SortDirection = 'asc' | 'desc'
-export type SortField = 'dueToday' | 'title' | 'updated'
 
-export type SortPreference = {
+export type SortPreference<TField extends string> = {
   direction: SortDirection
-  field: SortField
-}
-
-export const defaultSortPreference: SortPreference = {
-  direction: 'asc',
-  field: 'title',
+  field: TField
 }

@@ -133,7 +133,7 @@ Require the visible deck and next parent, reject duplicate visible titles in the
 
 Status: inferred
 
-Require the visible deck and return visible note list items for that deck. Support `sortField=title|updated` and `sortDirection=asc|desc`.
+Require the visible deck and return visible note list items for that deck. Support `sortField=dueAt|progress|title|updatedAt` and `sortDirection=asc|desc`.
 
 ## operation:createNote
 

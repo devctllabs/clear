@@ -88,7 +88,7 @@ describe('webFolderService', () => {
 
         expect(params.folderId).toBe('reading-notes')
         expect(url.searchParams.get('sortDirection')).toBe('desc')
-        expect(url.searchParams.get('sortField')).toBe('updated')
+        expect(url.searchParams.get('sortField')).toBe('updatedAt')
 
         return HttpResponse.json([folder])
       }),
@@ -97,7 +97,7 @@ describe('webFolderService', () => {
     await expect(
       webFolderService.listFolderChildren('reading-notes', {
         direction: 'desc',
-        field: 'updated',
+        field: 'updatedAt',
       }),
     ).resolves.toEqual({
       ok: true,

@@ -6,6 +6,7 @@ import { createAppServices } from '@core/services'
 import { renderRoute } from '@/test/renderRoute'
 import { mockMatchMedia } from '@/test/matchMedia'
 import { domainError, err } from '@shared/errors'
+import { formatDueLabel } from '@shared/lib/date-format'
 
 const createDeferred = <T,>() => {
   let resolve!: (value: T) => void
@@ -251,6 +252,18 @@ describe('NoteDetailPage', () => {
 
   it('keeps derived card timing in desktop cloze content instead of the right panel', async () => {
     mockMatchMedia(true)
+    const baseServices = createAppServices('mock')
+    const noteResult = await baseServices.notes.getById(
+      'cognitive-biases',
+      'availability-heuristic',
+    )
+
+    if (!noteResult.ok) {
+      throw new Error('Expected availability-heuristic note fixture to exist.')
+    }
+
+    const dueLabel = formatDueLabel(noteResult.value.dueAt)
+
     renderRoute('/dashboard/independent-study/decks/cognitive-biases/notes/availability-heuristic')
 
     expect(
@@ -265,7 +278,7 @@ describe('NoteDetailPage', () => {
       within(noteContent).getByRole('button', { name: 'Show derived cards note' }),
     ).toHaveAttribute('aria-expanded', 'false')
     expect(within(noteContent).getAllByText(/Reviewed:/).length).toBeGreaterThan(0)
-    expect(within(noteContent).getAllByText(/Due:/).length).toBeGreaterThan(0)
+    expect(noteContent.textContent).toContain(dueLabel)
 
     const metadata = await screen.findByRole('complementary', { name: 'Note metadata' })
 

@@ -4,15 +4,28 @@ import type { ContentSearchService } from '@features/content-search/services/con
 import type { BootstrapService } from '@features/bootstrap'
 import type { SearchResultGroup } from '@features/content-search/types/search.types'
 import type { DeckService } from '@features/decks/services/deckService'
-import type { Deck, DeckDetail, DeckDraft } from '@features/decks/types/deck.types'
+import {
+  defaultDeckSortPreference,
+  type Deck,
+  type DeckDetail,
+  type DeckDraft,
+  type DeckSortPreference,
+} from '@features/decks/types/deck.types'
 import type { FolderService } from '@features/folders/services/folderService'
-import type { Folder, FolderDraft } from '@features/folders/types/folder.types'
+import {
+  defaultFolderSortPreference,
+  type Folder,
+  type FolderDraft,
+  type FolderSortPreference,
+} from '@features/folders/types/folder.types'
 import type { NoteService } from '@features/notes/services/noteService'
-import type {
-  NoteDetail,
-  NoteDraft,
-  NoteListItem,
-  NoteRef,
+import {
+  defaultNoteSortPreference,
+  type NoteDetail,
+  type NoteDraft,
+  type NoteListItem,
+  type NoteRef,
+  type NoteSortPreference,
 } from '@features/notes/types/note.types'
 import type { ReviewService } from '@features/review/services/reviewService'
 import type {
@@ -38,10 +51,7 @@ import {
   type BootstrapResult,
   type RuntimeProfile,
 } from '@shared/lib/runtime-profile'
-import {
-  defaultSortPreference,
-  type SortPreference,
-} from '@shared/types/sort.types'
+import type { SortPreference } from '@shared/types/sort.types'
 
 import {
   baseBasicNoteDetail,
@@ -115,17 +125,20 @@ export const createSettings = (settings: Partial<Settings> = {}): Settings => ({
 })
 
 const sortByPreference = <
-  T extends { dueToday?: number; name?: string; title?: string; updatedAt: string },
+  T extends { dueAt?: string; dueToday?: number; name?: string; title?: string; updatedAt: string },
+  TField extends string,
 >(
   items: readonly T[],
-  sort: SortPreference = defaultSortPreference,
+  sort: SortPreference<TField>,
 ) =>
   [...items].sort((left, right) => {
     const direction = sort.direction === 'asc' ? 1 : -1
     let value: number
 
-    if (sort.field === 'updated') {
+    if (sort.field === 'updatedAt') {
       value = new Date(left.updatedAt).getTime() - new Date(right.updatedAt).getTime()
+    } else if (sort.field === 'dueAt') {
+      value = new Date(left.dueAt ?? '').getTime() - new Date(right.dueAt ?? '').getTime()
     } else if (sort.field === 'dueToday') {
       value = (left.dueToday ?? 0) - (right.dueToday ?? 0)
     } else {
@@ -510,7 +523,7 @@ export const createFolderService = ({
     parentId
   const listFolders = async (
     predicate: (folder: Folder) => boolean,
-    sort?: SortPreference,
+    sort?: FolderSortPreference,
   ): DomainResult<Folder[]> => {
     if (loading) {
       return pendingDomainResult<Folder[]>()
@@ -526,7 +539,9 @@ export const createFolderService = ({
 
     listCallCount += 1
 
-    return ok(sortByPreference(folderRecords.filter(predicate), sort))
+    return ok(
+      sortByPreference(folderRecords.filter(predicate), sort ?? defaultFolderSortPreference),
+    )
   }
 
   return {
@@ -588,10 +603,10 @@ export const createFolderService = ({
 
       return ok(folderPaths[folderId] ?? ['Workspace'])
     },
-    async listFolderChildren(folderId: string, sort?: SortPreference) {
+    async listFolderChildren(folderId: string, sort?: FolderSortPreference) {
       return listFolders((folder) => folder.parentId === folderId, sort)
     },
-    async listWorkspaceRoot(workspaceId: string, sort?: SortPreference) {
+    async listWorkspaceRoot(workspaceId: string, sort?: FolderSortPreference) {
       return listFolders(
         (folder) => folder.workspaceId === workspaceId && folder.parentId === workspaceId,
         sort,
@@ -658,7 +673,7 @@ export const createDeckService = ({
     (parentId === baseDeck.workspaceId ? parentId : baseDeck.workspaceId)
   const listDecks = async (
     predicate: (deck: Deck) => boolean,
-    sort?: SortPreference,
+    sort?: DeckSortPreference,
   ): DomainResult<Deck[]> => {
     if (loading) {
       return pendingDomainResult<Deck[]>()
@@ -674,7 +689,9 @@ export const createDeckService = ({
 
     listCallCount += 1
 
-    return ok(sortByPreference(deckRecords.filter(predicate), sort))
+    return ok(
+      sortByPreference(deckRecords.filter(predicate), sort ?? defaultDeckSortPreference),
+    )
   }
 
   return {
@@ -725,10 +742,10 @@ export const createDeckService = ({
 
       return ok(deckDetails[deckId] ?? deckRecords.find((deck) => deck.id === deckId) ?? baseDeck)
     },
-    async listFolderChildren(folderId: string, sort?: SortPreference) {
+    async listFolderChildren(folderId: string, sort?: DeckSortPreference) {
       return listDecks((deck) => deck.parentId === folderId, sort)
     },
-    async listWorkspaceRoot(workspaceId: string, sort?: SortPreference) {
+    async listWorkspaceRoot(workspaceId: string, sort?: DeckSortPreference) {
       return listDecks(
         (deck) => deck.workspaceId === workspaceId && deck.parentId === workspaceId,
         sort,
@@ -850,7 +867,7 @@ export const createNoteService = ({
           baseBasicNoteDetail,
       )
     },
-    async listByDeck(deckId: string, sort?: SortPreference) {
+    async listByDeck(deckId: string, sort?: NoteSortPreference) {
       if (loading) {
         return pendingDomainResult<NoteListItem[]>()
       }
@@ -868,7 +885,7 @@ export const createNoteService = ({
       return ok(
         sortByPreference(
           noteRecords.filter((note) => note.deckId === deckId),
-          sort,
+          sort ?? defaultNoteSortPreference,
         ).map(toNoteListItem),
       )
     },

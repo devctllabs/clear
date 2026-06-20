@@ -116,7 +116,6 @@ export const tr = {
     },
     labels: {
       deleted: '{{value}} silindi',
-      due: 'Sıra zamanı: {{value}}',
       reviewed: 'Tekrarlandı: {{value}}',
       updated: '{{value}} güncellendi',
       updatedUppercase: '{{value}} GÜNCELLENDİ',
