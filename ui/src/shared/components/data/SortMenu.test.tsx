@@ -6,7 +6,7 @@ import { SortMenu } from './SortMenu'
 
 const fieldOptions = [
   { field: 'title', label: 'Name' },
-  { field: 'updated', label: 'Updated' },
+  { field: 'updatedAt', label: 'Updated' },
 ] as const
 
 describe('SortMenu', () => {
@@ -71,7 +71,7 @@ describe('SortMenu', () => {
     await user.click(screen.getByRole('button', { name: 'Sort decks' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Updated' }))
 
-    expect(onFieldChange).toHaveBeenCalledWith('updated')
+    expect(onFieldChange).toHaveBeenCalledWith('updatedAt')
 
     await user.click(screen.getByRole('button', { name: 'Sort decks' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Desc' }))

@@ -6,4 +6,11 @@ export {
 export { DeckCreatePage } from './pages/CreatePage'
 export { DeckDetailPage } from './pages/DetailPage'
 export { DeckEditPage } from './pages/EditPage'
-export type { Deck, DeckDetail, DeckDraft } from './types/deck.types'
+export { deckSortFields, defaultDeckSortPreference } from './types/deck.types'
+export type {
+  Deck,
+  DeckDetail,
+  DeckDraft,
+  DeckSortField,
+  DeckSortPreference,
+} from './types/deck.types'

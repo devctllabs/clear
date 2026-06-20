@@ -124,7 +124,6 @@ export const ru = {
     },
     labels: {
       deleted: 'Удалено {{value}}',
-      due: 'К повторению: {{value}}',
       reviewed: 'Повторено: {{value}}',
       updated: 'Обновлено {{value}}',
       updatedUppercase: 'ОБНОВЛЕНО {{value}}',

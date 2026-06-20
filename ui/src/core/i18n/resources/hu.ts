@@ -116,7 +116,6 @@ export const hu = {
     },
     labels: {
       deleted: 'Törölve {{value}}',
-      due: 'Esedékes: {{value}}',
       reviewed: 'Ismételve: {{value}}',
       updated: 'Frissítve {{value}}',
       updatedUppercase: 'FRISSÍTVE {{value}}',

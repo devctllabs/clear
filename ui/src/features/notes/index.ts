@@ -1,5 +1,6 @@
 export { NoteDetailPage } from './pages/DetailPage'
 export { NoteEditorPage } from './pages/EditorPage'
+export { defaultNoteSortPreference, noteSortFields } from './types/note.types'
 export type {
   BasicNote,
   BasicNoteEditor,
@@ -11,4 +12,6 @@ export type {
   NoteKind,
   NoteListItem,
   NoteRef,
+  NoteSortField,
+  NoteSortPreference,
 } from './types/note.types'

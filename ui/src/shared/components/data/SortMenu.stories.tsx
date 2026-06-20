@@ -8,7 +8,7 @@ import { SortMenu } from './SortMenu'
 
 const deckFieldOptions = [
   { field: 'title', label: 'Title' },
-  { field: 'updated', label: 'Updated' },
+  { field: 'updatedAt', label: 'Updated' },
 ] as const
 
 const deckFieldOptionsWithDueToday = [

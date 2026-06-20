@@ -247,6 +247,34 @@ describe('mock api app', () => {
     )
   })
 
+  it('sorts deck notes by due date', async () => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(
+      new Request('http://localhost/api/v1/decks/world-history/notes?sortField=dueAt&sortDirection=desc'),
+    )
+
+    expect(response.status).toBe(200)
+    await expect(json<Array<{ id: string }>>(response)).resolves.toEqual([
+      expect.objectContaining({ id: 'postwar-institutions' }),
+      expect.objectContaining({ id: 'industrial-revolution-causes' }),
+    ])
+  })
+
+  it('sorts deck notes by progress', async () => {
+    const app = await newMockApiApp()
+
+    const response = await app.fetch(
+      new Request('http://localhost/api/v1/decks/world-history/notes?sortField=progress&sortDirection=asc'),
+    )
+
+    expect(response.status).toBe(200)
+    await expect(json<Array<{ id: string }>>(response)).resolves.toEqual([
+      expect.objectContaining({ id: 'postwar-institutions' }),
+      expect.objectContaining({ id: 'industrial-revolution-causes' }),
+    ])
+  })
+
   it('exposes admin state reset and inspection endpoints', async () => {
     const app = await newMockApiApp()
 

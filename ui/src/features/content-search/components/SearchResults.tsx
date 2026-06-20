@@ -3,6 +3,7 @@ import { Braces, ChevronRight, FileText, Folder } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { DateText } from '@shared/components/data/DateText'
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
 import { Card } from '@shared/components/ui/card'
 import { Button } from '@shared/components/ui/button'
@@ -192,7 +193,9 @@ const SearchResultRow = ({ result }: { result: SearchResult }) => {
           </span>
           <span className="text-muted-foreground">•</span>
           <span className="text-wrap-anywhere min-w-0 text-muted-foreground">
-            {formatRelativeDate(result.updatedAt)}
+            <DateText timestamp={result.updatedAt}>
+              {formatRelativeDate(result.updatedAt)}
+            </DateText>
           </span>
         </div>
       </div>

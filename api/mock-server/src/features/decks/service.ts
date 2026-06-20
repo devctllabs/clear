@@ -184,7 +184,9 @@ export class DeckService {
     return {
       sortDirection: query.sortDirection === 'desc' ? 'desc' : 'asc',
       sortField:
-        query.sortField === 'dueToday' || query.sortField === 'title' || query.sortField === 'updated'
+        query.sortField === 'dueToday' ||
+        query.sortField === 'title' ||
+        query.sortField === 'updatedAt'
           ? query.sortField
           : undefined,
     } as const

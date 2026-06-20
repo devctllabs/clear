@@ -1,3 +1,16 @@
+import type { SortPreference } from '@shared/types/sort.types'
+
+export const noteSortFields = ['title', 'dueAt', 'progress', 'updatedAt'] as const
+
+export type NoteSortField = (typeof noteSortFields)[number]
+
+export type NoteSortPreference = SortPreference<NoteSortField>
+
+export const defaultNoteSortPreference: NoteSortPreference = {
+  direction: 'asc',
+  field: 'title',
+}
+
 export type NoteKind = 'basic' | 'cloze'
 
 export type NoteStatus = 'in-progress' | 'mastered'

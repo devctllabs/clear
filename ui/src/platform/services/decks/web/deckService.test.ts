@@ -84,7 +84,7 @@ describe('webDeckService', () => {
 
         expect(params.folderId).toBe('reading-notes')
         expect(url.searchParams.get('sortDirection')).toBe('desc')
-        expect(url.searchParams.get('sortField')).toBe('updated')
+        expect(url.searchParams.get('sortField')).toBe('updatedAt')
 
         return HttpResponse.json([deck])
       }),
@@ -93,7 +93,7 @@ describe('webDeckService', () => {
     await expect(
       webDeckService.listFolderChildren('reading-notes', {
         direction: 'desc',
-        field: 'updated',
+        field: 'updatedAt',
       }),
     ).resolves.toEqual({
       ok: true,

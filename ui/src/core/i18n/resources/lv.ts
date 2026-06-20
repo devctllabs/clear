@@ -120,7 +120,6 @@ export const lv = {
     },
     labels: {
       deleted: 'Dzēsts {{value}}',
-      due: 'Termiņš: {{value}}',
       reviewed: 'Atkārtots: {{value}}',
       updated: 'Atjaunināts {{value}}',
       updatedUppercase: 'ATJAUNINĀTS {{value}}',

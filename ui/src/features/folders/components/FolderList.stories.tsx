@@ -32,7 +32,7 @@ const meta = {
     onSortChange: noop,
     sort: {
       direction: 'desc',
-      field: 'updated',
+      field: 'updatedAt',
     },
     workspaceId: 'independent-study',
   },

@@ -197,21 +197,23 @@ components:
       enum:
         - dueToday
         - title
-        - updated
+        - updatedAt
       example: title
 
     FolderSortField:
       type: string
       enum:
         - title
-        - updated
+        - updatedAt
       example: title
 
     NoteSortField:
       type: string
       enum:
+        - dueAt
+        - progress
         - title
-        - updated
+        - updatedAt
       example: title
 
     SortDirection:

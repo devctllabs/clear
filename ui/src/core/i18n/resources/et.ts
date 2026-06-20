@@ -116,7 +116,6 @@ export const et = {
     },
     labels: {
       deleted: 'Kustutatud {{value}}',
-      due: 'Tähtaeg: {{value}}',
       reviewed: 'Korratud: {{value}}',
       updated: 'Uuendatud {{value}}',
       updatedUppercase: 'UUENDATUD {{value}}',

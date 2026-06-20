@@ -116,7 +116,6 @@ export const fa = {
     },
     labels: {
       deleted: 'حذف‌شده {{value}}',
-      due: 'موعد: {{value}}',
       reviewed: 'مرور شد: {{value}}',
       updated: 'به‌روزرسانی‌شده {{value}}',
       updatedUppercase: 'به‌روزرسانی‌شده {{value}}',

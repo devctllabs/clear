@@ -23,7 +23,8 @@ describe('translated date formatters', () => {
   it('formats labeled dates through translations', () => {
     const formatters = createFormatters()
 
-    expect(formatters.formatDueLabel('2026-06-05T12:00:00.000Z')).toBe('Due: Tomorrow')
+    expect(formatters.formatDueLabel('2026-06-05T12:00:00.000Z')).toBe('Tomorrow')
+    expect(formatters.formatDueLabel('2026-05-20T12:00:00.000Z')).toBe('2 weeks ago')
     expect(formatters.formatReviewedLabel('2026-06-03T12:00:00.000Z')).toBe(
       'Reviewed: Yesterday',
     )
@@ -74,6 +75,15 @@ describe('translated date formatters', () => {
     expect(formatters.formatUpdatedAge('2026-06-04T10:00:00.000Z')).toBe('2h ago')
     expect(formatters.formatUpdatedAge('2026-06-01T12:00:00.000Z')).toBe('3 days ago')
     expect(formatters.formatUpdatedAge('2026-05-01T12:00:00.000Z')).toBe('01.05.2026')
+  })
+
+  it('formats absolute date-time values for native date tooltips', () => {
+    const formatters = createFormatters()
+
+    expect(formatters.formatAbsoluteDateTime('2026-05-01T12:34:00')).toBe(
+      '01.05.2026 12:34',
+    )
+    expect(formatters.formatAbsoluteDateTime('not-a-date')).toBeUndefined()
   })
 
   it('formats review durations through translations', () => {

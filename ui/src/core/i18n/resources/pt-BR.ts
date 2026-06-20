@@ -116,7 +116,6 @@ export const ptBR = {
     },
     labels: {
       deleted: 'Excluído {{value}}',
-      due: 'Vence: {{value}}',
       reviewed: 'Revisado: {{value}}',
       updated: 'Atualizado {{value}}',
       updatedUppercase: 'ATUALIZADO {{value}}',

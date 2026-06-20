@@ -116,7 +116,6 @@ export const vi = {
     },
     labels: {
       deleted: 'Đã xóa {{value}}',
-      due: 'Đến hạn: {{value}}',
       reviewed: 'Đã ôn tập: {{value}}',
       updated: 'Đã cập nhật {{value}}',
       updatedUppercase: 'ĐÃ CẬP NHẬT {{value}}',

@@ -181,7 +181,8 @@ export class FolderService {
   private parseSortQuery(query: { sortField?: string; sortDirection?: string } = {}) {
     return {
       sortDirection: query.sortDirection === 'desc' ? 'desc' : 'asc',
-      sortField: query.sortField === 'title' || query.sortField === 'updated' ? query.sortField : undefined,
+      sortField:
+        query.sortField === 'title' || query.sortField === 'updatedAt' ? query.sortField : undefined,
     } as const
   }
 

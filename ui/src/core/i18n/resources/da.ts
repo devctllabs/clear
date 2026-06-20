@@ -116,7 +116,6 @@ export const da = {
     },
     labels: {
       deleted: 'Slettet {{value}}',
-      due: 'Forfalder: {{value}}',
       reviewed: 'Gentaget: {{value}}',
       updated: 'Opdateret {{value}}',
       updatedUppercase: 'OPDATERET {{value}}',

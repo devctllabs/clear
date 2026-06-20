@@ -116,7 +116,6 @@ export const ko = {
     },
     labels: {
       deleted: '{{value}} 삭제됨',
-      due: '기한: {{value}}',
       reviewed: '복습함: {{value}}',
       updated: '{{value}} 업데이트됨',
       updatedUppercase: '{{value}} 업데이트됨',

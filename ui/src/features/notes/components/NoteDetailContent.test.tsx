@@ -56,6 +56,26 @@ describe('NoteDetailContent', () => {
     expect(screen.getByText('IN PROGRESS')).toBeInTheDocument()
   })
 
+  it('adds absolute date-time tooltips to visible basic note dates', () => {
+    render(
+      <NoteDetailContent
+        note={{
+          ...basicNote,
+          dueAt: '2026-05-05T10:30:00',
+          reviewedAt: '2026-05-01T09:15:00',
+          updatedAt: '2026-05-02T11:45:00',
+        }}
+      />,
+    )
+
+    expect(screen.getByText(/Reviewed:/)).toHaveAttribute('title', '01.05.2026 09:15')
+    expect(screen.getByTitle('05.05.2026 10:30')).toHaveAttribute(
+      'dateTime',
+      '2026-05-05T10:30:00',
+    )
+    expect(screen.getByText(/UPDATED/)).toHaveAttribute('title', '02.05.2026 11:45')
+  })
+
   it('renders a cloze note detail card with derived cards', () => {
     render(<NoteDetailContent note={clozeNote} />)
 

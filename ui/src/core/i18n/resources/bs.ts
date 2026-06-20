@@ -120,7 +120,6 @@ export const bs = {
     },
     labels: {
       deleted: 'Izbrisano {{value}}',
-      due: 'Rok: {{value}}',
       reviewed: 'Ponovljeno: {{value}}',
       updated: 'Ažurirano {{value}}',
       updatedUppercase: 'AŽURIRANO {{value}}',

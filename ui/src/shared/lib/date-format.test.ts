@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  formatAbsoluteDateTime,
   formatDeletedAge,
   formatDueLabel,
   formatRelativeAge,
@@ -43,7 +44,8 @@ describe('date-format', () => {
 
   it('formats review, due, chip, and deleted labels', () => {
     expect(formatReviewedLabel('2026-04-25T12:00:00.000Z')).toBe('Reviewed: Yesterday')
-    expect(formatDueLabel('2026-04-27T12:00:00.000Z')).toBe('Due: Tomorrow')
+    expect(formatDueLabel('2026-04-27T12:00:00.000Z')).toBe('Tomorrow')
+    expect(formatDueLabel('2026-04-12T12:00:00.000Z')).toBe('2 weeks ago')
     expect(formatUpdatedChipLabel('2026-04-26T11:30:00.000Z')).toBe('UPDATED 30M AGO')
     expect(formatDeletedAge('2026-04-26T12:00:00.000Z')).toBe('Deleted just now')
     expect(formatRelativeAge('2026-04-26T11:59:00.000Z')).toBe('1 minute ago')
@@ -53,7 +55,12 @@ describe('date-format', () => {
     expect(formatRelativeAge('bad-date')).toBe('date unavailable')
     expect(formatDeletedAge('bad-date')).toBe('Deleted date unavailable')
     expect(formatReviewedLabel('bad-date')).toBe('Reviewed: Date unavailable')
-    expect(formatDueLabel('bad-date')).toBe('Due: Date unavailable')
+    expect(formatDueLabel('bad-date')).toBe('Date unavailable')
     expect(formatUpdatedChipLabel('bad-date')).toBe('UPDATED DATE UNAVAILABLE')
+  })
+
+  it('formats absolute date-time values for native date tooltips', () => {
+    expect(formatAbsoluteDateTime('2026-04-26T09:05:00')).toBe('26.04.2026 09:05')
+    expect(formatAbsoluteDateTime('bad-date')).toBeUndefined()
   })
 })

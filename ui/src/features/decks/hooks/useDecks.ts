@@ -7,20 +7,19 @@ import {
 
 import { unwrapDomainResult } from '@core/query/domain-query'
 import { useServices } from '@core/services'
-import type { SortPreference } from '@shared/types/sort.types'
 
-import type { DeckDraft } from '../types/deck.types'
+import type { DeckDraft, DeckSortPreference } from '../types/deck.types'
 
 export const deckKeys = {
   all: ['decks'] as const,
   detail: (deckId: string) => ['decks', deckId] as const,
-  folderChildren: (folderId: string, sort?: SortPreference) =>
+  folderChildren: (folderId: string, sort?: DeckSortPreference) =>
     ['decks', 'folderChildren', folderId, sort ?? 'default'] as const,
-  workspaceRoot: (workspaceId: string, sort?: SortPreference) =>
+  workspaceRoot: (workspaceId: string, sort?: DeckSortPreference) =>
     ['decks', 'workspaceRoot', workspaceId, sort ?? 'default'] as const,
 }
 
-export const useWorkspaceRootDecks = (workspaceId: string, sort?: SortPreference) => {
+export const useWorkspaceRootDecks = (workspaceId: string, sort?: DeckSortPreference) => {
   const { decks } = useServices()
 
   return useQuery({
@@ -31,7 +30,7 @@ export const useWorkspaceRootDecks = (workspaceId: string, sort?: SortPreference
   })
 }
 
-export const useDecksInFolder = (folderId: string, sort?: SortPreference) => {
+export const useDecksInFolder = (folderId: string, sort?: DeckSortPreference) => {
   const { decks } = useServices()
 
   return useQuery({

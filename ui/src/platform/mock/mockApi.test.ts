@@ -221,10 +221,15 @@ describe('mock API services', () => {
       'world-history',
       { direction: 'asc', field: 'title' },
     )
+    const notesByProgress = await mockNoteService.listByDeck(
+      'world-history',
+      { direction: 'asc', field: 'progress' },
+    )
 
     expect(decksByDue.ok).toBe(true)
     expect(foldersByTitleDesc.ok).toBe(true)
     expect(notesByTitle.ok).toBe(true)
+    expect(notesByProgress.ok).toBe(true)
 
     if (decksByDue.ok) {
       expect(decksByDue.value.map((deck) => deck.id)).toEqual([
@@ -245,6 +250,13 @@ describe('mock API services', () => {
       expect(notesByTitle.value.map((note) => note.id)).toEqual([
         'industrial-revolution-causes',
         'postwar-institutions',
+      ])
+    }
+
+    if (notesByProgress.ok) {
+      expect(notesByProgress.value.map((note) => note.id)).toEqual([
+        'postwar-institutions',
+        'industrial-revolution-causes',
       ])
     }
   })

@@ -10,7 +10,6 @@ import type {
   NoteDraft as ApiNoteDraft,
   NoteListItem as ApiNoteListItem,
   NoteRef as ApiNoteRef,
-  NoteSortField as ApiNoteSortField,
 } from '@api-generated/clear-api'
 
 import type { NoteService } from '@features/notes/services/noteService'
@@ -48,10 +47,7 @@ export const webNoteService: NoteService = {
     )
   },
   listByDeck(deckId, sort) {
-    const query = toSortQuery(sort) as {
-      sortDirection?: 'asc' | 'desc'
-      sortField?: ApiNoteSortField
-    }
+    const query = toSortQuery(sort)
 
     return toDomainResult(
       apiListNotesByDeck({

@@ -4,6 +4,7 @@ import { Pencil, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { LazyIconGlyph } from '@shared/components/icons/IconGlyph'
+import { DateText } from '@shared/components/data/DateText'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
 import { Badge } from '@shared/components/ui/badge'
@@ -41,7 +42,8 @@ export const WorkspaceSpaceCard = ({
   workspace: Workspace
 }) => {
   const { t } = useTranslation()
-  const { formatRelativeDate } = useDateFormatters()
+  const { formatAbsoluteDateTime, formatRelativeDate } = useDateFormatters()
+  const updatedAtTitle = formatAbsoluteDateTime(workspace.updatedAt)
   const openWorkspace = () => {
     if (opening) {
       return
@@ -113,6 +115,7 @@ export const WorkspaceSpaceCard = ({
             'absolute inset-0 z-10 cursor-pointer rounded-compact text-left focus-visible:ring-inset focus-visible:ring-offset-0',
           )}
           type="button"
+          title={updatedAtTitle}
           onClick={openWorkspace}
         />
         <div
@@ -131,7 +134,9 @@ export const WorkspaceSpaceCard = ({
             </p>
             <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
               <p className="text-wrap-anywhere type-label uppercase text-muted-foreground">
-                {formatRelativeDate(workspace.updatedAt)}
+                <DateText timestamp={workspace.updatedAt}>
+                  {formatRelativeDate(workspace.updatedAt)}
+                </DateText>
               </p>
               {active ? (
                 <WorkspaceBadge
@@ -167,6 +172,7 @@ export const WorkspaceSpaceCard = ({
           'absolute inset-0 z-10 cursor-pointer rounded-panel text-left focus-visible:ring-inset focus-visible:ring-offset-0 sm:rounded-card',
         )}
         type="button"
+        title={updatedAtTitle}
         onClick={openWorkspace}
       />
       <div className="pointer-events-none relative z-20 flex h-full flex-1 flex-col p-5 sm:p-7">
@@ -203,7 +209,9 @@ export const WorkspaceSpaceCard = ({
         </p>
 
         <p className="text-wrap-anywhere type-label mt-auto pt-8 uppercase text-muted-foreground sm:pt-12">
-          {formatRelativeDate(workspace.updatedAt)}
+          <DateText timestamp={workspace.updatedAt}>
+            {formatRelativeDate(workspace.updatedAt)}
+          </DateText>
         </p>
       </div>
     </Card>

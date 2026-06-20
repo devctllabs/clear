@@ -14,6 +14,9 @@ const isValidDate = (value: Date) => !Number.isNaN(value.getTime())
 
 const pad2 = (value: number) => value.toString().padStart(2, '0')
 
+const formatDateParts = (value: Date) =>
+  `${pad2(value.getDate())}.${pad2(value.getMonth() + 1)}.${value.getFullYear()}`
+
 const formatAbsoluteDate = (timestamp: string) => {
   const parsed = new Date(timestamp)
 
@@ -21,7 +24,17 @@ const formatAbsoluteDate = (timestamp: string) => {
     return timestamp
   }
 
-  return `${pad2(parsed.getDate())}.${pad2(parsed.getMonth() + 1)}.${parsed.getFullYear()}`
+  return formatDateParts(parsed)
+}
+
+export const formatAbsoluteDateTime = (timestamp: string) => {
+  const parsed = new Date(timestamp)
+
+  if (!isValidDate(parsed)) {
+    return undefined
+  }
+
+  return `${formatDateParts(parsed)} ${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`
 }
 
 const getCalendarDayDifference = (left: Date, right: Date) => {
@@ -188,15 +201,14 @@ export const createDateFormatters = (t: TFunction) => {
   }
 
   return {
+    formatAbsoluteDateTime,
     formatDeletedAge(value: string) {
       return t(($) => $.dates.labels.deleted, {
         value: formatRelativeAgeValue(t, value),
       })
     },
     formatDueLabel(timestamp: string) {
-      return t(($) => $.dates.labels.due, {
-        value: formatRelativeTimestamp(timestamp, 'future'),
-      })
+      return formatRelativeTimestamp(timestamp)
     },
     formatRelativeAge(value: string) {
       return formatRelativeAgeValue(t, value)

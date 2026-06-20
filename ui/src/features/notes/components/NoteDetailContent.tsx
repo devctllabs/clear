@@ -2,6 +2,7 @@ import { useId, useState, type ReactNode } from 'react'
 import { CalendarDays, Clock3, Info } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DateText } from '@shared/components/data/DateText'
 import { MarkdownContent } from '@shared/components/data/MarkdownContent'
 import { IconButton } from '@shared/components/ui/icon-button'
 import { useDateFormatters } from '@shared/lib/translated-date-format'
@@ -32,9 +33,9 @@ const NoteDetailSurface = ({ children }: { children: ReactNode }) => (
   </article>
 )
 
-const MetadataChip = ({ label }: { label: string }) => (
+const MetadataChip = ({ label, timestamp }: { label: string; timestamp?: string }) => (
   <span className="text-wrap-anywhere type-label inline-flex max-w-full rounded-full bg-muted px-3 py-1 uppercase text-muted-foreground">
-    {label}
+    {timestamp ? <DateText timestamp={timestamp}>{label}</DateText> : label}
   </span>
 )
 
@@ -110,7 +111,7 @@ const BasicNoteDetailCardContent = ({
       <div className="px-8 pt-8">
         <div className="flex min-w-0 flex-wrap gap-2">
           <NoteKindChip note={note} />
-          <MetadataChip label={formatUpdatedChipLabel(note.updatedAt)} />
+          <MetadataChip label={formatUpdatedChipLabel(note.updatedAt)} timestamp={note.updatedAt} />
         </div>
       </div>
     ) : null}
@@ -166,14 +167,16 @@ const BasicNoteDetailCardContent = ({
           <div className="mt-6 flex min-w-0 flex-wrap items-center gap-4">
             <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
               <CalendarDays className="size-4 shrink-0" />
-              <span className="text-wrap-anywhere min-w-0">
+              <DateText className="text-wrap-anywhere min-w-0" timestamp={note.reviewedAt}>
                 {formatReviewedLabel(note.reviewedAt)}
-              </span>
+              </DateText>
             </div>
             <div className="h-1 w-1 rounded-full bg-muted-foreground/35" />
             <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
               <Clock3 className="size-4 shrink-0" />
-              <span className="text-wrap-anywhere min-w-0">{formatDueLabel(note.dueAt)}</span>
+              <DateText className="text-wrap-anywhere min-w-0" timestamp={note.dueAt}>
+                {formatDueLabel(note.dueAt)}
+              </DateText>
             </div>
           </div>
         </div>
@@ -211,7 +214,7 @@ const ClozeNoteDetailCardContent = ({
       <div className="px-8 pt-8">
         <div className="flex min-w-0 flex-wrap gap-2">
           <NoteKindChip note={note} />
-          <MetadataChip label={formatUpdatedChipLabel(note.updatedAt)} />
+          <MetadataChip label={formatUpdatedChipLabel(note.updatedAt)} timestamp={note.updatedAt} />
         </div>
       </div>
     ) : null}
@@ -310,8 +313,9 @@ const DerivedCardGroup = ({ card }: { card: ClozeNoteCard }) => {
           </span>
         </div>
         <div className="text-wrap-anywhere text-[11px] font-normal text-muted-foreground">
-          {formatReviewedLabel(card.reviewedAt)} <span className="mx-1">·</span>{' '}
-          {formatDueLabel(card.dueAt)}
+          <DateText timestamp={card.reviewedAt}>{formatReviewedLabel(card.reviewedAt)}</DateText>{' '}
+          <span className="mx-1">·</span>{' '}
+          <DateText timestamp={card.dueAt}>{formatDueLabel(card.dueAt)}</DateText>
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { Link } from '@tanstack/react-router'
 import { Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { DateText } from '@shared/components/data/DateText'
 import { LoadErrorState } from '@shared/components/feedback/LoadErrorState'
 import { BottomNav, type NavigationTarget } from '@shared/components/layout/BottomNav'
 import { mobileLaneClassName } from '@shared/components/layout/LayoutLane'
@@ -325,7 +326,7 @@ const NoteDesktopOverviewContent = ({
   note: NoteDetail
 }) => {
   const { t } = useTranslation()
-  const { formatRelativeTimestamp, formatUpdatedAge } = useDateFormatters()
+  const { formatDueLabel, formatRelativeTimestamp, formatUpdatedAge } = useDateFormatters()
 
   return (
   <DesktopAsidePanel aria-label={t(($) => $.notes.labels.noteMetadata)} className="space-y-6" role="complementary">
@@ -354,15 +355,17 @@ const NoteDesktopOverviewContent = ({
       {note.kind === 'basic' ? (
         <>
           <NoteMetadataField label={t(($) => $.notes.labels.reviewed)}>
-            {formatRelativeTimestamp(note.reviewedAt, 'past')}
+            <DateText timestamp={note.reviewedAt}>
+              {formatRelativeTimestamp(note.reviewedAt, 'past')}
+            </DateText>
           </NoteMetadataField>
           <NoteMetadataField label={t(($) => $.notes.labels.due)}>
-            {formatRelativeTimestamp(note.dueAt, 'future')}
+            <DateText timestamp={note.dueAt}>{formatDueLabel(note.dueAt)}</DateText>
           </NoteMetadataField>
         </>
       ) : null}
       <NoteMetadataField label={t(($) => $.notes.labels.updated)}>
-        {formatUpdatedAge(note.updatedAt)}
+        <DateText timestamp={note.updatedAt}>{formatUpdatedAge(note.updatedAt)}</DateText>
       </NoteMetadataField>
     </div>
   </DesktopAsidePanel>

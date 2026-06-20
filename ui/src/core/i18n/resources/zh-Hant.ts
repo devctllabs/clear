@@ -116,7 +116,6 @@ export const zhHant = {
     },
     labels: {
       deleted: '已刪除 {{value}}',
-      due: '到期：{{value}}',
       reviewed: '已複習：{{value}}',
       updated: '已更新 {{value}}',
       updatedUppercase: '已更新 {{value}}',

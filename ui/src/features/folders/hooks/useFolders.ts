@@ -7,21 +7,23 @@ import {
 
 import { unwrapDomainResult } from '@core/query/domain-query'
 import { useServices } from '@core/services'
-import type { SortPreference } from '@shared/types/sort.types'
 
-import type { FolderDraft } from '../types/folder.types'
+import type { FolderDraft, FolderSortPreference } from '../types/folder.types'
 
 export const folderKeys = {
   all: ['folders'] as const,
   detail: (folderId: string) => ['folders', folderId] as const,
-  folderChildren: (folderId: string, sort?: SortPreference) =>
+  folderChildren: (folderId: string, sort?: FolderSortPreference) =>
     ['folders', 'folderChildren', folderId, sort ?? 'default'] as const,
   path: (folderId: string) => ['folders', folderId, 'path'] as const,
-  workspaceRoot: (workspaceId: string, sort?: SortPreference) =>
+  workspaceRoot: (workspaceId: string, sort?: FolderSortPreference) =>
     ['folders', 'workspaceRoot', workspaceId, sort ?? 'default'] as const,
 }
 
-export const useWorkspaceRootFolders = (workspaceId: string, sort?: SortPreference) => {
+export const useWorkspaceRootFolders = (
+  workspaceId: string,
+  sort?: FolderSortPreference,
+) => {
   const { folders } = useServices()
 
   return useQuery({
@@ -32,7 +34,7 @@ export const useWorkspaceRootFolders = (workspaceId: string, sort?: SortPreferen
   })
 }
 
-export const useFoldersInFolder = (folderId: string, sort?: SortPreference) => {
+export const useFoldersInFolder = (folderId: string, sort?: FolderSortPreference) => {
   const { folders } = useServices()
 
   return useQuery({

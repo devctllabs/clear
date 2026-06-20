@@ -124,7 +124,6 @@ export const pl = {
     },
     labels: {
       deleted: 'Usunięto {{value}}',
-      due: 'Do powtórki: {{value}}',
       reviewed: 'Powtórzono: {{value}}',
       updated: 'Zaktualizowano {{value}}',
       updatedUppercase: 'ZAKTUALIZOWANO {{value}}',

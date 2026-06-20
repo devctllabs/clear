@@ -116,7 +116,6 @@ export const enUS = {
     },
     labels: {
       deleted: 'Deleted {{value}}',
-      due: 'Due: {{value}}',
       reviewed: 'Reviewed: {{value}}',
       updated: 'Updated {{value}}',
       updatedUppercase: 'UPDATED {{value}}',

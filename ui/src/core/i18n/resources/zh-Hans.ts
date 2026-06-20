@@ -116,7 +116,6 @@ export const zhHans = {
     },
     labels: {
       deleted: '已删除 {{value}}',
-      due: '到期：{{value}}',
       reviewed: '已复习：{{value}}',
       updated: '已更新 {{value}}',
       updatedUppercase: '已更新 {{value}}',

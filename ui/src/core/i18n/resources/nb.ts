@@ -116,7 +116,6 @@ export const nb = {
     },
     labels: {
       deleted: 'Slettet {{value}}',
-      due: 'Frist: {{value}}',
       reviewed: 'Repetert: {{value}}',
       updated: 'Oppdatert {{value}}',
       updatedUppercase: 'OPPDATERT {{value}}',

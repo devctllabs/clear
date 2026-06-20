@@ -14,7 +14,12 @@ import {
   getNoteKindLabel,
   noteCreateOptions,
 } from '@features/notes/components/noteCreateOptions'
-import type { NoteKind, NoteListItem } from '@features/notes'
+import {
+  defaultNoteSortPreference,
+  noteSortFields,
+  type NoteKind,
+  type NoteListItem,
+} from '@features/notes'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { EmptyState } from '@shared/components/feedback/EmptyState'
 import {
@@ -46,7 +51,11 @@ export const DeckDetailPage = ({
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [noteSort, setNoteSort] = usePersistedSort('workspace-sort:deck-notes')
+  const [noteSort, setNoteSort] = usePersistedSort(
+    'workspace-sort:deck-notes',
+    defaultNoteSortPreference,
+    noteSortFields,
+  )
   const deckQuery = useDeck(deckId)
   const notesQuery = useNotesByDeck(deckId, noteSort)
   const deleteDeck = useDeleteDeck()

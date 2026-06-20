@@ -116,7 +116,6 @@ export const ja = {
     },
     labels: {
       deleted: '{{value}}に削除',
-      due: '期限: {{value}}',
       reviewed: '復習済み: {{value}}',
       updated: '{{value}}に更新',
       updatedUppercase: '{{value}}に更新',

@@ -13,47 +13,44 @@ import {
   dropdownMenuItemClassName,
 } from '@shared/components/ui/dropdown-menu'
 import {
-  defaultSortPreference,
   type SortDirection,
-  type SortField,
   type SortPreference,
 } from '@shared/types/sort.types'
 
-export type SortFieldOption = Readonly<{
-  field: SortField
+export type SortFieldOption<TField extends string> = Readonly<{
+  field: TField
   label: string
 }>
 
-export interface SortMenuProps {
+export interface SortMenuProps<TField extends string> {
   ariaLabel: string
-  fieldOptions: readonly SortFieldOption[]
+  fieldOptions: readonly SortFieldOption<TField>[]
   onDirectionChange: (direction: SortDirection) => void
-  onFieldChange: (field: SortField) => void
-  sort: SortPreference
+  onFieldChange: (field: TField) => void
+  sort: SortPreference<TField>
 }
 
-export const usePersistedSort = (
+export const usePersistedSort = <TField extends string>(
   storageKey: string,
-  initial: SortPreference = defaultSortPreference,
+  initial: SortPreference<TField>,
+  validFields: readonly TField[],
 ) => {
-  const [sort, setSort] = useState<SortPreference>(() => {
+  const [sort, setSort] = useState<SortPreference<TField>>(() => {
     if (typeof window === 'undefined') {
       return initial
     }
 
     try {
       const parsed = JSON.parse(window.localStorage.getItem(storageKey) ?? 'null') as
-        | Partial<SortPreference>
+        | Partial<SortPreference<TField>>
         | null
+
+      const parsedField = parsed?.field
 
       return {
         direction: parsed?.direction === 'desc' ? 'desc' : initial.direction,
         field:
-          parsed?.field === 'dueToday' ||
-          parsed?.field === 'updated' ||
-          parsed?.field === 'title'
-            ? parsed.field
-            : initial.field,
+          parsedField && validFields.includes(parsedField) ? parsedField : initial.field,
       }
     } catch {
       return initial
@@ -71,13 +68,13 @@ export const usePersistedSort = (
   return [sort, setSort] as const
 }
 
-export const SortMenu = ({
+export const SortMenu = <TField extends string>({
   ariaLabel,
   fieldOptions,
   onDirectionChange,
   onFieldChange,
   sort,
-}: SortMenuProps) => {
+}: SortMenuProps<TField>) => {
   const { t } = useTranslation()
   const directionLabels: Record<SortDirection, string> = {
     asc: t(($) => $.common.sort.ascending),

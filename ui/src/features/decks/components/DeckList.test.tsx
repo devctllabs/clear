@@ -11,12 +11,11 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { AppProviders } from '@core/providers/AppProviders'
 import { createAppServices } from '@core/services'
-import type { SortPreference } from '@shared/types/sort.types'
 
-import type { Deck } from '../types/deck.types'
+import type { Deck, DeckSortPreference } from '../types/deck.types'
 import { DeckList } from './DeckList'
 
-const sort: SortPreference = {
+const sort: DeckSortPreference = {
   direction: 'asc',
   field: 'title',
 }

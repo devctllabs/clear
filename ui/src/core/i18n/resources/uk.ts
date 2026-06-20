@@ -124,7 +124,6 @@ export const uk = {
     },
     labels: {
       deleted: 'Видалено {{value}}',
-      due: 'До повторення: {{value}}',
       reviewed: 'Повторено: {{value}}',
       updated: 'Оновлено {{value}}',
       updatedUppercase: 'ОНОВЛЕНО {{value}}',

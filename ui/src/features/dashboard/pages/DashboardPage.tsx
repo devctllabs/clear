@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next'
 
 import { useDeleteDeck, useWorkspaceRootDecks } from '@features/decks/hooks/useDecks'
 import { DeckList } from '@features/decks/components/DeckList'
-import type { Deck } from '@features/decks'
+import {
+  deckSortFields,
+  defaultDeckSortPreference,
+  type Deck,
+} from '@features/decks'
 import {
   SearchResults,
   useContentSearch,
@@ -16,7 +20,11 @@ import {
   useWorkspaceRootFolders,
 } from '@features/folders/hooks/useFolders'
 import { FolderList } from '@features/folders/components/FolderList'
-import type { Folder } from '@features/folders'
+import {
+  defaultFolderSortPreference,
+  folderSortFields,
+  type Folder,
+} from '@features/folders'
 import {
   useActiveWorkspaceId,
   useDeleteWorkspace,
@@ -48,8 +56,16 @@ import {
 export const DashboardPage = ({ workspaceId }: { workspaceId: string }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [folderSort, setFolderSort] = usePersistedSort('workspace-sort:folders')
-  const [deckSort, setDeckSort] = usePersistedSort('workspace-sort:decks')
+  const [folderSort, setFolderSort] = usePersistedSort(
+    'workspace-sort:folders',
+    defaultFolderSortPreference,
+    folderSortFields,
+  )
+  const [deckSort, setDeckSort] = usePersistedSort(
+    'workspace-sort:decks',
+    defaultDeckSortPreference,
+    deckSortFields,
+  )
   const workspaceQuery = useWorkspace(workspaceId)
   const activeWorkspaceIdQuery = useActiveWorkspaceId()
   const foldersQuery = useWorkspaceRootFolders(workspaceId, folderSort)

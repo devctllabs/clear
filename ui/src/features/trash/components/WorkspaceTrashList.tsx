@@ -9,6 +9,7 @@ import {
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DateText } from '@shared/components/data/DateText'
 import { ActionMenu } from '@shared/components/feedback/ActionMenu'
 import { PendingSpinner } from '@shared/components/feedback/PendingSpinner'
 import { Card } from '@shared/components/ui/card'
@@ -124,7 +125,7 @@ const WorkspaceTrashRow = ({
             {compactLocationLabel}
           </p>
           <p className="text-wrap-anywhere text-[13px] leading-5 text-muted-foreground">
-            {formatDeletedAge(item.deletedAt)}
+            <DateText timestamp={item.deletedAt}>{formatDeletedAge(item.deletedAt)}</DateText>
           </p>
         </div>
       </div>

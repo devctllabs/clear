@@ -7,6 +7,7 @@ import { WorkspaceTrashSummary } from './WorkspaceTrashSummary'
 const meta = {
   args: {
     ageLabel: 'Last emptied 2 days ago',
+    ageTimestamp: '2026-05-01T12:00:00',
     countLabel: '3 items',
   },
   component: WorkspaceTrashSummary,
@@ -26,6 +27,7 @@ export const Default: Story = {}
 export const SingleItem: Story = {
   args: {
     ageLabel: 'Last emptied 1 hour ago',
+    ageTimestamp: '2026-05-03T11:00:00',
     countLabel: '1 item',
   },
 }

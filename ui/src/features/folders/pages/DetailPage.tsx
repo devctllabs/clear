@@ -6,7 +6,11 @@ import { useTranslation } from 'react-i18next'
 import { ResourceCreateMenu } from '@features/dashboard/components/ResourceCreateMenu'
 import { useDecksInFolder, useDeleteDeck } from '@features/decks/hooks/useDecks'
 import { DeckList } from '@features/decks/components/DeckList'
-import type { Deck } from '@features/decks'
+import {
+  deckSortFields,
+  defaultDeckSortPreference,
+  type Deck,
+} from '@features/decks'
 import {
   SearchBox,
   SearchResults,
@@ -39,7 +43,11 @@ import { useIsDesktopLayout } from '@shared/hooks/useAppLayoutMode'
 import { FolderList } from '../components/FolderList'
 import { FolderDetailLoadingState } from '../components/FolderDetailLoadingState'
 import { useDeleteFolder, useFolder, useFoldersInFolder } from '../hooks/useFolders'
-import type { Folder } from '../types/folder.types'
+import {
+  defaultFolderSortPreference,
+  folderSortFields,
+  type Folder,
+} from '../types/folder.types'
 
 export const FolderDetailPage = ({
   folderId,
@@ -50,8 +58,16 @@ export const FolderDetailPage = ({
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [folderSort, setFolderSort] = usePersistedSort('workspace-sort:folders')
-  const [deckSort, setDeckSort] = usePersistedSort('workspace-sort:decks')
+  const [folderSort, setFolderSort] = usePersistedSort(
+    'workspace-sort:folders',
+    defaultFolderSortPreference,
+    folderSortFields,
+  )
+  const [deckSort, setDeckSort] = usePersistedSort(
+    'workspace-sort:decks',
+    defaultDeckSortPreference,
+    deckSortFields,
+  )
   const folderQuery = useFolder(folderId)
   const foldersQuery = useFoldersInFolder(folderId, folderSort)
   const decksQuery = useDecksInFolder(folderId, deckSort)
