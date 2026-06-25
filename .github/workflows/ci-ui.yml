@@ -49,7 +49,7 @@ jobs:
           cmd: yq '.importers.ui.devDependencies.playwright.version' pnpm-lock.yaml
 
       - name: Cache Playwright browsers
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.result }}
