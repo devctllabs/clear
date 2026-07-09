@@ -19,14 +19,14 @@
   "dependencies": {
     "@hono/node-server": "^1.19.7",
     "@msw/data": "1.1.6",
-    "hono": "^4.12.23",
+    "hono": "^4.12.27",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.97.1",
     "@types/node": "^20.0.0",
-    "esbuild": "^0.28.0",
-    "tsx": "^4.22.4",
+    "esbuild": "^0.28.1",
+    "tsx": "^4.22.5",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8",
     "yaml": "^2.8.1"
