@@ -20,7 +20,7 @@
     "@hono/node-server": "^1.19.7",
     "@msw/data": "1.1.6",
     "hono": "^4.12.23",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "^0.97.1",
