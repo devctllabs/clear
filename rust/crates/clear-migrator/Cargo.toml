@@ -6,7 +6,7 @@ rust-version.workspace = true
 build = "build.rs"
 
 [dependencies]
-rusqlite = { version = "0.32.1", features = ["bundled"] }
+rusqlite = { version = "0.40.1", features = ["bundled"] }
 thiserror = "2.0.17"
 
 [dev-dependencies]
